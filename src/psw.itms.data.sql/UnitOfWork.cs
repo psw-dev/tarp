@@ -18,8 +18,25 @@ namespace PSW.ITMS.Data.Sql
 
     public class UnitOfWork : IUnitOfWork
     {
-    
-        #region Public Properties SHRD
+        #region Private Properties SHRD
+        private IAddDeclarationRequirementRepository _addDeclarationRequirementRepository;
+		private IDeclarationCategoryRepository _declarationCategoryRepository;
+		private IDocumentRequirementRepository _documentRequirementRepository;
+		private IFinancialRequirementRepository _financialRequirementRepository;
+		private IITMSRequirementRepository _iTMSRequirementRepository;
+		private ILogicOperatorRepository _logicOperatorRepository;
+		private INilRequirementRepository _nilRequirementRepository;
+		private IRefusalIntimationRepository _refusalIntimationRepository;
+		private IRequestTypeRepository _requestTypeRepository;
+		private IRequirementRepository _requirementRepository;
+		private IRequirementCategoryRepository _requirementCategoryRepository;
+		private IRequirementSetRepository _requirementSetRepository;
+		private ITermUoMRepository _termUoMRepository;
+		private ITestingRequirementRepository _testingRequirementRepository;
+		private IValidityTermRequirementRepository _validityTermRequirementRepository;
+        #endregion
+        
+        #region Private Properties SHRD
         private IAgencyRepository _agencyRepository;
         private IAppConfigRepository _appConfigRepository;
         private IAttachedObjectFormatRepository _attachedObjectFormatRepository;
@@ -58,8 +75,24 @@ namespace PSW.ITMS.Data.Sql
 
         #endregion 
 
+        #region Public Properties ITMS
+        public IAddDeclarationRequirementRepository AddDeclarationRequirementRepository => _addDeclarationRequirementRepository ?? (_addDeclarationRequirementRepository = new AddDeclarationRequirementRepository(_connection));
+		public IDeclarationCategoryRepository DeclarationCategoryRepository => _declarationCategoryRepository ?? (_declarationCategoryRepository = new DeclarationCategoryRepository(_connection));
+		public IDocumentRequirementRepository DocumentRequirementRepository => _documentRequirementRepository ?? (_documentRequirementRepository = new DocumentRequirementRepository(_connection));
+		public IFinancialRequirementRepository FinancialRequirementRepository => _financialRequirementRepository ?? (_financialRequirementRepository = new FinancialRequirementRepository(_connection));
+		public IITMSRequirementRepository ITMSRequirementRepository => _iTMSRequirementRepository ?? (_iTMSRequirementRepository = new ITMSRequirementRepository(_connection));
+		public ILogicOperatorRepository LogicOperatorRepository => _logicOperatorRepository ?? (_logicOperatorRepository = new LogicOperatorRepository(_connection));
+		public INilRequirementRepository NilRequirementRepository => _nilRequirementRepository ?? (_nilRequirementRepository = new NilRequirementRepository(_connection));
+		public IRefusalIntimationRepository RefusalIntimationRepository => _refusalIntimationRepository ?? (_refusalIntimationRepository = new RefusalIntimationRepository(_connection));
+		public IRequestTypeRepository RequestTypeRepository => _requestTypeRepository ?? (_requestTypeRepository = new RequestTypeRepository(_connection));
+		public IRequirementRepository RequirementRepository => _requirementRepository ?? (_requirementRepository = new RequirementRepository(_connection));
+		public IRequirementCategoryRepository RequirementCategoryRepository => _requirementCategoryRepository ?? (_requirementCategoryRepository = new RequirementCategoryRepository(_connection));
+		public IRequirementSetRepository RequirementSetRepository => _requirementSetRepository ?? (_requirementSetRepository = new RequirementSetRepository(_connection));
+		public ITermUoMRepository TermUoMRepository => _termUoMRepository ?? (_termUoMRepository = new TermUoMRepository(_connection));
+		public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
+		public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
+        #endregion
 
-   
         #region Public Properties SHRD
 
         public IAgencyRepository AgencyRepository => _agencyRepository ?? (_agencyRepository = new AgencyRepository(_connection));

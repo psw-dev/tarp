@@ -8,7 +8,7 @@ namespace PSW.ITMS.Data.Entities
 {
     public abstract class Entity
     {
-        #region Protected Properties
+		#region Protected Properties
 
         public string TableName { get; set; }
 
@@ -21,22 +21,22 @@ namespace PSW.ITMS.Data.Entities
         #region public Properties
 
         public object PrimaryKey { get; set; }
+        
+		public string PrimaryKeyName { get; set; }
 
-        public string PrimaryKeyName { get; set; }
-
-        #endregion
+		#endregion
 
         #region PropertyChange
 
         #endregion
 
-        #region public Methods
+		#region public Methods
 
-        public virtual Dictionary<string, object> GetColumns()
+		public virtual Dictionary<string, object> GetColumns()
         {
             return null;
         }
 
-        #endregion
+		#endregion
     }
 }

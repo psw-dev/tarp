@@ -10,7 +10,21 @@ namespace PSW.ITMS.Data
     public interface IUnitOfWork : IDisposable
     {
         #region ITMS Repositories
-
+        IAddDeclarationRequirementRepository AddDeclarationRequirementRepository { get; }
+		IDeclarationCategoryRepository DeclarationCategoryRepository { get; }
+		IDocumentRequirementRepository DocumentRequirementRepository { get; }
+		IFinancialRequirementRepository FinancialRequirementRepository { get; }
+		IITMSRequirementRepository ITMSRequirementRepository { get; }
+		ILogicOperatorRepository LogicOperatorRepository { get; }
+		INilRequirementRepository NilRequirementRepository { get; }
+		IRefusalIntimationRepository RefusalIntimationRepository { get; }
+		IRequestTypeRepository RequestTypeRepository { get; }
+		IRequirementRepository RequirementRepository { get; }
+		IRequirementCategoryRepository RequirementCategoryRepository { get; }
+		IRequirementSetRepository RequirementSetRepository { get; }
+		ITermUoMRepository TermUoMRepository { get; }
+		ITestingRequirementRepository TestingRequirementRepository { get; }
+		IValidityTermRequirementRepository ValidityTermRequirementRepository { get; }
        
         #endregion
 

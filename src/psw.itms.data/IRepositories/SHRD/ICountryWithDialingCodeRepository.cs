@@ -11,7 +11,7 @@ namespace PSW.ITMS.Data.Repositories
 {
     public interface ICountryWithDialingCodeRepository : IRepository<CountryWithDialingCodes>
     {
-        IEnumerable<CountryWithDialingCodes> GetCountryDialingCode();
+        
 
 
     }
