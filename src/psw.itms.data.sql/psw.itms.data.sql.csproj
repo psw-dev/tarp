@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Project References -->
+  <ItemGroup>
+    <ProjectReference Include="..\psw.itms.common\psw.itms.common.csproj" />
+    <ProjectReference Include="..\psw.itms.data\psw.itms.data.csproj" />
+  </ItemGroup>
+
+  <!-- Package References -->
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+  </ItemGroup>
+
+
+
+   <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputPath>..\..\build\psw.itms.data.sql\</OutputPath>
+    <!-- Remove this if you multi-target and need the created net*, netcoreapp* subdirs -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+
+</Project>

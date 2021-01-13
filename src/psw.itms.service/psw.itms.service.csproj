@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+
+ <!-- Package References -->
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="System.Text.Json" Version="5.0.0" />
+  </ItemGroup>
+
+ <!-- Project References -->
+  <ItemGroup>
+    <ProjectReference Include="..\psw.itms.common\psw.itms.common.csproj" />
+    <ProjectReference Include="..\psw.itms.data\psw.itms.data.csproj" />
+    <ProjectReference Include="..\psw.itms.data.sql\psw.itms.data.sql.csproj" />
+    <ProjectReference Include="..\..\lib\librabbitmq\src\psw.rabbitmq\psw.rabbitmq.csproj" />
+  </ItemGroup>
+
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputPath>..\..\build\psw.itms.service\</OutputPath>
+    <!-- Remove this if you multi-target and need the created net*, netcoreapp* subdirs -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+</Project>
