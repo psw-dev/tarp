@@ -31,6 +31,7 @@ namespace PSW.ITMS.Service.Strategies
 
             switch (request.methodId)
             {
+                case "1710": return new MockDataStrategy(request);
                 case "removelater": return null;
                 
                 default: break;
