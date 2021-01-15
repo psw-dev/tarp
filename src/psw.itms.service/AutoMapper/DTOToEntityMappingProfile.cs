@@ -11,19 +11,15 @@ namespace PSW.ITMS.Service.AutoMapper
     {
         public override string ProfileName
         {
-            get { return "DTOToEntityMappings"; }
-        } 
+            get
+            {
+                return "DTOToEntityMappings";
+            }
+        }
+
         public DTOToEntityMappingProfile()
         {
             var _culture = new CultureInfo("en-Us");
-
-            //GetCityByCountryRequestDTO
-            CreateMap<GetCityByCountryRequestDTO, Country>()
-                .ForMember(dest => dest.Code , opt => opt.MapFrom(src => src.CountryCode));
-            
-            //GetImportPermitsResponseDTO
-
-
         }
     }
 }

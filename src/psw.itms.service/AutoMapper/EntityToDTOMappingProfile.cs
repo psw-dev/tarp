@@ -9,14 +9,14 @@ namespace PSW.ITMS.Service.AutoMapper
     {
         public override string ProfileName
         {
-            get { return "EntityToDTOMappings"; }
+            get
+            {
+                return "EntityToDTOMappings";
+            }
         }
+
         public EntityToDTOMappingProfile()
         {
-
-           
-            
-        
         }
     }
 }
