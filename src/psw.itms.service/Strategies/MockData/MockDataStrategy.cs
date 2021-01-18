@@ -70,7 +70,7 @@ namespace PSW.ITMS.Service.Strategies
                 HSCode="1214.9000",
                 CommodityName="ALFALFA / ALFALFA HAY",
                 Purpose="Animal feed",
-                IPDocumentaryRequirements="Application on DPP prescribed form 4 | Proforma Invoice | Fee Challan",
+                IPDocumentaryRequirements="Application on DPP Prescribed Form 4|Proforma Invoice|Fee Challan",
                 IPFees="5000 Per 6 months" ,
                 TechnicalName="Medicago sativa"                
                 };
@@ -80,7 +80,7 @@ namespace PSW.ITMS.Service.Strategies
                     HSCode="1214.9000",
                     CommodityName="CLOVER MIXTURE",
                     Purpose="Commercial Sowing",
-                    IPDocumentaryRequirements="Application on DPP prescribed form 3 | Proforma Invoice | Fee Challan | Enlisted variety proof from FSC&RD if import is for planting or propagation purpose | NOC from NBC if the imported product is GMO",
+                    IPDocumentaryRequirements="Application on DPP prescribed form 3|Proforma Invoice|Fee Challan|Enlisted variety proof from FSC&RD if import is for planting or propagation purpose|NOC from NBC if the imported product is GMO",
                     IPFees="5000 Per 6 months" ,
                     TechnicalName=""
                 };
@@ -90,7 +90,7 @@ namespace PSW.ITMS.Service.Strategies
                     HSCode="1214.9000",
                     CommodityName="CLOVER MIXTURE",
                     Purpose="Screening / Research/ Trails",
-                    IPDocumentaryRequirements="Application on DPP prescribed form 2 | Proforma Invoice | Fee Challan | NOC from NBC if the imported product is GMO",
+                    IPDocumentaryRequirements="Application on DPP prescribed form 2|Proforma Invoice|Fee Challan |NOC from NBC if the imported product is GMO",
                     IPFees="5000 Per 6 months" ,
                     TechnicalName=""
                 };
@@ -127,6 +127,7 @@ namespace PSW.ITMS.Service.Strategies
                     foreach(SeedData item in desiredList){
                         GetNamesOfPlantAndPlantProductsResponseDTO response=new GetNamesOfPlantAndPlantProductsResponseDTO(){
                             HSCode=item.HSCode,
+                            Purpose=item.Purpose,                            
                             Name=item.TechnicalName
                         };
                         filteredData.Add(response) ;
@@ -134,14 +135,26 @@ namespace PSW.ITMS.Service.Strategies
                     return filteredData;
 
                 case "Document Type": 
-                    desiredList=MockData.FindAll(x => (x.HSCode == HSCode && x.Purpose==importPurpose));                
+                    var docmentList=GetAllDocumentType(2,HSCode);
+                    desiredList=MockData.FindAll(x => (x.HSCode == HSCode && x.Purpose==importPurpose)); 
                     foreach(SeedData item in desiredList){
+                        IList<string> documentNameList=StringSplitter(item.IPDocumentaryRequirements);                       
+                        IList<DocumentResponseDTO> RequiredDocs =new List<DocumentResponseDTO>();                
+
+                        foreach(String documentName in documentNameList){
+                            string docCode=searchDocumentCode(docmentList,documentName);
+                            RequiredDocs.Add(new DocumentResponseDTO{
+                                DocumentCode=docCode,
+                                DocumentName=documentName
+                            });
+                        }
                         GetAllDocumentTypeResponseDTO response=new GetAllDocumentTypeResponseDTO(){
                             HSCode=item.HSCode,
-                            Name=item.IPDocumentaryRequirements
+                            Purpose=item.Purpose,
+                            Documents=RequiredDocs
                         };
                         filteredData.Add(response) ;
-                    }                    
+                    }                                        
                     return filteredData;
 
                 case "IP Fees": 
@@ -149,56 +162,62 @@ namespace PSW.ITMS.Service.Strategies
                     foreach(SeedData item in desiredList){
                         GetIPFeesResponseDTO response=new GetIPFeesResponseDTO(){
                             HSCode=item.HSCode,
+                            Purpose=item.Purpose,                            
                             IPFees=item.IPFees
                         };
                         filteredData.Add(response) ;
                     }                    
                     return filteredData;    
                                 
-                default: break;
-            }
-            
-            foreach(SeedData item in MockData){
-                 if(MockData.Exists(x => x.HSCode == HSCode)){
-                    GetPurposeOfImportByHSCodeResponseDTO response=new GetPurposeOfImportByHSCodeResponseDTO(){
-                        HSCode=item.HSCode,
-                        Name=item.Purpose
-                    };
-                    filteredData.Add(response) ;
-                 }
-                // if(MockData.Contains(item.HSCode)){
-                //     GetPurposeOfImportByHSCodeResponseDTO response=new GetPurposeOfImportByHSCodeResponseDTO(){
-                //         ID=item.HSCode,
-                //         Name=item.Purpose
-                //     };
-                //     filteredData.Add(item) ;
-                // }                                                                                                     
-            }
-            return filteredData;          
+                default: return filteredData;
+            }                            
         }
 
-        public List<TradePurpose> GetImportPurposeByHSCode(int AgencyId,string HScode)
+        
+        public List<string> StringSplitter(string value){
+            return value.Split('|').ToList();
+        }
+        public IEnumerable<DocumentType> GetAllDocumentType(int agencyId,string HScode)
         {
+            try
+            {
+                //TODO: Query ITMS to get Document Type w.r.t HSCode and Agency Id
+
+                //For The Time being Getting the desire values from shared DB directly
+                
+                
                 // Begin Transaction  
                 this.Command.UnitOfWork.BeginTransaction();
 
-                //TODO: Fetch Import Purpose from Request to ITMS
-                
                 // Query Database 
-                List<TradePurpose> ImportPurposeList = this.Command.UnitOfWork.TradePurposeRepository.Where(new
-                {
-                    // agencyId = requestDTO.AgencyId,
-                    // HSCode =requestDTO.HSCode
-                    IsDPP=1
-                });
+                IEnumerable<DocumentType> AllDocmumentType =
+                    this.Command.UnitOfWork.DocumentTypeRepository.Where(
+                        new{
+                            AgencyID=agencyId,  
+                            //HSCode=HSCode //Will be required when querying tom ITMS                        
+                        }
+                    );
 
                 // Commit Transaction  
                 this.Command.UnitOfWork.Commit();
 
-                return ImportPurposeList;
+                return AllDocmumentType;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
         }
         
-        
+        public string searchDocumentCode(IEnumerable<DocumentType> documentList, string documentName){
+            var doc=documentList.FirstOrDefault(x => x.Name == documentName);                       
+            if(doc== null){
+                Random _random = new Random();
+                return "D"+_random.Next(9, 99).ToString("D2");
+            }
+            return doc.Code;
+        }
         #endregion 
 
     }
