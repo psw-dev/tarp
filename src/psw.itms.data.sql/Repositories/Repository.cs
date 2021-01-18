@@ -21,53 +21,57 @@ namespace PSW.ITMS.Data.Sql.Repositories
     /// <typeparam name="T">the type of the Entity</typeparam>
 	public abstract class Repository<T> : IRepository<T> where T : Entity
     {
-		#region Protected Fields
+        #region Protected Fields
 
-        private IDbConnection connection;
+        protected IDbConnection _connection;
+        protected IDbTransaction _transaction;
 
-		#endregion
+        #endregion
 
-		#region Protected properties
+        #region Protected properties
 
-		protected string TableName {get;set;}
-		protected string PrimaryKeyName {get;set;}
+        protected string TableName { get; set; }
+        protected string PrimaryKeyName { get; set; }
 
-		#endregion
+        #endregion
 
-		#region Public properties
+        #region Public properties
 
         public Entity Entity { get; set; }
 
-		#endregion
+        #endregion
 
         #region Protected Constructors
 
-		 protected Repository(IDbConnection _connection)
+        protected Repository(IDbConnection connection)
         {
-            connection = _connection;
+            _connection = connection;
         }
 
-		#endregion
+        #endregion
 
-		#region Public Methods
+        #region Public Methods
 
         public virtual T Get(int id)
         {
-            return connection.Query<T>(string.Format("SELECT TOP 1 * FROM {0} WHERE {2} = '{1}'", TableName, id, PrimaryKeyName)).FirstOrDefault();
+            return _connection.Query<T>(string.Format("SELECT TOP 1 * FROM {0} WHERE [{2}] = '{1}'", TableName, id, PrimaryKeyName),
+                                        transaction: _transaction).FirstOrDefault();
         }
 
         public virtual T Get(string id)
         {
-            return connection.Query<T>(string.Format("SELECT TOP 1 * FROM {0} WHERE {2} = '{1}'", TableName, id, PrimaryKeyName)).FirstOrDefault();
+            return _connection.Query<T>(string.Format("SELECT TOP 1 * FROM {0} WHERE [{2}] = '{1}'", TableName, id, PrimaryKeyName),
+                                        transaction: _transaction).FirstOrDefault();
         }
 
-        public Task<IEnumerable<T>> Get()
+        public virtual IEnumerable<T> Get()
         {
-            return (Task<IEnumerable<T>>)connection.Query<T>(string.Format("SELECT * FROM {0}", TableName));
+            return (IEnumerable<T>)_connection.Query<T>(string.Format("SELECT * FROM {0}", TableName),
+                                                        transaction: _transaction);
         }
-        
 
-        public void Add(T _entity)
+
+        public virtual int Add(T _entity)
         {
             var Entity = _entity;
             var query = "INSERT INTO {0} ({1}) VALUES({2}); SELECT SCOPE_IDENTITY()";
@@ -88,22 +92,25 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
             query = string.Format(query, Entity.TableName, cols.ToString().TrimEnd(','), values.ToString().TrimEnd(',')) + ";";
 
-            connection.Query<T>(query);
+            int result = _connection.ExecuteScalar<int>(query,
+                                                        transaction: _transaction);
+            return result;
         }
-
-		public void Delete(Entity _entity)
+        public virtual void Delete(Entity _entity)
         {
             var Entity = _entity;
             var query = string.Format("DELETE {0} WHERE {2} = '{1}';", Entity.TableName, Entity.PrimaryKey, Entity.PrimaryKeyName);
-            connection.Execute(query);
+            _connection.Execute(query,
+                                transaction: _transaction);
         }
 
         public virtual void Delete(int id)
         {
-            connection.Query<T>(string.Format("DELETE FROM {0} WHERE {2} = '{1}'", TableName, id, PrimaryKeyName)).FirstOrDefault();
+            _connection.Query<T>(string.Format("DELETE FROM {0} WHERE {2} = '{1}'", TableName, id, PrimaryKeyName),
+                                 transaction: _transaction).FirstOrDefault();
         }
 
-        public List<T> Where(object propertyValues)
+        public virtual List<T> Where(object propertyValues)
         {
             const string query = "SELECT * FROM {0} WHERE {1}";
 
@@ -115,10 +122,11 @@ namespace PSW.ITMS.Data.Sql.Repositories
                 whereBulder.AppendFormat("{2} {0} = '{1}'", property.Name, property.GetValue(propertyValues).ToString().Replace("'", "''"), first ? "" : "AND");
                 first = false;
             }
-            return connection.Query<T>(string.Format(query, TableName, whereBulder)).ToList();
+            return _connection.Query<T>(string.Format(query, TableName, whereBulder),
+                                        transaction: _transaction).ToList();
         }
 
-        public List<T> GetPage(int pageNumber, int pageSize)
+        public virtual List<T> GetPage(int pageNumber, int pageSize)
         {
             if (string.IsNullOrWhiteSpace(TableName) || pageSize < 1 || pageNumber < 1 || string.IsNullOrWhiteSpace(PrimaryKeyName))
                 return new List<T>();
@@ -126,28 +134,56 @@ namespace PSW.ITMS.Data.Sql.Repositories
             var query = @"SELECT * FROM {2} ORDER BY {3} OFFSET(({1}-1)*{0}) ROWS FETCH NEXT {1} ROWS ONLY";
             query = string.Format(query, pageSize, pageNumber, TableName, PrimaryKeyName);
 
-            return connection.Query<T>(query).ToList();
+            return _connection.Query<T>(query,
+                                        transaction: _transaction).ToList();
         }
 
-	public int Update(Entity entity)
+        public virtual int Update(Entity entity)
         {
-            
-            StringBuilder values=new StringBuilder();
-            Dictionary<string,object> columns = entity.GetColumns();
-            foreach (KeyValuePair<string,object> item in columns)
+
+            StringBuilder values = new StringBuilder();
+            Dictionary<string, object> columns = entity.GetColumns();
+
+            foreach (KeyValuePair<string, object> item in columns)
             {
-                //item.Key //column's name;
-                //item.Value //column's value;
-                values.Append(string.Format("{0}='{1}',",item.Key,item.Value.ToString()));
-                //"Update Table Set ColumnName=Value Where Id=1";
+                if (entity.PrimaryKeyName == item.Key)
+                    continue;
+
+                values.Append(string.Format(item.Value == null ? "{0}={1}," : "{0}='{1}',", item.Key, item.Value == null ? "null" : item.Value.ToString()));
             }
 
-            return connection.Query<T>(
-                "Update @TableName Set @Values WHERE @PrimaryKeyName = @Id",
-                param: new { TableName=this.TableName,Values=values.ToString(),PrimaryKeyName=this.PrimaryKeyName, Id = columns[this.PrimaryKeyName] }).Count();
+            // Need to Remove last comma
+            string colValues = values.ToString().TrimEnd(',');
 
+            string query = string.Format("Update {0} Set {1} WHERE {2} = {3}", this.TableName, colValues, this.PrimaryKeyName, columns[this.PrimaryKeyName]); ;
+
+            int numberOfRowsUpdated = _connection.ExecuteScalar<int>(query,
+                                                                    null,
+                                                                    transaction: _transaction);
+            return numberOfRowsUpdated;
         }
 
-		#endregion
+        public virtual T Find(int id)
+        {
+            return _connection.Query<T>(
+                string.Format("SELECT top 1 * FROM {0} where {1} = {2}", this.TableName, this.PrimaryKeyName, id),
+                param: new { TableName = this.TableName, PrimaryKeyName = this.PrimaryKeyName, Id = id },
+                transaction: _transaction
+                ).FirstOrDefault();
+        }
+
+        public virtual void SetTransaction(IDbTransaction transaction)
+        {
+            _transaction = transaction;
+        }
+
+        public virtual int Count(string ColumnValue, string ColumnName)
+        {
+            string query = string.Format("SELECT count({0}) FROM {1} where {0} = '{2}'", ColumnName, this.TableName, ColumnValue);
+            int numberOfRecords = _connection.ExecuteScalar<int>(query, transaction: _transaction);
+            return numberOfRecords;
+        }
+
+        #endregion
     }
 }

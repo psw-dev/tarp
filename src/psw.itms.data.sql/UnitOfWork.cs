@@ -245,6 +245,7 @@ namespace PSW.ITMS.Data.Sql
         }
 
 
+        
         private void SetTransactions(IDbTransaction transaction)
         {
             var repositories = this.GetType().GetProperties();
