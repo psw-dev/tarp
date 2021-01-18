@@ -7,6 +7,9 @@ namespace PSW.ITMS.Service.DTO
         [JsonPropertyName("HSCode")]
         public string HSCode { get; set; }
 
+        [JsonPropertyName("purpose")]
+        public string Purpose { get; set; }
+
         [JsonPropertyName("tecnicalName")]
         public string Name { get; set; }
     }

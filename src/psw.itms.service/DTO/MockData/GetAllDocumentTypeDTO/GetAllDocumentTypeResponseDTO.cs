@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace PSW.ITMS.Service.DTO
@@ -7,7 +10,12 @@ namespace PSW.ITMS.Service.DTO
         [JsonPropertyName("HSCode")]
         public string HSCode { get; set; }
 
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
+        [JsonPropertyName("purpose")]
+        public string Purpose { get; set; }
+
+        [JsonPropertyName("documents")]
+        public IList<DocumentResponseDTO> Documents { get; set; }
+
+
     }
 }
