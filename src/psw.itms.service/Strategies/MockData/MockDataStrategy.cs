@@ -133,7 +133,7 @@ namespace PSW.ITMS.Service.Strategies
                         GetNamesOfPlantAndPlantProductsResponseDTO response=new GetNamesOfPlantAndPlantProductsResponseDTO(){                                                      
                             Name=item.TechnicalName
                         };
-                        filteredData.Add(response) ;
+                        filteredData.Add(item.TechnicalName) ;
                     }                    
                     return filteredData;
 
