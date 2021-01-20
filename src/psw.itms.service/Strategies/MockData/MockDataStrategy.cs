@@ -69,7 +69,7 @@ namespace PSW.ITMS.Service.Strategies
                 AgencyId=2,
                 HSCode="1214.9000",
                 CommodityName="ALFALFA / ALFALFA HAY",
-                Purpose="Animal feed",
+                Purpose="Animal Feed",
                 IPDocumentaryRequirements="Application on DPP Prescribed Form 4|Proforma Invoice|Fee Challan",
                 IPFees="5000 Per 6 months" ,
                 TechnicalName="Medicago sativa"                
@@ -89,7 +89,7 @@ namespace PSW.ITMS.Service.Strategies
                     AgencyId=2,
                     HSCode="1214.9000",
                     CommodityName="CLOVER MIXTURE",
-                    Purpose="Screening / Research/ Trails",
+                    Purpose="Screening/Research/Trail",
                     IPDocumentaryRequirements="Application on DPP prescribed form 2|Proforma Invoice|Fee Challan |NOC from NBC if the imported product is GMO",
                     IPFees="5000 Per 6 months" ,
                     TechnicalName=""
@@ -111,10 +111,15 @@ namespace PSW.ITMS.Service.Strategies
             switch(request)
             {
                 case "Import Purpose": 
+                   var ImportPurposeList=GetAllImportPurpose();
                    desiredList=MockData.FindAll(x => x.HSCode == HSCode);
+                   //int id=1;
                     foreach(SeedData item in desiredList){
+                        
+                        int purposeID=searchImportPurposeID(ImportPurposeList,item.Purpose);
+                        //var pupose=ImportPurposeList.Find(x => (x.Name == item.Purpose));
                         GetPurposeOfImportByHSCodeResponseDTO response=new GetPurposeOfImportByHSCodeResponseDTO(){
-                            HSCode=item.HSCode,
+                            ID=purposeID,
                             Name=item.Purpose
                         };
                         filteredData.Add(response) ;
@@ -125,9 +130,7 @@ namespace PSW.ITMS.Service.Strategies
                 case "Technical Name":                   
                     desiredList=MockData.FindAll(x => (x.HSCode == HSCode && x.Purpose==importPurpose));
                     foreach(SeedData item in desiredList){
-                        GetNamesOfPlantAndPlantProductsResponseDTO response=new GetNamesOfPlantAndPlantProductsResponseDTO(){
-                            HSCode=item.HSCode,
-                            Purpose=item.Purpose,                            
+                        GetNamesOfPlantAndPlantProductsResponseDTO response=new GetNamesOfPlantAndPlantProductsResponseDTO(){                                                      
                             Name=item.TechnicalName
                         };
                         filteredData.Add(response) ;
@@ -210,6 +213,42 @@ namespace PSW.ITMS.Service.Strategies
             
         }
         
+        public List<TradePurpose> GetAllImportPurpose()
+        {
+            try
+            {
+                //TODO: Query ITMS to get Document Type w.r.t HSCode and Agency Id
+
+                //For The Time being Getting the desire values from shared DB directly
+                
+                
+                // Begin Transaction  
+                this.Command.UnitOfWork.BeginTransaction();
+
+                // Query Database 
+                IEnumerable<TradePurpose> ImportPurposeList =
+                    this.Command.UnitOfWork.TradePurposeRepository.Get();
+
+                // Commit Transaction  
+                this.Command.UnitOfWork.Commit();
+
+                return ImportPurposeList.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+        
+        public int searchImportPurposeID(IEnumerable<TradePurpose> importPurposeList, string importPurposeName){
+            var ImportPurpose=importPurposeList.FirstOrDefault(x => x.Name == importPurposeName);                       
+            if(ImportPurpose== null){
+                Random _random = new Random();
+                return _random.Next(11, 99);
+            }
+            return ImportPurpose.ID;
+        }
         public string searchDocumentCode(IEnumerable<DocumentType> documentList, string documentName){
             var doc=documentList.FirstOrDefault(x => x.Name == documentName);                       
             if(doc== null){
