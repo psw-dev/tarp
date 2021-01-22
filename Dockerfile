@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 WORKDIR /app
 #EXPOSE 80
 EXPOSE 4000
-ENV ASPNETCORE_URLS http://*:4000
+ENV ASPNETCORE_URLS http://*:5002
 
 # Copy csproj and restore as distinct layers
 #COPY src/ ./
