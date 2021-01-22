@@ -65,41 +65,110 @@ namespace PSW.ITMS.Service.Strategies
         #region Methods  
         public List<SeedData> InsertMockData(){
                 
+                /*----------- RECORDS FOR HSCODE 1214.9000-----------------*/
                 SeedData record1=new SeedData(){
-                AgencyId=2,
-                HSCode="1214.9000",
-                CommodityName="ALFALFA / ALFALFA HAY",
-                Purpose="Animal Feed",
-                IPDocumentaryRequirements="Application on DPP Prescribed Form 4|Proforma Invoice|Fee Challan",
-                IPFees="5000 Per 6 months" ,
-                TechnicalName="Medicago sativa"                
+                    AgencyId=2,
+                    HSCode="1214.9000",
+                    HSCodeExt="",
+                    CommodityName="ALFALFA / ALFALFA HAY",
+                    Purpose="Animal Feed",
+                    IPDocumentaryRequirements="Application on DPP Prescribed Form 4|Proforma Invoice|Fee Challan",
+                    IPFees="5000 Per 6 months" ,
+                    TechnicalName="Medicago sativa",
+                    UoMID=1,
+                    UoMName="gram",
+                    BannedCountries=new string[]{},
+                    AllowedCountries=new string[]{"SUADAN", "U.S.A","ARGENTINA"}                
                 };
                 
                 SeedData record2=new SeedData(){
                     AgencyId=2,
                     HSCode="1214.9000",
+                    HSCodeExt="",
                     CommodityName="CLOVER MIXTURE",
                     Purpose="Commercial Sowing",
                     IPDocumentaryRequirements="Application on DPP prescribed form 3|Proforma Invoice|Fee Challan|Enlisted variety proof from FSC&RD if import is for planting or propagation purpose|NOC from NBC if the imported product is GMO",
                     IPFees="5000 Per 6 months" ,
-                    TechnicalName=""
+                    TechnicalName="",
+                    UoMID=1,
+                    UoMName="gram",
+                    BannedCountries=new string[]{},
+                    AllowedCountries=new string[]{"INDONESIA"}
                 };
                 
                 SeedData record3=new SeedData(){
                     AgencyId=2,
                     HSCode="1214.9000",
+                    HSCodeExt="",
                     CommodityName="CLOVER MIXTURE",
                     Purpose="Screening/Research/Trail",
                     IPDocumentaryRequirements="Application on DPP prescribed form 2|Proforma Invoice|Fee Challan |NOC from NBC if the imported product is GMO",
                     IPFees="5000 Per 6 months" ,
-                    TechnicalName=""
+                    TechnicalName="",
+                    UoMID=1,
+                    UoMName="gram",
+                    BannedCountries=new string[]{},
+                    AllowedCountries=new string[]{"INDONESIA"}
                 };
+                /*-----------END RECORDS FOR HSCODE 1214.9000-----------------*/
 
+                /*----------- RECORDS FOR HSCODE 0904.2120-----------------*/
+                
+
+
+                SeedData record_09042120_1=new SeedData(){
+                    AgencyId=2,
+                    HSCode="0904.2120",
+                    HSCodeExt="",
+                    CommodityName="RED CHILLI SEEDS FOR SOWING",
+                    Purpose="Commercial Sowing",
+                    IPDocumentaryRequirements="Application on DPP prescribed form 3|Proforma Invoice|Fee Challan|Enlisted variety proof from FSC&RD if import is for planting or propagation purpose|NOC from NBC if the imported product is GMO",
+                    IPFees="5000 Per 6 months" ,
+                    TechnicalName="Capsicum annuum",
+                    UoMID=1,
+                    UoMName="gram",
+                    BannedCountries=new string[]{"FRANCE", "JAPAN", "U.S.A"},
+                    AllowedCountries=new string[]{"CHINA" , "EGYPT" , "U.A.E"}
+
+                };
+                 SeedData record_09042120_2=new SeedData(){
+                    AgencyId=2,
+                    HSCode="0904.2120",
+                    HSCodeExt="",
+                    CommodityName="Dry Red Chilli",
+                    Purpose="Consumption",
+                    IPDocumentaryRequirements="Application on DPP prescribed form 4|Proforma Invoice|Fee Challan",
+                    IPFees="5000 Per 6 months" ,
+                    TechnicalName="Capsicum annum",
+                    UoMID=1,
+                    UoMName="gram",
+                    BannedCountries=new string[]{},
+                    AllowedCountries=new string[]{"China"}
+                };
+                 SeedData record_09042120_3=new SeedData(){
+                    AgencyId=2,
+                    HSCode="0904.2120",
+                    HSCodeExt="",
+                    CommodityName="RED CHILLI SEEDS FOR SOWING",
+                    Purpose="Screening/Research/Trail",
+                    IPDocumentaryRequirements="Application on DPP prescribed form 2|Proforma Invoice|Fee Challan|NOC from NBC if the imported product is GMO",
+                    IPFees="5000 Per 6 months" ,
+                    TechnicalName="Capsicum annuum",
+                    UoMID=1,
+                    UoMName="gram",
+                    BannedCountries=new string[]{},
+                    AllowedCountries=new string[]{"All"}
+                };
+                
                 List<SeedData> seedData= new List<SeedData>();
 
                 seedData.Add(record1);
                 seedData.Add(record2);
                 seedData.Add(record3);
+
+                seedData.Add(record_09042120_1);
+                seedData.Add(record_09042120_2);
+                seedData.Add(record_09042120_3);
 
                 return seedData;
         }
@@ -169,6 +238,18 @@ namespace PSW.ITMS.Service.Strategies
                             IPFees=item.IPFees
                         };
                         filteredData.Add(response) ;
+                    }                    
+                    return filteredData;    
+
+                case "Banned Countries": 
+                    desiredList=MockData.FindAll(x => (x.HSCode == HSCode && x.Purpose==importPurpose));                
+                    foreach(SeedData item in desiredList){
+                        // GetIPFeesResponseDTO response=new GetIPFeesResponseDTO(){
+                        //     HSCode=item.HSCode,
+                        //     Purpose=item.Purpose,                            
+                        //     IPFees=item.IPFees
+                        // };
+                        filteredData.Add(item.BannedCountries) ;
                     }                    
                     return filteredData;    
                                 

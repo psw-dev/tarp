@@ -4,12 +4,20 @@ namespace PSW.ITMS.Service.Strategies
     {
         public int AgencyId {get;set;}
         public string HSCode { get; set; }
+        public string HSCodeExt { get; set; }
         public string CommodityName { get; set; }
         public string Purpose { get; set; }
 
         public string IPDocumentaryRequirements { get; set; }
         public string IPFees { get; set; }
         public string TechnicalName { get; set; }
+        public int UoMID { get; set; }
+
+        public string UoMName { get; set; }
+                    
+        public string[] BannedCountries{ get; set; }
+                    
+         public string[] AllowedCountries{ get; set; }
 
     }
 }
