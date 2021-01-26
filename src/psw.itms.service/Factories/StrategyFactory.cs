@@ -32,6 +32,7 @@ namespace PSW.ITMS.Service.Strategies
             switch (request.methodId)
             {
                 case "1710": return new MockDataStrategy(request);
+                case "1711": return new GetHSCodeListStrategy(request);
                 case "removelater": return null;
                 
                 default: break;
