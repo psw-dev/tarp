@@ -66,12 +66,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public AppConfig()
-		{
-			TableName = "AppConfig";
-			PrimaryKeyName = "Key";
-		}
 		
 		#endregion
 	}

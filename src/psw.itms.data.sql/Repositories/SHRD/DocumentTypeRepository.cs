@@ -14,7 +14,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public DocumentTypeRepository(IDbConnection context) : base(context)
         {
-            TableName = "[SHRD].[dbo].[DocumentType]";
+            TableName = "[dbo].[DocumentType]";
 			PrimaryKeyName = "Code";
         }
 

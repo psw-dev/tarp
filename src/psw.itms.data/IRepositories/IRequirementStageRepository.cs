@@ -5,7 +5,7 @@ using PSW.ITMS.Data.Entities;
 
 namespace PSW.ITMS.Data.Repositories
 {
-    public interface IPayModeRepository : IRepository<PayMode>
+    public interface IRequirementStageRepository : IRepository<RequirementStage>
     {
 
     }

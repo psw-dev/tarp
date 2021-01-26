@@ -48,12 +48,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public DialingCode()
-		{
-			TableName = "DialingCode";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

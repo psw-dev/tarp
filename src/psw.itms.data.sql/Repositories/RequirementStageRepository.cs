@@ -8,13 +8,13 @@ using PSW.ITMS.Data.Repositories;
 
 namespace PSW.ITMS.Data.Sql.Repositories
 {
-    public class CollectorateRepository : Repository<Collectorate>, ICollectorateRepository
+    public class RequirementStageRepository : Repository<RequirementStage>, IRequirementStageRepository
     {
 		#region public constructors
 
-        public CollectorateRepository(IDbConnection context) : base(context)
+        public RequirementStageRepository(IDbConnection context) : base(context)
         {
-            TableName = "[dbo].[Collectorate]";
+            TableName = "[dbo].[RequirementStage]";
 			PrimaryKeyName = "ID";
         }
 

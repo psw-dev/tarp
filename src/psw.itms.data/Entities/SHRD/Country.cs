@@ -18,6 +18,7 @@ namespace PSW.ITMS.Data.Entities
 		private string _code;
 		private string _codeA3;
 		private string _name;
+		private short? _webocCountryId;
 
 		#endregion
 
@@ -26,6 +27,7 @@ namespace PSW.ITMS.Data.Entities
 		public string Code { get { return _code; } set { _code = value; PrimaryKey = value; }}
 		public string CodeA3 { get { return _codeA3; } set { _codeA3 = value;  }}
 		public string Name { get { return _name; } set { _name = value;  }}
+		public short? WebocCountryId { get { return _webocCountryId; } set { _webocCountryId = value;  }}
 
 		#endregion
 
@@ -41,19 +43,14 @@ namespace PSW.ITMS.Data.Entities
 			{
 				{"Code", Code},
 				{"CodeA3", CodeA3},
-				{"Name", Name}
+				{"Name", Name},
+				{"WebocCountryId", WebocCountryId}
 			};
         }
 
 		#endregion
 
 		#region Constructors
-
-		public Country()
-		{
-			TableName = "Country";
-			PrimaryKeyName = "Code";
-		}
 		
 		#endregion
 	}

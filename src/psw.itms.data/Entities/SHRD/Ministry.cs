@@ -45,12 +45,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public Ministry()
-		{
-			TableName = "Ministry";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

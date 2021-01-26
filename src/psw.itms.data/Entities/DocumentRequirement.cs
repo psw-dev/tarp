@@ -20,6 +20,7 @@ namespace PSW.ITMS.Data.Entities
 		private System.SByte _attachedObjectFormatID;
 		private string _documentTypeCode;
 		private bool _isMandatory;
+		private System.SByte _requirementStageID;
 		private DateTime _createdOn;
 		private int _createdBy;
 
@@ -32,6 +33,7 @@ namespace PSW.ITMS.Data.Entities
 		public System.SByte AttachedObjectFormatID { get { return _attachedObjectFormatID; } set { _attachedObjectFormatID = value;  }}
 		public string DocumentTypeCode { get { return _documentTypeCode; } set { _documentTypeCode = value;  }}
 		public bool IsMandatory { get { return _isMandatory; } set { _isMandatory = value;  }}
+		public System.SByte RequirementStageID { get { return _requirementStageID; } set { _requirementStageID = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
 
@@ -52,6 +54,7 @@ namespace PSW.ITMS.Data.Entities
 				{"AttachedObjectFormatID", AttachedObjectFormatID},
 				{"DocumentTypeCode", DocumentTypeCode},
 				{"IsMandatory", IsMandatory},
+				{"RequirementStageID", RequirementStageID},
 				{"CreatedOn", CreatedOn},
 				{"CreatedBy", CreatedBy}
 			};

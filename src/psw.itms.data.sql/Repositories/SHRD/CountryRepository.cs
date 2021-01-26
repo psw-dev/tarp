@@ -14,7 +14,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public CountryRepository(IDbConnection context) : base(context)
         {
-            TableName = "[dbo].[Country]";
+            TableName = "[SHRD].[dbo].[Country]";
 			PrimaryKeyName = "Code";
         }
 

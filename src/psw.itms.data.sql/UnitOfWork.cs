@@ -12,6 +12,7 @@ using Dapper;
 using PSW.ITMS.Common;
 using PSW.ITMS.Data.Repositories;
 using PSW.ITMS.Data.Sql.Repositories;
+using PSW.ITMS.Data.Objects.Views;
 
 namespace PSW.ITMS.Data.Sql
 {
@@ -23,55 +24,42 @@ namespace PSW.ITMS.Data.Sql
 		private IDeclarationCategoryRepository _declarationCategoryRepository;
 		private IDocumentRequirementRepository _documentRequirementRepository;
 		private IFinancialRequirementRepository _financialRequirementRepository;
-		private IITMSRequirementRepository _iTMSRequirementRepository;
-		private ILogicOperatorRepository _logicOperatorRepository;
+        private IHSCodeTARPRepository _hSCodeTARPRepository;		
+        private ILogicOperatorRepository _logicOperatorRepository;
 		private INilRequirementRepository _nilRequirementRepository;
 		private IRefusalIntimationRepository _refusalIntimationRepository;
 		private IRequestTypeRepository _requestTypeRepository;
 		private IRequirementRepository _requirementRepository;
 		private IRequirementCategoryRepository _requirementCategoryRepository;
 		private IRequirementSetRepository _requirementSetRepository;
-		private ITermUoMRepository _termUoMRepository;
+		private IRequirementStageRepository _requirementStageRepository;
+        private ITermUoMRepository _termUoMRepository;
 		private ITestingRequirementRepository _testingRequirementRepository;
 		private IValidityTermRequirementRepository _validityTermRequirementRepository;
         #endregion
         
+        #region Private Properties TARP Views
+        private IUV_DocumentaryRequirementRepository _uv_DocumentaryRequirementRepository;
+        #endregion
+
         #region Private Properties SHRD
         private IAgencyRepository _agencyRepository;
-        private IAppConfigRepository _appConfigRepository;
-        private IAttachedObjectFormatRepository _attachedObjectFormatRepository;
-        private IAttachmentStatusRepository _attachmentStatusRepository;
-        private IBankRepository _bankRepository;
-        private IBranchRepository _branchRepository;
-        private IChannelRepository _channelRepository;
-        private ICityRepository _cityRepository;
-        private ICollectorateRepository _collectorateRepository;
-        private IConsignmentCategoryRepository _consignmentCategoryRepository;
-        private IConsignmentModeRepository _consignmentModeRepository;
-        private ICountryRepository _countryRepository;
-        private ICountryWithDialingCodeRepository _countryWithDialingCodeRepository;
-
-        private ICountrySubEntityRepository _countrySubEntityRepository;
-        private ICurrencyRepository _currencyRepository;
-        private IDeclarationTypeRepository _declarationTypeRepository;
-        private IDeliveryTermRepository _deliveryTermRepository;
-        private IDialingCodeRepository _dialingCodeRepository;
-        private IDocumentTypeRepository _documentTypeRepository;
-        private IGenderRepository _genderRepository;
-        private IHazardClassRepository _hazardClassRepository;
-        private IItemImportTypeRepository _itemImportTypeRepository;
-        private IMinistryRepository _ministryRepository;
-        private IPayChannelRepository _payChannelRepository;
-        private IPayModeRepository _payModeRepository;
-        private IPayTermRepository _payTermRepository;
-        private IPCTCodeRepository _pCTCodeRepository;
-        private IPortRepository _portRepository;
-        private IPortTypeRepository _portTypeRepository;
-        private IShedRepository _shedRepository;
-        private ITradePurposeRepository _tradePurposeRepository;
-        private ITradeTranTypeRepository _tradeTranTypeRepository;
-        private IUoMRepository _uoMRepository;
-        private IZoneRepository _zoneRepository;
+		private IAppConfigRepository _appConfigRepository;
+		private IAttachedObjectFormatRepository _attachedObjectFormatRepository;
+		private IAttachmentStatusRepository _attachmentStatusRepository;
+		private ICityRepository _cityRepository;
+		private ICountryRepository _countryRepository;
+		private ICountrySubEntityRepository _countrySubEntityRepository;
+		private ICurrencyRepository _currencyRepository;
+		private IDialingCodeRepository _dialingCodeRepository;
+		private IDocumentTypeRepository _documentTypeRepository;
+		private IGenderRepository _genderRepository;
+		private IMinistryRepository _ministryRepository;
+		private IPortRepository _portRepository;
+		private ITradePurposeRepository _tradePurposeRepository;
+		private ITradeTranTypeRepository _tradeTranTypeRepository;
+		private IUoMRepository _uoMRepository;
+		private IZoneRepository _zoneRepository;
 
         #endregion 
 
@@ -80,56 +68,46 @@ namespace PSW.ITMS.Data.Sql
 		public IDeclarationCategoryRepository DeclarationCategoryRepository => _declarationCategoryRepository ?? (_declarationCategoryRepository = new DeclarationCategoryRepository(_connection));
 		public IDocumentRequirementRepository DocumentRequirementRepository => _documentRequirementRepository ?? (_documentRequirementRepository = new DocumentRequirementRepository(_connection));
 		public IFinancialRequirementRepository FinancialRequirementRepository => _financialRequirementRepository ?? (_financialRequirementRepository = new FinancialRequirementRepository(_connection));
-		public IITMSRequirementRepository ITMSRequirementRepository => _iTMSRequirementRepository ?? (_iTMSRequirementRepository = new ITMSRequirementRepository(_connection));
-		public ILogicOperatorRepository LogicOperatorRepository => _logicOperatorRepository ?? (_logicOperatorRepository = new LogicOperatorRepository(_connection));
+        public IHSCodeTARPRepository HSCodeTARPRepository => _hSCodeTARPRepository ?? (_hSCodeTARPRepository = new HSCodeTARPRepository(_connection));		
+        public ILogicOperatorRepository LogicOperatorRepository => _logicOperatorRepository ?? (_logicOperatorRepository = new LogicOperatorRepository(_connection));
 		public INilRequirementRepository NilRequirementRepository => _nilRequirementRepository ?? (_nilRequirementRepository = new NilRequirementRepository(_connection));
 		public IRefusalIntimationRepository RefusalIntimationRepository => _refusalIntimationRepository ?? (_refusalIntimationRepository = new RefusalIntimationRepository(_connection));
 		public IRequestTypeRepository RequestTypeRepository => _requestTypeRepository ?? (_requestTypeRepository = new RequestTypeRepository(_connection));
 		public IRequirementRepository RequirementRepository => _requirementRepository ?? (_requirementRepository = new RequirementRepository(_connection));
 		public IRequirementCategoryRepository RequirementCategoryRepository => _requirementCategoryRepository ?? (_requirementCategoryRepository = new RequirementCategoryRepository(_connection));
 		public IRequirementSetRepository RequirementSetRepository => _requirementSetRepository ?? (_requirementSetRepository = new RequirementSetRepository(_connection));
-		public ITermUoMRepository TermUoMRepository => _termUoMRepository ?? (_termUoMRepository = new TermUoMRepository(_connection));
+		
+        public IRequirementStageRepository RequirementStageRepository => _requirementStageRepository ?? (_requirementStageRepository = new RequirementStageRepository(_connection));
+        public ITermUoMRepository TermUoMRepository => _termUoMRepository ?? (_termUoMRepository = new TermUoMRepository(_connection));
 		public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
 		public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
         #endregion
 
+         #region Public Properties ITMS Views
+		public IUV_DocumentaryRequirementRepository UV_DocumentaryRequirementRepository => _uv_DocumentaryRequirementRepository ?? (_uv_DocumentaryRequirementRepository = new UV_DocumentaryRequirementRepository(_connection));
+        
+        #endregion
+        
         #region Public Properties SHRD
 
         public IAgencyRepository AgencyRepository => _agencyRepository ?? (_agencyRepository = new AgencyRepository(_connection));
-        public IAppConfigRepository AppConfigRepository => _appConfigRepository ?? (_appConfigRepository = new AppConfigRepository(_connection));
-        public IAttachedObjectFormatRepository AttachedObjectFormatRepository => _attachedObjectFormatRepository ?? (_attachedObjectFormatRepository = new AttachedObjectFormatRepository(_connection));
-        public IAttachmentStatusRepository AttachmentStatusRepository => _attachmentStatusRepository ?? (_attachmentStatusRepository = new AttachmentStatusRepository(_connection));
-        public IBankRepository BankRepository => _bankRepository ?? (_bankRepository = new BankRepository(_connection));
-        public IBranchRepository BranchRepository => _branchRepository ?? (_branchRepository = new BranchRepository(_connection));
-        public IChannelRepository ChannelRepository => _channelRepository ?? (_channelRepository = new ChannelRepository(_connection));
-        public ICityRepository CityRepository => _cityRepository ?? (_cityRepository = new CityRepository(_connection));
-        public ICollectorateRepository CollectorateRepository => _collectorateRepository ?? (_collectorateRepository = new CollectorateRepository(_connection));
-        public IConsignmentCategoryRepository ConsignmentCategoryRepository => _consignmentCategoryRepository ?? (_consignmentCategoryRepository = new ConsignmentCategoryRepository(_connection));
-        public IConsignmentModeRepository ConsignmentModeRepository => _consignmentModeRepository ?? (_consignmentModeRepository = new ConsignmentModeRepository(_connection));
-        public ICountryRepository CountryRepository => _countryRepository ?? (_countryRepository = new CountryRepository(_connection));
-        public ICountryWithDialingCodeRepository CountryWithDialingCodeRepository => _countryWithDialingCodeRepository ?? (_countryWithDialingCodeRepository = new CountryWithDialingCodeRepository(_connection));
-        public ICountrySubEntityRepository CountrySubEntityRepository => _countrySubEntityRepository ?? (_countrySubEntityRepository = new CountrySubEntityRepository(_connection));
-        public ICurrencyRepository CurrencyRepository => _currencyRepository ?? (_currencyRepository = new CurrencyRepository(_connection));
-        public IDeclarationTypeRepository DeclarationTypeRepository => _declarationTypeRepository ?? (_declarationTypeRepository = new DeclarationTypeRepository(_connection));
-        public IDeliveryTermRepository DeliveryTermRepository => _deliveryTermRepository ?? (_deliveryTermRepository = new DeliveryTermRepository(_connection));
-        public IDialingCodeRepository DialingCodeRepository => _dialingCodeRepository ?? (_dialingCodeRepository = new DialingCodeRepository(_connection));
-        public IDocumentTypeRepository DocumentTypeRepository => _documentTypeRepository ?? (_documentTypeRepository = new DocumentTypeRepository(_connection));
-        public IGenderRepository GenderRepository => _genderRepository ?? (_genderRepository = new GenderRepository(_connection));
-        public IHazardClassRepository HazardClassRepository => _hazardClassRepository ?? (_hazardClassRepository = new HazardClassRepository(_connection));
-        public IItemImportTypeRepository ItemImportTypeRepository => _itemImportTypeRepository ?? (_itemImportTypeRepository = new ItemImportTypeRepository(_connection));
-        public IMinistryRepository MinistryRepository => _ministryRepository ?? (_ministryRepository = new MinistryRepository(_connection));
-        public IPayChannelRepository PayChannelRepository => _payChannelRepository ?? (_payChannelRepository = new PayChannelRepository(_connection));
-        public IPayModeRepository PayModeRepository => _payModeRepository ?? (_payModeRepository = new PayModeRepository(_connection));
-        public IPayTermRepository PayTermRepository => _payTermRepository ?? (_payTermRepository = new PayTermRepository(_connection));
-        public IPCTCodeRepository PCTCodeRepository => _pCTCodeRepository ?? (_pCTCodeRepository = new PCTCodeRepository(_connection));
-        public IPortRepository PortRepository => _portRepository ?? (_portRepository = new PortRepository(_connection));
-        public IPortTypeRepository PortTypeRepository => _portTypeRepository ?? (_portTypeRepository = new PortTypeRepository(_connection));
-        public IShedRepository ShedRepository => _shedRepository ?? (_shedRepository = new ShedRepository(_connection));
-        public ITradePurposeRepository TradePurposeRepository => _tradePurposeRepository ?? (_tradePurposeRepository = new TradePurposeRepository(_connection));
-        public ITradeTranTypeRepository TradeTranTypeRepository => _tradeTranTypeRepository ?? (_tradeTranTypeRepository = new TradeTranTypeRepository(_connection));
-        public IUoMRepository UoMRepository => _uoMRepository ?? (_uoMRepository = new UoMRepository(_connection));
-        public IZoneRepository ZoneRepository => _zoneRepository ?? (_zoneRepository = new ZoneRepository(_connection));
-
+		public IAppConfigRepository AppConfigRepository => _appConfigRepository ?? (_appConfigRepository = new AppConfigRepository(_connection));
+		public IAttachedObjectFormatRepository AttachedObjectFormatRepository => _attachedObjectFormatRepository ?? (_attachedObjectFormatRepository = new AttachedObjectFormatRepository(_connection));
+		public IAttachmentStatusRepository AttachmentStatusRepository => _attachmentStatusRepository ?? (_attachmentStatusRepository = new AttachmentStatusRepository(_connection));
+		public ICityRepository CityRepository => _cityRepository ?? (_cityRepository = new CityRepository(_connection));
+		public ICountryRepository CountryRepository => _countryRepository ?? (_countryRepository = new CountryRepository(_connection));
+		public ICountrySubEntityRepository CountrySubEntityRepository => _countrySubEntityRepository ?? (_countrySubEntityRepository = new CountrySubEntityRepository(_connection));
+		public ICurrencyRepository CurrencyRepository => _currencyRepository ?? (_currencyRepository = new CurrencyRepository(_connection));
+		public IDialingCodeRepository DialingCodeRepository => _dialingCodeRepository ?? (_dialingCodeRepository = new DialingCodeRepository(_connection));
+		public IDocumentTypeRepository DocumentTypeRepository => _documentTypeRepository ?? (_documentTypeRepository = new DocumentTypeRepository(_connection));
+		public IGenderRepository GenderRepository => _genderRepository ?? (_genderRepository = new GenderRepository(_connection));
+		public IMinistryRepository MinistryRepository => _ministryRepository ?? (_ministryRepository = new MinistryRepository(_connection));
+		public IPortRepository PortRepository => _portRepository ?? (_portRepository = new PortRepository(_connection));
+		public ITradePurposeRepository TradePurposeRepository => _tradePurposeRepository ?? (_tradePurposeRepository = new TradePurposeRepository(_connection));
+		public ITradeTranTypeRepository TradeTranTypeRepository => _tradeTranTypeRepository ?? (_tradeTranTypeRepository = new TradeTranTypeRepository(_connection));
+		public IUoMRepository UoMRepository => _uoMRepository ?? (_uoMRepository = new UoMRepository(_connection));
+		public IZoneRepository ZoneRepository => _zoneRepository ?? (_zoneRepository = new ZoneRepository(_connection));        
+        
         #endregion
 
         //private IEventBus _eventBus;

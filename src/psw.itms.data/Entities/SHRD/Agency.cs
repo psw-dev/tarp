@@ -22,7 +22,7 @@ namespace PSW.ITMS.Data.Entities
 		private short? _parentAgencyID;
 		private short? _misnistryID;
 		private short? _zoneID;
-		private short? _cityID;
+		private int? _cityID;
 		private string _websiteURL;
 		private bool _softDeleted;
 		private DateTime _createdOn;
@@ -43,7 +43,7 @@ namespace PSW.ITMS.Data.Entities
 		public short? ParentAgencyID { get { return _parentAgencyID; } set { _parentAgencyID = value;  }}
 		public short? MisnistryID { get { return _misnistryID; } set { _misnistryID = value;  }}
 		public short? ZoneID { get { return _zoneID; } set { _zoneID = value;  }}
-		public short? CityID { get { return _cityID; } set { _cityID = value;  }}
+		public int? CityID { get { return _cityID; } set { _cityID = value;  }}
 		public string WebsiteURL { get { return _websiteURL; } set { _websiteURL = value;  }}
 		public bool SoftDeleted { get { return _softDeleted; } set { _softDeleted = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
@@ -87,12 +87,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public Agency()
-		{
-			TableName = "Agency";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

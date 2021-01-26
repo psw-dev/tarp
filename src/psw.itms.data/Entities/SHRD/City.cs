@@ -15,7 +15,7 @@ namespace PSW.ITMS.Data.Entities
 	{
 		#region Fields
 		
-		private short _iD;
+		private int _iD;
 		private string _countryCode;
 		private string _name;
 
@@ -23,7 +23,7 @@ namespace PSW.ITMS.Data.Entities
 
 		#region Properties
 		
-		public short ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
+		public int ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
 		public string CountryCode { get { return _countryCode; } set { _countryCode = value;  }}
 		public string Name { get { return _name; } set { _name = value;  }}
 
@@ -48,12 +48,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public City()
-		{
-			TableName = "City";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

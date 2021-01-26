@@ -2,11 +2,13 @@
 You can find the source code of the code generator from here -> https://git.psw.gov.pk/unais.vayani/DalGenerator*/
 
 using PSW.ITMS.Data.Entities;
+using System.Collections.Generic;
+
 
 namespace PSW.ITMS.Data.Repositories
 {
-    public interface IItemImportTypeRepository : IRepository<ItemImportType>
+    public interface IHSCodeTARPRepository : IRepository<HSCodeTARP>
     {
-
+        List<string> GetHSCode(string hsCode);
     }
 }

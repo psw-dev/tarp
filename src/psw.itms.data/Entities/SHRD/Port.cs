@@ -20,8 +20,9 @@ namespace PSW.ITMS.Data.Entities
 		private string _name;
 		private string _countryCode;
 		private string _countrySubEntityCode;
-		private short? _cityID;
+		private int? _cityID;
 		private string _portTypeCode;
+		private int? _webocPortID;
 		private DateTime _createdOn;
 		private int _createdBy;
 		private DateTime _updatedOn;
@@ -36,8 +37,9 @@ namespace PSW.ITMS.Data.Entities
 		public string Name { get { return _name; } set { _name = value;  }}
 		public string CountryCode { get { return _countryCode; } set { _countryCode = value;  }}
 		public string CountrySubEntityCode { get { return _countrySubEntityCode; } set { _countrySubEntityCode = value;  }}
-		public short? CityID { get { return _cityID; } set { _cityID = value;  }}
+		public int? CityID { get { return _cityID; } set { _cityID = value;  }}
 		public string PortTypeCode { get { return _portTypeCode; } set { _portTypeCode = value;  }}
+		public int? WebocPortID { get { return _webocPortID; } set { _webocPortID = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
 		public DateTime UpdatedOn { get { return _updatedOn; } set { _updatedOn = value;  }}
@@ -62,6 +64,7 @@ namespace PSW.ITMS.Data.Entities
 				{"CountrySubEntityCode", CountrySubEntityCode},
 				{"CityID", CityID},
 				{"PortTypeCode", PortTypeCode},
+				{"WebocPortID", WebocPortID},
 				{"CreatedOn", CreatedOn},
 				{"CreatedBy", CreatedBy},
 				{"UpdatedOn", UpdatedOn},
@@ -72,12 +75,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public Port()
-		{
-			TableName = "Port";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

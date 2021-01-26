@@ -18,10 +18,7 @@ namespace PSW.ITMS.Data.Entities
 		private short _iD;
 		private string _name;
 		private System.SByte _tradeTranTypeID;
-		private bool _isDPP;
-		private bool _isAQD;
-		private bool _isFSC;
-		private bool _isPQC;
+		private short _agencyID;
 		private DateTime _createdOn;
 		private int _createdBy;
 		private DateTime _updatedOn;
@@ -34,10 +31,7 @@ namespace PSW.ITMS.Data.Entities
 		public short ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
 		public string Name { get { return _name; } set { _name = value;  }}
 		public System.SByte TradeTranTypeID { get { return _tradeTranTypeID; } set { _tradeTranTypeID = value;  }}
-		public bool IsDPP { get { return _isDPP; } set { _isDPP = value;  }}
-		public bool IsAQD { get { return _isAQD; } set { _isAQD = value;  }}
-		public bool IsFSC { get { return _isFSC; } set { _isFSC = value;  }}
-		public bool IsPQC { get { return _isPQC; } set { _isPQC = value;  }}
+		public short AgencyID { get { return _agencyID; } set { _agencyID = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
 		public DateTime UpdatedOn { get { return _updatedOn; } set { _updatedOn = value;  }}
@@ -58,10 +52,7 @@ namespace PSW.ITMS.Data.Entities
 				{"ID", ID},
 				{"Name", Name},
 				{"TradeTranTypeID", TradeTranTypeID},
-				{"IsDPP", IsDPP},
-				{"IsAQD", IsAQD},
-				{"IsFSC", IsFSC},
-				{"IsPQC", IsPQC},
+				{"AgencyID", AgencyID},
 				{"CreatedOn", CreatedOn},
 				{"CreatedBy", CreatedBy},
 				{"UpdatedOn", UpdatedOn},
@@ -72,12 +63,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public TradePurpose()
-		{
-			TableName = "TradePurpose";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

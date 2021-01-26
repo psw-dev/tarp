@@ -9,19 +9,21 @@ using System.Linq;
 namespace PSW.ITMS.Data.Entities
 {
     /// <summary>
-    /// This class represents the ITMSRequirement table in the database 
+    /// This class represents the HSCodeTARP table in the database 
     /// </summary>
-	public class ITMSRequirement : Entity
+	public class HSCodeTARP : Entity
 	{
 		#region Fields
 		
 		private long _iD;
-		private int _pCTCodeID;
-		private string _hSCode1;
-		private string _hSCode2;
+		private string _hSCode;
+		private string _itemDescription;
+		private string _hSCodeExt;
+		private string _itemDescriptionExt;
+		private System.SByte _uoMID;
 		private string _documentTypeCode;
 		private System.SByte _requestTypeID;
-		private string _name;
+		private string _technicalName;
 		private System.SByte _purposeLogicOperatorID;
 		private string _purposeIDList;
 		private System.SByte _countryCodeLogicOperatorID;
@@ -46,12 +48,14 @@ namespace PSW.ITMS.Data.Entities
 		#region Properties
 		
 		public long ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
-		public int PCTCodeID { get { return _pCTCodeID; } set { _pCTCodeID = value;  }}
-		public string HSCode1 { get { return _hSCode1; } set { _hSCode1 = value;  }}
-		public string HSCode2 { get { return _hSCode2; } set { _hSCode2 = value;  }}
+		public string HSCode { get { return _hSCode; } set { _hSCode = value;  }}
+		public string ItemDescription { get { return _itemDescription; } set { _itemDescription = value;  }}
+		public string HSCodeExt { get { return _hSCodeExt; } set { _hSCodeExt = value;  }}
+		public string ItemDescriptionExt { get { return _itemDescriptionExt; } set { _itemDescriptionExt = value;  }}
+		public System.SByte UoMID { get { return _uoMID; } set { _uoMID = value;  }}
 		public string DocumentTypeCode { get { return _documentTypeCode; } set { _documentTypeCode = value;  }}
 		public System.SByte RequestTypeID { get { return _requestTypeID; } set { _requestTypeID = value;  }}
-		public string Name { get { return _name; } set { _name = value;  }}
+		public string TechnicalName { get { return _technicalName; } set { _technicalName = value;  }}
 		public System.SByte PurposeLogicOperatorID { get { return _purposeLogicOperatorID; } set { _purposeLogicOperatorID = value;  }}
 		public string PurposeIDList { get { return _purposeIDList; } set { _purposeIDList = value;  }}
 		public System.SByte CountryCodeLogicOperatorID { get { return _countryCodeLogicOperatorID; } set { _countryCodeLogicOperatorID = value;  }}
@@ -84,12 +88,14 @@ namespace PSW.ITMS.Data.Entities
             return new Dictionary<string, object> 
 			{
 				{"ID", ID},
-				{"PCTCodeID", PCTCodeID},
-				{"HSCode1", HSCode1},
-				{"HSCode2", HSCode2},
+				{"HSCode", HSCode},
+				{"ItemDescription", ItemDescription},
+				{"HSCodeExt", HSCodeExt},
+				{"ItemDescriptionExt", ItemDescriptionExt},
+				{"UoMID", UoMID},
 				{"DocumentTypeCode", DocumentTypeCode},
 				{"RequestTypeID", RequestTypeID},
-				{"Name", Name},
+				{"TechnicalName", TechnicalName},
 				{"PurposeLogicOperatorID", PurposeLogicOperatorID},
 				{"PurposeIDList", PurposeIDList},
 				{"CountryCodeLogicOperatorID", CountryCodeLogicOperatorID},

@@ -45,12 +45,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public AttachmentStatus()
-		{
-			TableName = "AttachmentStatus";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

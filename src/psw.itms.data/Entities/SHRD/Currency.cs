@@ -60,12 +60,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public Currency()
-		{
-			TableName = "Currency";
-			PrimaryKeyName = "Code";
-		}
 		
 		#endregion
 	}

@@ -18,6 +18,7 @@ namespace PSW.ITMS.Data.Entities
 		private System.SByte _iD;
 		private string _code;
 		private string _name;
+		private System.SByte _webocUoMID;
 		private DateTime _createdOn;
 		private int _createdBy;
 		private DateTime _updatedOn;
@@ -30,6 +31,7 @@ namespace PSW.ITMS.Data.Entities
 		public System.SByte ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
 		public string Code { get { return _code; } set { _code = value;  }}
 		public string Name { get { return _name; } set { _name = value;  }}
+		public System.SByte WebocUoMID { get { return _webocUoMID; } set { _webocUoMID = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
 		public DateTime UpdatedOn { get { return _updatedOn; } set { _updatedOn = value;  }}
@@ -50,6 +52,7 @@ namespace PSW.ITMS.Data.Entities
 				{"ID", ID},
 				{"Code", Code},
 				{"Name", Name},
+				{"WebocUoMID", WebocUoMID},
 				{"CreatedOn", CreatedOn},
 				{"CreatedBy", CreatedBy},
 				{"UpdatedOn", UpdatedOn},
@@ -60,12 +63,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public UoM()
-		{
-			TableName = "UoM";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

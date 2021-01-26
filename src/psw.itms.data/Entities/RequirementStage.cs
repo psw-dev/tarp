@@ -9,14 +9,13 @@ using System.Linq;
 namespace PSW.ITMS.Data.Entities
 {
     /// <summary>
-    /// This class represents the PayChannel table in the database 
+    /// This class represents the RequirementStage table in the database 
     /// </summary>
-	public class PayChannel : Entity
+	public class RequirementStage : Entity
 	{
 		#region Fields
 		
 		private System.SByte _iD;
-		private string _code;
 		private string _name;
 
 		#endregion
@@ -24,7 +23,6 @@ namespace PSW.ITMS.Data.Entities
 		#region Properties
 		
 		public System.SByte ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
-		public string Code { get { return _code; } set { _code = value;  }}
 		public string Name { get { return _name; } set { _name = value;  }}
 
 		#endregion
@@ -40,7 +38,6 @@ namespace PSW.ITMS.Data.Entities
             return new Dictionary<string, object> 
 			{
 				{"ID", ID},
-				{"Code", Code},
 				{"Name", Name}
 			};
         }
@@ -48,12 +45,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public PayChannel()
-		{
-			TableName = "PayChannel";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

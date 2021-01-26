@@ -45,12 +45,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public AttachedObjectFormat()
-		{
-			TableName = "AttachedObjectFormat";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

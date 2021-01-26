@@ -48,12 +48,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public TradeTranType()
-		{
-			TableName = "TradeTranType";
-			PrimaryKeyName = "ID";
-		}
 		
 		#endregion
 	}

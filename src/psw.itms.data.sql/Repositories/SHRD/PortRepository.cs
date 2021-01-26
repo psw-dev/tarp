@@ -14,7 +14,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public PortRepository(IDbConnection context) : base(context)
         {
-            TableName = "[dbo].[Port]";
+            TableName = "[SHRD].[dbo].[Port]";
 			PrimaryKeyName = "ID";
         }
 

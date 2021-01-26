@@ -48,12 +48,6 @@ namespace PSW.ITMS.Data.Entities
 		#endregion
 
 		#region Constructors
-
-		public CountrySubEntity()
-		{
-			TableName = "CountrySubEntity";
-			PrimaryKeyName = "Code";
-		}
 		
 		#endregion
 	}
