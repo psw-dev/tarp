@@ -18,7 +18,12 @@ namespace PSW.ITMS.Service.AutoMapper
 
         public EntityToDTOMappingProfile()
         {
-            CreateMap<UV_DocumentaryRequirement, GetHSCodeRequirementsResponseDTO>();
+            CreateMap<UV_DocumentaryRequirement, ListOfRules>();
+            CreateMap<UV_DocumentaryRequirement, TestDTO>()
+            .ForMember(dest => dest.RequestedDocument, opt => opt.Ignore())
+            .ForMember(dest => dest.RequiredDocument, opt => opt.Ignore())
+            .ForMember(dest => dest.purposesOfImport, opt => opt.Ignore())
+            .ForMember(dest => dest.UoM, opt => opt.Ignore());
         }
     }
 }
