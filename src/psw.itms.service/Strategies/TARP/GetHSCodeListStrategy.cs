@@ -49,7 +49,7 @@ namespace PSW.ITMS.Service.Strategies
                 if(!HSCodeList.Any())
                     return NotFoundReply();
 
-                ResponseDTO = HSCodeList.Select(item => item.HSCode).ToList();
+                ResponseDTO = HSCodeList;
 
                 // Send Command Reply 
                 return OKReply();
@@ -65,7 +65,7 @@ namespace PSW.ITMS.Service.Strategies
 
         #region Methods  
 
-        public IList<HSCodeTARP> GetHSCodeList(int agencyId)
+        public List<string> GetHSCodeList(int agencyId)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace PSW.ITMS.Service.Strategies
                 // Query Database 
                 // IList<string> HSCodeList =
                 //     this.Command.UnitOfWork.HSCodeTARPRepository.GetHSCode(hsCode);
-                IList<HSCodeTARP> HSCodeList =this.Command.UnitOfWork.HSCodeTARPRepository.Where(new {
+                List<string> HSCodeList =this.Command.UnitOfWork.HSCodeTARPRepository.GetHSCode(new {
                     AgencyID= agencyId
                 });
 
