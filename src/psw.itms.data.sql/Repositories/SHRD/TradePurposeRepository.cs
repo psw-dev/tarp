@@ -14,7 +14,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public TradePurposeRepository(IDbConnection context) : base(context)
         {
-            TableName = "[dbo].[TradePurpose]";
+            TableName = "[SHRD].[dbo].[TradePurpose]";
 			PrimaryKeyName = "ID";
         }
 

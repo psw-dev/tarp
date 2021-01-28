@@ -14,7 +14,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public UoMRepository(IDbConnection context) : base(context)
         {
-            TableName = "[dbo].[UoM]";
+            TableName = "[SHRD].[dbo].[UoM]";
 			PrimaryKeyName = "ID";
         }
 
