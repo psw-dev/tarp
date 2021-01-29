@@ -18,18 +18,12 @@ using PSW.ITMS.Data.Entities;
 
 namespace PSW.ITMS.Service.Strategies
 {
-    public class GetHSCodeRequirementStrategy : ApiStrategy<GetHSCodeRequirementsRequestDTO, List<TestDTO>>
+    public class GetHSCodeRequirementStrategy : ApiStrategy<GetHSCodeRequirementsRequestDTO, List<GetHSCodeRequirementsResponseDTO>>
     {
 
         #region Properties 
         #endregion 
-//FLOWW
-//
-//GET ALL FROM HSCODETARP RECORDS
-//IF GET COMMA SEPEARTED VALUES, ADD Another instance
-// return
-//1-List of rules
-//2-List of VAlid Purposes (Done)
+
         #region Constructors 
         public GetHSCodeRequirementStrategy(CommandRequest request) : base(request)
         {
@@ -48,96 +42,32 @@ namespace PSW.ITMS.Service.Strategies
         public override CommandReply Execute()
         {
             try{
-               // Map DTO To Entity   
-
-                // Query Database  
-
-                
-                List<GetPurposeOfImportByHSCodeResponseDTO> validTardePurpose=new List<GetPurposeOfImportByHSCodeResponseDTO>();
-               
+                 
                 // Retreive All required Data from DB
-                IEnumerable<TradePurpose> tradePurposes= GetAllTradePurposes(RequestDTO.AgencyID);
-                IEnumerable<DocumentType> documentList=GetAllDocumentType(RequestDTO.AgencyID);
-                IEnumerable<UoM> UoMList=GetUoMs();
-                
-                //Get applicable Rules
-                var HSCodeRequirements = GetHSCodeRequirements(RequestDTO.AgencyID,RequestDTO.HSCode);
+                IEnumerable<TradePurpose> tradePurposes= GetAllTradePurposes(RequestDTO.AgencyID);                
+                if(!tradePurposes.Any())
+                    return NotFoundReply("Trade Purpose not Found");
 
+
+                IEnumerable<DocumentType> documentList=GetAllDocumentType(RequestDTO.AgencyID);
+                if(!documentList.Any())
+                    return NotFoundReply("Documents not Found");
+
+
+                IEnumerable<UoM> UoMList=GetUoMs();
+                if(!UoMList.Any())
+                    return NotFoundReply("UOMs not found");
+                
+
+                //Get applicable Rules                
+                var HSCodeRequirements = GetHSCodeRequirements(RequestDTO.AgencyID,RequestDTO.HSCode);
                 if(!HSCodeRequirements.Any())
                     return NotFoundReply();
-
-                //Creating List for Valid Purposes
-                foreach(UV_DocumentaryRequirement record in HSCodeRequirements){
-                    IList<string> PuposeIDList=StringSplitter(record.PurposeIDList);
-                    foreach(string purposeID in PuposeIDList){
-                        if(!validTardePurpose.Any(p=>p.ID==Convert.ToInt32(purposeID))){
-                            GetPurposeOfImportByHSCodeResponseDTO purpose=searchImportPurposeID(tradePurposes,Convert.ToInt32(purposeID));
-                            GetPurposeOfImportByHSCodeResponseDTO finalPurpose=new GetPurposeOfImportByHSCodeResponseDTO(){
-                                    ID=purpose.ID,
-                                    Name=purpose.Name
-                            };
-                            validTardePurpose.Add(finalPurpose);
-                        }                        
-                    }                   
-                }
-
-                //  //Creating List for Documents
-                // List<DocumentResponseDTO> Documents=new List<DocumentResponseDTO>();
- 
-                // foreach(UV_DocumentaryRequirement record in HSCodeRequirements){
-                //     if(!Documents.Any(p=>p.DocumentCode==record.RequiredDocumentTypeCode)){
-                //         DocumentResponseDTO document=searchDocumentCode(documentList,record.RequiredDocumentTypeCode);
-                //            DocumentResponseDTO finaldocument=new DocumentResponseDTO(){
-                //                 DocumentCode=document.DocumentCode,
-                //                 DocumentName=document.DocumentName
-                //         };
-                //         Documents.Add(finaldocument);
-                //         }
-                //     if(!Documents.Any(p=>p.DocumentCode==record.RequestedDocument)){
-                //         DocumentResponseDTO document=searchDocumentCode(documentList,record.RequestedDocument);
-                //            DocumentResponseDTO finaldocument=new DocumentResponseDTO(){
-                //                 DocumentCode=document.DocumentCode,
-                //                 DocumentName=document.DocumentName
-                //         };
-                //         Documents.Add(finaldocument);
-                //         }                                                                   
-                // }
-
-
-                
-                // List<UOMResponseDTO> UOMs=new List<UOMResponseDTO>();
- 
-                // foreach(UV_DocumentaryRequirement record in HSCodeRequirements){
-                //     if(!UOMs.Any(p=>p.ID==record.UoMID)){
-                //         UOMResponseDTO uom=searchUoM(UoMList,record.UoMID);
-                //            UOMResponseDTO finalUoM=new UOMResponseDTO(){
-                //                 ID=uom.ID,
-                //                 Name=uom.Name
-                //         };
-                //         UOMs.Add(finalUoM);
-                //         }                                                                 
-                // }
-
-                             
                 
                 
-                //Actual Response
-                //IList<ListOfRules> LORs=HSCodeRequirements.Select(item => this.Command._mapper.Map<ListOfRules>(item)).ToList();
+                //Create Response               
+                ResponseDTO=CreateResponse(HSCodeRequirements,documentList,UoMList,tradePurposes);
 
-                // ResponseDTO=new GetHSCodeRequirementsResponseDTO(){
-                //     rules=LORs,
-                //     purposesOfImport=validTardePurpose,
-                //     documents=Documents,
-                //     UoMs=UOMs
-                // };
-
-                ResponseDTO=CreateResponse(HSCodeRequirements,documentList,UoMList,validTardePurpose);
-
-
-                //ResponseDTO = HSCodeRequirements.Select(item => this.Command._mapper.Map<GetHSCodeRequirementsResponseDTO>(item)).ToList();
-    
-
-                //ResponseDTO = HSCodeRequirements.Select(item => item.HSCode).ToList();
 
                 // Send Command Reply 
                 return OKReply();
@@ -152,30 +82,29 @@ namespace PSW.ITMS.Service.Strategies
 
 
         #region Methods 
-        public List<TestDTO>  CreateResponse(IList<UV_DocumentaryRequirement> HSCodeRequirements,IEnumerable<DocumentType> documentList,IEnumerable<UoM> UoMList,List<GetPurposeOfImportByHSCodeResponseDTO> validTardePurpose){
-            List<TestDTO> testResp=new List<TestDTO>();
+        public List<GetHSCodeRequirementsResponseDTO>  CreateResponse(IList<UV_DocumentaryRequirement> HSCodeRequirements,IEnumerable<DocumentType> documentList,IEnumerable<UoM> UoMList,IEnumerable<TradePurpose> tradePurposes){
+            List<GetHSCodeRequirementsResponseDTO> testResp=new List<GetHSCodeRequirementsResponseDTO>();
 
                 //Testing Respose
                 foreach(UV_DocumentaryRequirement record in HSCodeRequirements){
-                    TestDTO test= new TestDTO();
-                    test= this.Command._mapper.Map<TestDTO>(record);
-                    test.UoM=searchUoM(UoMList,record.UoMID);
-                    test.purposesOfImport=validTardePurpose;
+                    GetHSCodeRequirementsResponseDTO test= new GetHSCodeRequirementsResponseDTO();
+                    test= this.Command._mapper.Map<GetHSCodeRequirementsResponseDTO>(record);
+                    
+                    test.UoM=searchUoM(UoMList,record.UoMID);                    
+                    test.RequiredDocument=searchDocumentCode(documentList,record.RequiredDocumentTypeCode);  
+                    test.RequestedDocument=searchDocumentCode(documentList,record.RequestedDocument);
+                    
+                    List<GetPurposeOfImportByHSCodeResponseDTO> validTradePurpose=new List<GetPurposeOfImportByHSCodeResponseDTO>();
 
-                    DocumentResponseDTO document=searchDocumentCode(documentList,record.RequiredDocumentTypeCode);
-                           DocumentResponseDTO finaldocument=new DocumentResponseDTO(){
-                                DocumentCode=document.DocumentCode,
-                                DocumentName=document.DocumentName
-                        };
-                     test.RequiredDocument=document;  
-                     test.RequestedDocument=searchDocumentCode(documentList,record.RequestedDocument);
- 
-                        
-                    //test.RequiredDocument=RequiredDocuments;
-                    //test.RequestedDocument=RequestedDocuments;
-                    // testResp.Add(new TestDTO{
-
-                    // });
+                    IList<string> PurposeIDList=StringSplitter(record.PurposeIDList);
+                    foreach(string purposeID in PurposeIDList){
+                        if(!validTradePurpose.Any(p=>p.ID==Convert.ToInt32(purposeID))){                            
+                            validTradePurpose.Add(searchImportPurposeID(tradePurposes,Convert.ToInt32(purposeID)));
+                        }                        
+                    } 
+                    
+                    test.purposesOfImport=validTradePurpose; 
+                    
                     testResp.Add(test);
                 } 
                 return   testResp;
@@ -313,7 +242,7 @@ namespace PSW.ITMS.Service.Strategies
             
         }
         
-         public DocumentResponseDTO searchDocumentCode(IEnumerable<DocumentType> documentList, string documentCode){
+        public DocumentResponseDTO searchDocumentCode(IEnumerable<DocumentType> documentList, string documentCode){
              DocumentResponseDTO response=new DocumentResponseDTO();
             var doc=documentList.FirstOrDefault(x => x.Code == documentCode);                       
             if(doc!= null){
@@ -353,7 +282,7 @@ namespace PSW.ITMS.Service.Strategies
             
         }
         
-         public UOMResponseDTO searchUoM(IEnumerable<UoM> uomList, int uomId){
+        public UOMResponseDTO searchUoM(IEnumerable<UoM> uomList, int uomId){
              UOMResponseDTO response=new UOMResponseDTO();
             var uom=uomList.FirstOrDefault(x => x.ID == uomId);                       
             if(uom!= null){
@@ -364,10 +293,7 @@ namespace PSW.ITMS.Service.Strategies
             }
             return response;            
         }
-        
-        
-        
-        
+                                
         #endregion 
 
     }

@@ -7,24 +7,54 @@ namespace PSW.ITMS.Service.DTO
 {
     public class GetHSCodeRequirementsResponseDTO
     {
+        [JsonPropertyName("id")]
+        public long ID{ get; set; }
+
+        [JsonPropertyName("HSCode")]
+		public string HSCode{ get; set; }
+
+        [JsonPropertyName("HSCodeExt")]
+		public string HSCodeExt{ get; set; }
         
-        // [JsonPropertyName("purposeIDList")]
-        // public string PurposeIDList { get; set; }
+		[JsonPropertyName("itemDescription")]
+        public string ItemDescription { get; set; }
 
-        // [JsonPropertyName("technicalName")]
-        // public string TechnicalName { get; set; }
-
-        // [JsonPropertyName("itemDescription")]
-        // public string ItemDescription { get; set; }
-
-        // [JsonPropertyName("UoMId")]
-        // public int UoMID { get; set; }
+        [JsonPropertyName("itemDescriptionExt")]
+        public string ItemDescriptionExt { get; set; }
         
+        [JsonPropertyName("UoM")]
+        public UOMResponseDTO UoM { get; set; }
+		
+		
+		[JsonPropertyName("technicalName")]
+        public string TechnicalName { get; set; }
+		
+        [JsonPropertyName("requestedDocument")]
+        public DocumentResponseDTO RequestedDocument{ get; set; }
+        
+        [JsonPropertyName("requirementStageID")]
+		public int RequirementStageID{ get; set; }
+		
+        [JsonPropertyName("requestTypeID")]
+        public int RequestTypeID{ get; set; }
+
+		[JsonPropertyName("purposeLogicOperatorID")]
+        public int PurposeLogicOperatorID { get; set; }
+		
+        [JsonPropertyName("purposesOfImport")]
         public IList<GetPurposeOfImportByHSCodeResponseDTO> purposesOfImport { get; set; }
-        public IList<DocumentResponseDTO> documents { get; set; }
+		
+		[JsonPropertyName("agencyID")]
+		public short AgencyID { get; set; }
 
-        public IList<UOMResponseDTO> UoMs { get; set; }
-        public IList<ListOfRules> rules { get; set; }
+        [JsonPropertyName("requirementCategoryID")]
+		public int RequirementCategoryID{ get; set; }
+
+        [JsonPropertyName("requirementCategoryName")]
+		public string RequirementCategoryName { get; set; }
+        
+        [JsonPropertyName("requiredDocument")]
+		public DocumentResponseDTO RequiredDocument { get; set; }
     }
 
 }
