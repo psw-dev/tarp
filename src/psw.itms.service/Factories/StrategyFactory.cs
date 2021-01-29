@@ -34,6 +34,7 @@ namespace PSW.ITMS.Service.Strategies
                 case "1710": return new MockDataStrategy(request);
                 case "1711": return new GetHSCodeListStrategy(request);
                 case "1712": return new GetHSCodeRequirementStrategy(request);
+                case "1713": return new GetRequiredDocumentTypeStrategy(request);
                 case "removelater": return null;
                 
                 default: break;
