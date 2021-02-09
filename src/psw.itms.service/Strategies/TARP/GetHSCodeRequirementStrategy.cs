@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Text;
 using System.Net.Http.Headers;
 using PSW.ITMS.Data.Entities;
+using psw.security.Encryption;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -103,8 +104,8 @@ namespace PSW.ITMS.Service.Strategies
                         }                        
                     } 
                     
-                    test.purposesOfImport=validTradePurpose; 
-                    
+                    test.purposesOfImport=validTradePurpose;
+                    test.Amount = PSWEncryption.encrypt("5000");
                     testResp.Add(test);
                 } 
                 return   testResp;

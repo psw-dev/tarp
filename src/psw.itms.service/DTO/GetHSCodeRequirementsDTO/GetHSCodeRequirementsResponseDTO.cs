@@ -21,7 +21,10 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("itemDescriptionExt")]
         public string ItemDescriptionExt { get; set; }
-        
+
+        [JsonPropertyName("amount")]
+        public string Amount { get; set; }
+
         [JsonPropertyName("UoM")]
         public UOMResponseDTO UoM { get; set; }
 		

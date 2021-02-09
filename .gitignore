@@ -112,3 +112,4 @@ UpgradeLog*.XML
 
 build/*
 Logs
+/.vs/psw.itms/DesignTimeBuild
