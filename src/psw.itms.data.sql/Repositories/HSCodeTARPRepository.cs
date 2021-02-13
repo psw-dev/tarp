@@ -43,6 +43,24 @@ namespace PSW.ITMS.Data.Sql.Repositories
             //                             transaction: _transaction).ToList();
         }
 
+        public List<HSCodeTARP> SearchHSCodes(object searchFilters)
+        {
+            string query = "SELECT * FROM {0} WHERE {1}";
+
+            var searchCriteria = new StringBuilder();
+            var objectType = searchFilters.GetType();
+            var first = true;
+            foreach (var property in objectType.GetProperties())
+            {
+                searchCriteria.AppendFormat("{2} {0} like '%{1}%'", property.Name, property.GetValue(searchFilters).ToString().Replace("'", "''"), first ? "" : "OR");
+                first = false;
+            }
+
+            query = string.Format(query, TableName, searchCriteria);
+            return _connection.Query<HSCodeTARP>(query,
+                                        transaction: _transaction).ToList();
+        }
+
 		#endregion
     }
 }
