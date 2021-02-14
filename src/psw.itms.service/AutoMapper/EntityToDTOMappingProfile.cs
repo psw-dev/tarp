@@ -24,11 +24,7 @@ namespace PSW.ITMS.Service.AutoMapper
             .ForMember(dest => dest.purposesOfImport, opt => opt.Ignore())
             .ForMember(dest => dest.UoM, opt => opt.Ignore());
 
-            CreateMap<HSCodeTARP, HSCodesData>()
-            .ForMember(dest => dest.HSCode, opt => opt.Ignore())
-            .ForMember(dest => dest.HSCodeExt, opt => opt.Ignore())
-            .ForMember(dest => dest.ItemDescription, opt => opt.Ignore())
-            .ForMember(dest => dest.TechnicalName, opt => opt.Ignore());
+            CreateMap<HSCodeTARP, HSCodesData>();
         }
     }
 }

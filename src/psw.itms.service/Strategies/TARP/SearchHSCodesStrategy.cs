@@ -76,9 +76,8 @@ namespace PSW.ITMS.Service.Strategies
                     HSCode = req.HSCode ?? "",
                     HSCodeExt = req.PCTCode ?? "",
                     ItemDescription = req.CommodityName,
-                    AgencyID = req.AgencyId,
                     TechnicalName = req.TechnicalName
-                });
+                }, req.AgencyId);
 
                 // Commit Transaction  
                 this.Command.UnitOfWork.Commit();
