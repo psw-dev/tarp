@@ -17,7 +17,7 @@ using System.Net.Http.Headers;
 
 namespace PSW.ITMS.Service.Strategies
 {
-    public class GetHSCodeListStrategy : ApiStrategy<GetHSCodeListRequestDTO, List<string>>
+    public class GetHSCodeListStrategy : ApiStrategy<GetHSCodeListRequestDTO, List<HSCodeDTO>>
     {
 
         #region Properties 
@@ -46,9 +46,6 @@ namespace PSW.ITMS.Service.Strategies
                 // Query Database  
                 var HSCodeList = GetHSCodeList(RequestDTO.AgencyID);
 
-                if(!HSCodeList.Any())
-                    return NotFoundReply();
-
                 ResponseDTO = HSCodeList;
 
                 // Send Command Reply 
@@ -65,33 +62,54 @@ namespace PSW.ITMS.Service.Strategies
 
         #region Methods  
 
-        public List<string> GetHSCodeList(int agencyId)
+        public List<HSCodeDTO> GetHSCodeList(int agencyId)
         {
             try
             {
+                List<HSCodeDTO> dtos = new List<HSCodeDTO>();
+
                 // Begin Transaction  
                 this.Command.UnitOfWork.BeginTransaction();
 
                 // Query Database 
                 // IList<string> HSCodeList =
                 //     this.Command.UnitOfWork.HSCodeTARPRepository.GetHSCode(hsCode);
-                List<string> HSCodeList =this.Command.UnitOfWork.HSCodeTARPRepository.GetHSCode(new {
+                List<(string, string)> HSCodeList =this.Command.UnitOfWork.HSCodeTARPRepository.GetHSCode(new {
                     AgencyID= agencyId
                 });
 
+                foreach(var HSCode in HSCodeList)
+                {
+                    HSCodeDTO hsCodeDto = dtos.Where(x => x.HSCode == HSCode.Item1).FirstOrDefault();
+
+                    if (hsCodeDto == null)
+                    {
+                        HSCodeDTO dto = new HSCodeDTO
+                        {
+                            HSCode = HSCode.Item1,
+                            HSCodeExt = new List<string>{
+                                HSCode.Item2.Substring(HSCode.Item2.Length - 4)
+                            }
+                        };
+
+                        dtos.Add(dto);
+                    }
+                    else
+                    {
+                        hsCodeDto.HSCodeExt.Add(HSCode.Item2);
+                    }
+                }
 
                 // Commit Transaction  
                 this.Command.UnitOfWork.Commit();
 
-                return HSCodeList;
+                return dtos;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            
         }
-        
 
         #endregion 
 

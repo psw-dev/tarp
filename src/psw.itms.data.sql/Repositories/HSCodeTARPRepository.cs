@@ -24,10 +24,10 @@ namespace PSW.ITMS.Data.Sql.Repositories
 		#endregion
 
 		#region Public methods
-        public List<string> GetHSCode(object propertyValues)
+        public List<(string, string)> GetHSCode(object propertyValues)
         {
 
-            const string query = "SELECT DISTINCT HSCode FROM {0} WHERE {1}";
+            const string query = "SELECT DISTINCT HSCode, HSCodeExt FROM {0} WHERE {1}";
 
             var whereBulder = new StringBuilder();
             var objectType = propertyValues.GetType();
@@ -37,10 +37,8 @@ namespace PSW.ITMS.Data.Sql.Repositories
                 whereBulder.AppendFormat("{2} {0} = '{1}'", property.Name, property.GetValue(propertyValues).ToString().Replace("'", "''"), first ? "" : "AND");
                 first = false;
             }
-            return _connection.Query<string>(string.Format(query, TableName, whereBulder),
+            return _connection.Query<(string, string)>(string.Format(query, TableName, whereBulder),
                                         transaction: _transaction).ToList();
-            // return _connection.Query<string>(string.Format("SELECT DISTINCT HSCode FROM {0}", TableName),
-            //                             transaction: _transaction).ToList();
         }
 
         public List<HSCodeTARP> SearchHSCodes(object searchFilters, int agencyId)
