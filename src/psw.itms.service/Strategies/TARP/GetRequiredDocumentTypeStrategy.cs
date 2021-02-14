@@ -84,7 +84,7 @@ namespace PSW.ITMS.Service.Strategies
                 //     this.Command.UnitOfWork.HSCodeTARPRepository.GetHSCode(hsCode);
                 IList<UV_DocumentaryRequirement> HSCodeRequirements =this.Command.UnitOfWork.UV_DocumentaryRequirementRepository.Where(new {
                     AgencyID= agencyId,
-                    HSCode=hsCode
+                    HSCodeExt=hsCode
                 });
 
 

@@ -81,22 +81,21 @@ namespace PSW.ITMS.Service.Strategies
                 foreach(var HSCode in HSCodeList)
                 {
                     HSCodeDTO hsCodeDto = dtos.Where(x => x.HSCode == HSCode.Item1).FirstOrDefault();
+                    string pctCode = HSCode.Item2.Substring(HSCode.Item2.Length - 4);
 
                     if (hsCodeDto == null)
                     {
                         HSCodeDTO dto = new HSCodeDTO
                         {
                             HSCode = HSCode.Item1,
-                            HSCodeExt = new List<string>{
-                                HSCode.Item2.Substring(HSCode.Item2.Length - 4)
-                            }
+                            HSCodeExt = new List<string>{ pctCode }
                         };
 
                         dtos.Add(dto);
                     }
                     else
                     {
-                        hsCodeDto.HSCodeExt.Add(HSCode.Item2);
+                        hsCodeDto.HSCodeExt.Add(pctCode);
                     }
                 }
 
