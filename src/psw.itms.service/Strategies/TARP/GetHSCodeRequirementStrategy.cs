@@ -45,26 +45,25 @@ namespace PSW.ITMS.Service.Strategies
             try{
                  
                 // Retreive All required Data from DB
-                IEnumerable<TradePurpose> tradePurposes= GetAllTradePurposes(RequestDTO.AgencyID);                
+                IEnumerable<TradePurpose> tradePurposes = GetAllTradePurposes(RequestDTO.AgencyID);                
                 if(!tradePurposes.Any())
                     return NotFoundReply("Trade Purpose not Found");
 
 
-                IEnumerable<DocumentType> documentList=GetAllDocumentType(RequestDTO.AgencyID);
+                IEnumerable<DocumentType> documentList = GetAllDocumentType(RequestDTO.AgencyID);
                 if(!documentList.Any())
                     return NotFoundReply("Documents not Found");
 
 
-                IEnumerable<UoM> UoMList=GetUoMs();
+                IEnumerable<UoM> UoMList = GetUoMs();
                 if(!UoMList.Any())
                     return NotFoundReply("UOMs not found");
                 
 
                 //Get applicable Rules                
-                var HSCodeRequirements = GetHSCodeRequirements(RequestDTO.AgencyID,RequestDTO.HSCode);
+                var HSCodeRequirements = GetHSCodeRequirements(RequestDTO.AgencyID, RequestDTO.HSCode);
                 if(!HSCodeRequirements.Any())
                     return NotFoundReply();
-                
                 
                 //Create Response               
                 ResponseDTO=CreateResponse(HSCodeRequirements,documentList,UoMList,tradePurposes);
@@ -194,9 +193,8 @@ namespace PSW.ITMS.Service.Strategies
                 //     this.Command.UnitOfWork.HSCodeTARPRepository.GetHSCode(hsCode);
                 IList<UV_DocumentaryRequirement> HSCodeRequirements =this.Command.UnitOfWork.UV_DocumentaryRequirementRepository.Where(new {
                     AgencyID= agencyId,
-                    HSCode=hsCode
+                    HSCodeExt=hsCode
                 });
-
 
                 // Commit Transaction  
                 this.Command.UnitOfWork.Commit();
