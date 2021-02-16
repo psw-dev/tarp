@@ -34,13 +34,15 @@ namespace PSW.ITMS.Data.Objects.Views
 		private short _agencyID ;
 		private System.SByte _requirementCategoryID ;
 		private string _requirementCategoryName ;
-		private string _requiredDocumentTypeCode ;
+		private string _requiredDocumentTypeCode ; 
+        private string _requiredDocumentTypeName;
+		private decimal _billAmount;
 		#endregion
-	   
-	   
-	    #region Properties
 
-		
+
+		#region Properties
+
+
 		public long ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
 		public string HSCode { get { return _hSCode; } set { _hSCode = value;  }}
 		public string HSCodeExt { get { return _hSCodeExt; } set { _hSCodeExt = value;  }}
@@ -63,8 +65,11 @@ namespace PSW.ITMS.Data.Objects.Views
 		public System.SByte RequirementCategoryID { get {return _requirementCategoryID; } set{_requirementCategoryID=value;} }
 		public string RequirementCategoryName { get{return _requirementCategoryName;} set{_requirementCategoryName=value;} }
 		public string RequiredDocumentTypeCode { get {return _requiredDocumentTypeCode;} set{_requiredDocumentTypeCode=value;} }
+        public string RequiredDocumentTypeName { get { return _requiredDocumentTypeName; } set { _requiredDocumentTypeName = value; } }
+		public decimal BillAmount { get { return _billAmount; } set { _billAmount = value; } }
+		
 
-        #endregion
+		#endregion
 
 		#region public Methods
 
@@ -94,7 +99,8 @@ namespace PSW.ITMS.Data.Objects.Views
 				{"RequirementCategoryID", RequirementCategoryID},
 				{"RequirementCategoryName", RequirementCategoryName},
 				{"RequiredDocumentTypeCode", RequiredDocumentTypeCode},
-				
+                {"RequiredDocumentTypeName", RequiredDocumentTypeName},
+				{"BillAmount", BillAmount}
 			};
         }
 

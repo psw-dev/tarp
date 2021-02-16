@@ -1,299 +1,244 @@
-
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Collections.Generic;
 using System.Linq;
-
-
 using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Data.Objects.Views;
 using System;
-using AutoMapper;
-using PSW.ITMS.Service.Mapper;
-using System.Net.Http;
-using System.Text;
-using System.Net.Http.Headers;
+using System.Globalization;
+using PSW.ITMS.Common;
 using PSW.ITMS.Data.Entities;
 using psw.security.Encryption;
 
 namespace PSW.ITMS.Service.Strategies
 {
-    public class GetHSCodeRequirementStrategy : ApiStrategy<GetHSCodeRequirementsRequestDTO, List<GetHSCodeRequirementsResponseDTO>>
+    public class GetHsCodeRequirementStrategy : ApiStrategy<GetHsCodeRequirementsRequestDto, GetHsCodeRequirementsResponseDto>
     {
+        #region Constructors
 
-        #region Properties 
-        #endregion 
-
-        #region Constructors 
-        public GetHSCodeRequirementStrategy(CommandRequest request) : base(request)
+        public GetHsCodeRequirementStrategy(CommandRequest request) : base(request)
         {
-            this.Reply = new CommandReply();
+            Reply = new CommandReply();
         }
+
         #endregion 
 
-        #region Distructors 
-        ~GetHSCodeRequirementStrategy()
+        #region Distructors
+
+        ~GetHsCodeRequirementStrategy()
         {
 
         }
+
         #endregion 
 
-        #region Strategy Excecution  
+        #region Strategy Excecution
+
         public override CommandReply Execute()
         {
-            try{
-                 
-                // Retreive All required Data from DB
-                IEnumerable<TradePurpose> tradePurposes = GetAllTradePurposes(RequestDTO.AgencyID);                
-                if(!tradePurposes.Any())
-                    return NotFoundReply("Trade Purpose not Found");
+            try 
+            {
+                // Retrieve All required Data from DB
+                List<TradePurpose> tradePurposes = GetAllTradePurposes(RequestDTO);
 
+                // Get Applicable Rules on HSCode and Document Type Code
+                var hsCodeRequirements = GetHsCodeRequirements(RequestDTO.DocumentTypeCode, RequestDTO.HsCode);
+                if(!hsCodeRequirements.Any())
+                    return NotFoundReply("No data found against this HS Code");
 
-                IEnumerable<DocumentType> documentList = GetAllDocumentType(RequestDTO.AgencyID);
-                if(!documentList.Any())
-                    return NotFoundReply("Documents not Found");
+                // Creating Response
+                GetHsCodeRequirementsResponseDto dto = CreateResponse(hsCodeRequirements, tradePurposes);
 
-
-                IEnumerable<UoM> UoMList = GetUoMs();
-                if(!UoMList.Any())
-                    return NotFoundReply("UOMs not found");
-                
-
-                //Get applicable Rules                
-                var HSCodeRequirements = GetHSCodeRequirements(RequestDTO.AgencyID, RequestDTO.HSCode);
-                if(!HSCodeRequirements.Any())
-                    return NotFoundReply();
-                
                 //Create Response               
-                ResponseDTO=CreateResponse(HSCodeRequirements,documentList,UoMList,tradePurposes);
-
+                ResponseDTO = dto;
 
                 // Send Command Reply 
                 return OKReply();
-                
             }
             catch (Exception ex)
             {
                 return InternalServerErrorReply(ex);
             }
         }
+
         #endregion
 
 
         #region Methods 
-        public List<GetHSCodeRequirementsResponseDTO>  CreateResponse(IList<UV_DocumentaryRequirement> HSCodeRequirements,IEnumerable<DocumentType> documentList,IEnumerable<UoM> UoMList,IEnumerable<TradePurpose> tradePurposes){
-            List<GetHSCodeRequirementsResponseDTO> testResp=new List<GetHSCodeRequirementsResponseDTO>();
 
-                //Testing Respose
-                foreach(UV_DocumentaryRequirement record in HSCodeRequirements){
-                    GetHSCodeRequirementsResponseDTO test= new GetHSCodeRequirementsResponseDTO();
-                    test= this.Command._mapper.Map<GetHSCodeRequirementsResponseDTO>(record);
-                    
-                    test.UoM=searchUoM(UoMList,record.UoMID);                    
-                    test.RequiredDocument=searchDocumentCode(documentList,record.RequiredDocumentTypeCode);  
-                    test.RequestedDocument=searchDocumentCode(documentList,record.RequestedDocument);
-                    
-                    List<GetPurposeOfImportByHSCodeResponseDTO> validTradePurpose=new List<GetPurposeOfImportByHSCodeResponseDTO>();
+        /// <summary>
+        /// Creating response by parsing HS Code Rules
+        /// </summary>
+        /// <param name="hsCodeRequirements"></param>
+        /// <param name="tradePurposes"></param>
+        /// <returns></returns>
+        public GetHsCodeRequirementsResponseDto CreateResponse(IList<UV_DocumentaryRequirement> hsCodeRequirements, List<TradePurpose> tradePurposes)
+        {
+            GetHsCodeRequirementsResponseDto response = new GetHsCodeRequirementsResponseDto();
+            UV_DocumentaryRequirement requirement = hsCodeRequirements.ElementAt(0);
 
-                    IList<string> PurposeIDList=StringSplitter(record.PurposeIDList);
-                    foreach(string purposeID in PurposeIDList){
-                        if(!validTradePurpose.Any(p=>p.ID==Convert.ToInt32(purposeID))){                            
-                            validTradePurpose.Add(searchImportPurposeID(tradePurposes,Convert.ToInt32(purposeID)));
-                        }                        
-                    } 
-                    
-                    test.purposesOfImport=validTradePurpose;
-                    test.Amount = PSWEncryption.encrypt("5000");
-                    testResp.Add(test);
-                } 
-                return   testResp;
-        }  
-        public GetPurposeOfImportByHSCodeResponseDTO searchImportPurposeID(IEnumerable<TradePurpose> importPurposeList, int importPurposeId){
-             GetPurposeOfImportByHSCodeResponseDTO response=new GetPurposeOfImportByHSCodeResponseDTO();
-            var ImportPurpose=importPurposeList.FirstOrDefault(x => x.ID == importPurposeId);                       
-            if(ImportPurpose!= null){
-                response.ID=importPurposeId;
-                response.Name=ImportPurpose.Name;
-                
+            response.HsCodeExt = requirement.HSCodeExt;
+            response.ItemDescription = requirement.ItemDescription;
+            response.TechnicalName = requirement.TechnicalName;
+            response.RequestedDocumentCode = requirement.RequestedDocument;
+
+            if (requirement.UoMID != 0)
+            {
+                int uomId = Convert.ToInt32(requirement.UoMID);
+                UoM UoM = Command.UnitOfWork.UoMRepository.Find(uomId);
+                UOMResponseDTO uomDto = new UOMResponseDTO
+                {
+                    ID = uomId,
+                    Name = UoM.Name
+                };
+
+                response.UoM = uomDto;
+            }
+
+            // Checking if Permitted or not
+            var uvPermittedRequirements = hsCodeRequirements.Where(x =>
+                x.RequirementCategoryID == (int)psw.itms.common.Enums.RequirementCategory.NotPermitted);
+
+            if (uvPermittedRequirements.Any())
+            {
+                response.IsNotPermitted = true;
                 return response;
             }
+
+            // Specific FSCRD Check
+            string fscrdDocumentCode = "D13";
+            var uvDocumentaryRequirements = hsCodeRequirements.Where(x =>
+                x.RequirementCategoryID == (int) psw.itms.common.Enums.RequirementCategory.Documentary && x.RequiredDocumentTypeCode == fscrdDocumentCode);
+
+            if (uvDocumentaryRequirements.Any()) response.IsFscrdEnlistmentRequired = true;
+
+            var distinctPurposes = hsCodeRequirements.Select(x => x.PurposeIDList).Distinct().ToList();
+
+            if (distinctPurposes.Count > 0)
+            {
+                foreach (string purposes in distinctPurposes)
+                {
+                    PurposeWiseRequirement purposeWiseRequirement = new PurposeWiseRequirement();
+                    var financialRequirements = hsCodeRequirements.Where(x =>
+                        x.RequirementCategoryID == (int)psw.itms.common.Enums.RequirementCategory.Financial && x.PurposeIDList == purposes).ToList();
+
+                    if (financialRequirements.Count > 0)
+                    {
+                        var financialRequirement = financialRequirements.ElementAt(0);
+                        purposeWiseRequirement.BillAmount = PSWEncryption.encrypt(financialRequirement.BillAmount.ToString(CultureInfo.CurrentCulture));
+                    }
+
+                    var documentaryRequirements = hsCodeRequirements.Where(x =>
+                        x.RequirementCategoryID == (int)psw.itms.common.Enums.RequirementCategory.Documentary && x.PurposeIDList == purposes).ToList();
+
+                    if (documentaryRequirements.Count > 0)
+                    {
+                        IList<string> purposeIdList = Utility.StringSplitter(purposes);
+                        foreach (string purposeId in purposeIdList)
+                        {
+                            if (purposeWiseRequirement.TradePurposes.All(p => p.ID != Convert.ToInt32(purposeId)))
+                            {
+                                GetPurposeOfImportByHSCodeResponseDTO purposeDto = SearchImportPurposeId(tradePurposes, Convert.ToInt32(purposeId));
+                                if (purposeDto != null) purposeWiseRequirement.TradePurposes.Add(purposeDto);
+                            }
+                        }
+
+                        foreach (var documentaryRequirement in documentaryRequirements)
+                        {
+                            if (documentaryRequirement.RequiredDocumentTypeCode != null && documentaryRequirement.RequiredDocumentTypeName != null)
+                            {
+                                purposeWiseRequirement.RequiredDocument.Add(new DocumentResponseDTO
+                                {
+                                    DocumentCode = documentaryRequirement.RequiredDocumentTypeCode,
+                                    DocumentName = documentaryRequirement.RequiredDocumentTypeName
+                                });
+                            }
+                        }
+                    }
+
+                    response.PurposeWiseRequirements.Add(purposeWiseRequirement);
+                }
+            }
+
             return response;
         }
-        
-        public List<string> StringSplitter(string value){
-            return value.Split(',').ToList();
+
+        /// <summary>
+        /// Search Import Purpose by Import Purpose Id and return Data Transfer Object
+        /// </summary>
+        /// <param name="importPurposeList"></param>
+        /// <param name="importPurposeId"></param>
+        /// <returns></returns>
+        public GetPurposeOfImportByHSCodeResponseDTO SearchImportPurposeId(IEnumerable<TradePurpose> importPurposeList, int importPurposeId)
+        {
+            GetPurposeOfImportByHSCodeResponseDTO response = new GetPurposeOfImportByHSCodeResponseDTO();
+            var importPurpose = importPurposeList.FirstOrDefault(x => x.ID == importPurposeId);
+            if (importPurpose == null) return null;
+
+            response.ID = importPurposeId;
+            response.Name = importPurpose.Name;
+
+            return response;
         }
-        public IEnumerable<TradePurpose> GetAllTradePurposes(int agencyId)
+
+        /// <summary>
+        /// Pulling Trade Purposes on the basis of Agency Id and Trade Tran Type Id
+        /// </summary>
+        /// <param name="requestDto"></param>
+        /// <returns></returns>
+        public List<TradePurpose> GetAllTradePurposes(GetHsCodeRequirementsRequestDto requestDto)
         {
             try
             {
                 // Begin Transaction  
-                this.Command.UnitOfWork.BeginTransaction();
+                Command.UnitOfWork.BeginTransaction();
 
                 // Query Database 
-                // IList<string> HSCodeRequirements =
-                //     this.Command.UnitOfWork.HSCodeTARPRepository.GetHSCode(hsCode);
-                IEnumerable<TradePurpose> tradePurposes =this.Command.UnitOfWork.TradePurposeRepository.Where(new {
-                    AgencyID= agencyId
-                   
-                });
-
-
-                // Commit Transaction  
-                this.Command.UnitOfWork.Commit();
-
-                return tradePurposes;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            
-        }
-        public IList<HSCodeTARP> GetFromHSCodeTARP(int agencyId,string hsCode)
-        {
-            try
-            {
-                // Begin Transaction  
-                this.Command.UnitOfWork.BeginTransaction();
-
-                // Query Database 
-                // IList<string> HSCodeRequirements =
-                //     this.Command.UnitOfWork.HSCodeTARPRepository.GetHSCode(hsCode);
-                IList<HSCodeTARP> HSCodeTARPList =this.Command.UnitOfWork.HSCodeTARPRepository.Where(new {
-                    AgencyID= agencyId,
-                    HSCode=hsCode
-                   
-                });
-
-
-                // Commit Transaction  
-                this.Command.UnitOfWork.Commit();
-
-                return HSCodeTARPList;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            
-        }
-        
-
-        public IList<UV_DocumentaryRequirement> GetHSCodeRequirements(int agencyId,string hsCode)
-        {
-            try
-            {
-                // Begin Transaction  
-                this.Command.UnitOfWork.BeginTransaction();
-
-                // Query Database 
-                // IList<string> HSCodeRequirements =
-                //     this.Command.UnitOfWork.HSCodeTARPRepository.GetHSCode(hsCode);
-                IList<UV_DocumentaryRequirement> HSCodeRequirements =this.Command.UnitOfWork.UV_DocumentaryRequirementRepository.Where(new {
-                    AgencyID= agencyId,
-                    HSCodeExt=hsCode
+                IEnumerable<TradePurpose> tradePurposes = Command.UnitOfWork.TradePurposeRepository.Where(new {
+                    AgencyID = requestDto.AgencyId,
+                    TradeTranTypeID = requestDto.TradeTranType
                 });
 
                 // Commit Transaction  
-                this.Command.UnitOfWork.Commit();
+                Command.UnitOfWork.Commit();
 
-                return HSCodeRequirements;
+                return tradePurposes.ToList();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            
         }
-        
-        public IEnumerable<DocumentType> GetAllDocumentType(int agencyId)
+
+        /// <summary>
+        /// Pulling data from view on 12 digit HSCode and Document Type Code
+        /// </summary>
+        /// <param name="requestedDocument"></param>
+        /// <param name="hsCode"></param>
+        /// <returns></returns>
+        public IList<UV_DocumentaryRequirement> GetHsCodeRequirements(string requestedDocument, string hsCode)
         {
             try
             {
-                //TODO: Query ITMS to get Document Type w.r.t HSCode and Agency Id
-
-                //For The Time being Getting the desire values from shared DB directly
-                
-                
                 // Begin Transaction  
-                this.Command.UnitOfWork.BeginTransaction();
+                Command.UnitOfWork.BeginTransaction();
 
                 // Query Database 
-                IEnumerable<DocumentType> AllDocmumentType =
-                    this.Command.UnitOfWork.DocumentTypeRepository.Where(
-                        new{
-                            AgencyID=agencyId,  
-                            //HSCode=HSCode //Will be required when querying tom ITMS                        
-                        }
-                    );
+                IList<UV_DocumentaryRequirement> hsCodeRequirements = Command.UnitOfWork.UV_DocumentaryRequirementRepository.Where(new {
+                    RequestedDocument = requestedDocument,
+                    HSCodeExt = hsCode
+                });
 
                 // Commit Transaction  
-                this.Command.UnitOfWork.Commit();
+                Command.UnitOfWork.Commit();
 
-                return AllDocmumentType;
+                return hsCodeRequirements;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            
         }
         
-        public DocumentResponseDTO searchDocumentCode(IEnumerable<DocumentType> documentList, string documentCode){
-             DocumentResponseDTO response=new DocumentResponseDTO();
-            var doc=documentList.FirstOrDefault(x => x.Code == documentCode);                       
-            if(doc!= null){
-                response.DocumentCode=documentCode;
-                response.DocumentName=doc.Name;
-                
-                return response;
-            }
-            return response;            
-        }
-        
-        public IEnumerable<UoM> GetUoMs()
-        {
-            try
-            {
-                //TODO: Query ITMS to get Document Type w.r.t HSCode and Agency Id
-
-                //For The Time being Getting the desire values from shared DB directly
-                
-                
-                // Begin Transaction  
-                this.Command.UnitOfWork.BeginTransaction();
-
-                // Query Database 
-                IEnumerable<UoM> UoMs =
-                    this.Command.UnitOfWork.UoMRepository.Get();
-
-                // Commit Transaction  
-                this.Command.UnitOfWork.Commit();
-
-                return UoMs;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            
-        }
-        
-        public UOMResponseDTO searchUoM(IEnumerable<UoM> uomList, int uomId){
-             UOMResponseDTO response=new UOMResponseDTO();
-            var uom=uomList.FirstOrDefault(x => x.ID == uomId);                       
-            if(uom!= null){
-                response.ID=uomId;
-                response.Name=uom.Name;
-                
-                return response;
-            }
-            return response;            
-        }
-                                
         #endregion 
-
     }
 }

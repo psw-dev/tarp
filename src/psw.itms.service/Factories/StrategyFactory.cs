@@ -25,15 +25,16 @@ namespace PSW.ITMS.Service.Strategies
         #region Private Method
 
         #endregion
+
         #region Public Methods
+
         public Strategy CreateStrategy(CommandRequest request)
         {
-
             switch (request.methodId)
             {
                 case "1710": return new MockDataStrategy(request);
                 case "1711": return new GetHSCodeListStrategy(request);
-                case "1712": return new GetHSCodeRequirementStrategy(request);
+                case "1712": return new GetHsCodeRequirementStrategy(request);
                 case "1713": return new GetRequiredDocumentTypeStrategy(request);
                 case "1714": return new SearchHSCodesStrategy(request);
                 case "removelater": return null;
@@ -41,10 +42,9 @@ namespace PSW.ITMS.Service.Strategies
                 default: break;
             }
 
-
             return new InvalidStrategy(request);
-
         }
+
         #endregion
 
     }
