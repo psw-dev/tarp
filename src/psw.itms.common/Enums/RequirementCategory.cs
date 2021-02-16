@@ -6,7 +6,7 @@
         Documentary = 2,
         ValidityPeriod = 3,
         RefusalInfo = 4,
-        NilRequirement = 8,
-        NotPermitted = 16
+        NilRequirement = 5,
+        NotPermitted = 6
     }
 }
