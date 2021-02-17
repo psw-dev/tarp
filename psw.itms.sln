@@ -37,8 +37,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psw.security", "lib\libcomm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psw.utils", "lib\libcommon\src\psw.utils\psw.utils.csproj", "{0F3C39A8-3BCA-481B-A93C-3D6BE001A697}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psw.service.common", "lib\libcommon\src\psw.service.common\psw.service.common.csproj", "{A6070CF1-A774-4A22-A477-95E504E9DC24}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,18 +155,6 @@ Global
 		{0F3C39A8-3BCA-481B-A93C-3D6BE001A697}.Release|x64.Build.0 = Release|Any CPU
 		{0F3C39A8-3BCA-481B-A93C-3D6BE001A697}.Release|x86.ActiveCfg = Release|Any CPU
 		{0F3C39A8-3BCA-481B-A93C-3D6BE001A697}.Release|x86.Build.0 = Release|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Debug|x64.Build.0 = Debug|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Debug|x86.Build.0 = Debug|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Release|x64.ActiveCfg = Release|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Release|x64.Build.0 = Release|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Release|x86.ActiveCfg = Release|Any CPU
-		{A6070CF1-A774-4A22-A477-95E504E9DC24}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -189,7 +175,6 @@ Global
 		{FC4564FE-C873-46B9-A461-AFD1652E38B5} = {CE6C55F5-9AF0-4C96-97AD-D757A6721FF2}
 		{D31AF1AE-25BA-4FF0-BCE6-BECDCA7C5203} = {FC4564FE-C873-46B9-A461-AFD1652E38B5}
 		{0F3C39A8-3BCA-481B-A93C-3D6BE001A697} = {FC4564FE-C873-46B9-A461-AFD1652E38B5}
-		{A6070CF1-A774-4A22-A477-95E504E9DC24} = {FC4564FE-C873-46B9-A461-AFD1652E38B5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3399B1E6-1C98-4BD1-B897-04A5D0822867}
