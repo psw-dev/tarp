@@ -13,9 +13,9 @@ using System.Security.Cryptography;
 namespace PSW.ITMS.Api.Contollers
 {
 
-    [Route("api/v1/itms/[controller]")]
+    [Route("api/v1/tarp/[controller]")]
     [ApiController]
-    public class ItmsController
+    public class TarpController
     {
 
         #region Properties
