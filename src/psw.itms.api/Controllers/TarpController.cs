@@ -28,7 +28,7 @@ namespace PSW.ITMS.Api.Contollers
 
         #region Constructors
 
-        public ItmsController(IItmsService service,IUnitOfWork uow)
+        public TarpController(IItmsService service,IUnitOfWork uow)
         {
             // Dependency Injection of services
             this.service = service;
