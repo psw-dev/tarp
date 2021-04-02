@@ -111,7 +111,6 @@ namespace PSW.ITMS.Api
             // var component = app.ApplicationServices.GetRequiredService<IEventBus>();
             // var upsRabbitMqListener = new UPSRabbitMqListener(OgaService, unitOfWork, Configuration);
             // component.Subscribe(MessageQueues.UPSQueue, upsRabbitMqListener, Configuration, eventBus);
-
         }
     }
 }

@@ -1,300 +1,69 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Text.Json;
 using PSW.ITMS.Api.ApiCommand;
 using PSW.ITMS.Service;
 using PSW.ITMS.Service.Strategies;
-using PSW.ITMS.Service.Exceptions;
 using PSW.ITMS.Data;
-using PSW.ITMS.Service.Command;
-using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http;
+using psw.itms.api.Controllers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PSW.ITMS.Api.Contollers
 {
 
     [Route("api/v1/itms/[controller]")]
     [ApiController]
-    public class ItmsController
+    public class ItmsController : BaseController
     {
 
         #region Properties
-
         private IItmsService service { get; set; }
-        // private Logger _logger { get; set; }
        
         #endregion
 
-
         #region Constructors
 
-        public ItmsController(IItmsService service,IUnitOfWork uow)
+        public ItmsController(IItmsService service, IItmsOpenService openService, IUnitOfWork uow, IHttpContextAccessor httpContextAccessor) : base(service, openService, uow)
         {
             // Dependency Injection of services
             this.service = service;
             this.service.UnitOfWork = uow;
             this.service.StrategyFactory = new StrategyFactory(uow);
+            this.service.UserClaims = httpContextAccessor.HttpContext.User.Claims;
         }
-
-        #endregion 
-        
-        #region End Points 
-        
-        // TODO: Authentication
-        // Assuming Request is Authenticated.
-        [HttpPost("secure")]   
-        public ActionResult<APIResponse> SecureRequest(APIRequest apiRequest) 
-        {
-            //TODO: Client Id Authentication here
-            APIResponse apiResponse = new APIResponse()
-            {
-                methodId = apiRequest.methodId,
-                message = new ResponseMessage(){
-                    code = "404",
-                    description="Action not found."
-                },
-                //TODO: Add error object if required
-                error = new ErrorModel(),
-                //TODO: Add pagination if required
-                pagination = null
-            };
-
-            try
-            {
-                //TODO: Resourse Authorization (Middleware)
-                //TODO: Pass User Detials and Method ID to Middleware for Action/Method/Resourse Authorization
-                // Assuming Request is Authenticated 
-                bool authenticated = true;  
-                if(authenticated) 
-                {
-                    // Crate JsonElement for service
-                    // Calling Service 
-                     CommandReply commandReply = service.invokeMethod(
-                        new CommandRequest() {
-                            methodId = apiRequest.methodId,
-                            data = apiRequest.data                                                    
-                        } 
-                    );
-
-                    // Preparing Resposnse 
-                    apiResponse = APIResponseByCommand(commandReply, apiResponse);
-
-                } 
-                else
-                {                    
-                    apiResponse.message.code = "404";
-                    apiResponse.message.description = "Not Authorized";
-                } 
-                
-            }
-            catch(Exception ex)
-            {
-                // Log 
-                //  _logger.Log(ex.Message);
-                // // Prepare Appropriate Response 
-                apiResponse.message.code = "404";
-                apiResponse.message.description = "Error : " + ex.Message;
-            }
-            // catch (ServiceException ex)
-            // {
-            //     // Log 
-            //     //  _logger.Log(ex.Message);
-            //     // // Prepare Appropriate Response 
-            //     apiResponse.message.code = "404";
-            //     apiResponse.message.message = "Error : " + ex.Message;
-            //     // throw;
-            // }
-            
-            // Log 
-            // _logger.Log("Sending This Response");
-
-            // Send Response 
-            return apiResponse;
-        } 
-
-
-        [HttpPost("open")]   
-        public ActionResult<object> OpenRequest(APIRequest apiRequest) 
-        {
-            APIResponse apiResponse = new APIResponse()
-            {
-                methodId = apiRequest.methodId,
-                message = new ResponseMessage()
-                // requestStartTime = DateTime.Now 
-            };
-
-            try
-            {
-                //TODO: Resourse Authorization (Middleware)
-                //TODO: Pass User Detials and Method ID to Middleware for Action/Method/Resourse Authorization
-                // Assuming Request is Authenticated 
-                
-      
-                
-                    // Calling Service 
-                     CommandReply commandReply = service.invokeMethod(
-                        new CommandRequest() {
-                            methodId = apiRequest.methodId,
-                            data =  apiRequest.data
-                        } 
-                    );
-
-                    // Write a function to do this 
-                    // Preparing Resposnse 
-                  apiResponse = APIResponseByCommand(commandReply, apiResponse);
-                    
-
-
-                
-               
-            }
-            catch(Exception ex)
-            {
-                // Log 
-                //  _logger.Log(ex.Message);
-                // // Prepare Appropriate Response 
-                apiResponse.message.code = "404";
-                apiResponse.message.description = "Error : " + ex.Message;
-            }
-            // catch (ServiceException ex)
-            // {
-            //     // Log 
-            //     //  _logger.Log(ex.Message);
-            //     // // Prepare Appropriate Response 
-            //     apiResponse.message.code = "404";
-            //     apiResponse.message.message = "Error : " + ex.Message;
-            //     // throw;
-            // }
-            
-            // Log 
-            // _logger.Log("Sending This Response");
-
-            // Send Response 
-            return apiResponse;
-        } 
-
-        [HttpGet("query/{methodId}")]   
-        public ActionResult<object> OpenRequest(string methodId,string username,int duration) 
-        {
-            //TODO: Client Id Authentication here
-            APIResponse apiResponse = new APIResponse()
-            {
-                methodId = methodId,
-                message=new ResponseMessage(){
-                    code="404",
-                    description="Action not found."
-                },
-                //TODO: Add error object if required
-                error=null,
-                //TODO: Add pagination if required
-                pagination=null
-            };
-
-            try
-            {
-                //TODO: Resourse Authorization (Middleware)
-                //TODO: Pass User Detials and Method ID to Middleware for Action/Method/Resourse Authorization
-                // Assuming Request is Authenticated 
-                bool authenticated = true;  
-                if(authenticated) 
-                {
-                    // Crate JsonElement for service
-                    string json = "{"+string.Format(@"""username"":""{0}"",""duration"":{1}",username,duration)+"}";
-                    JsonElement element = JsonDocument.Parse(json).RootElement; 
-                    // Calling Service 
-                     CommandReply commandReply = service.invokeMethod(
-                        new CommandRequest() {
-                            methodId = methodId,
-                            data = element                                                    
-                        } 
-                    );
-
-                    // Write a function to do this 
-                    // Preparing Resposnse 
-                    apiResponse.data = commandReply.data;
-                    apiResponse.message.code = commandReply.code;
-                    apiResponse.message.description = commandReply.message;
-                    //   -- Sign Data 
-                    string signature = Sign(commandReply.data);
-                    apiResponse.signature= signature;
-                    
-
-
-                } 
-                else
-                {                    
-                    apiResponse.message.code = "404";
-                    apiResponse.message.description = "Not Authorized";
-                } 
-                
-            }
-            catch(Exception ex)
-            {
-                // Log 
-                //  _logger.Log(ex.Message);
-                // // Prepare Appropriate Response 
-                apiResponse.message.code = "404";
-                apiResponse.message.description = "Error : " + ex.Message;
-            }
-            // catch (ServiceException ex)
-            // {
-            //     // Log 
-            //     //  _logger.Log(ex.Message);
-            //     // // Prepare Appropriate Response 
-            //     apiResponse.message.code = "404";
-            //     apiResponse.message.message = "Error : " + ex.Message;
-            //     // throw;
-            // }
-            
-            // Log 
-            // _logger.Log("Sending This Response");
-
-            // Send Response 
-            return apiResponse;
-        } 
 
         #endregion
 
-     
-       
+        #region End Points 
 
-        #region Helper Methods 
-        private string Sign(JsonElement data)
-        {            
-            // TODO Call Sign API to Get Signature  
-            using (HashAlgorithm algorithm = SHA256.Create())
-                return System.Convert.ToBase64String(algorithm.ComputeHash(System.Text.UTF8Encoding.UTF8.GetBytes(data.ToString())));            
+        [HttpPost("secure")]
+        [Authorize("authorizedUserPolicy")]
+        public override ActionResult<APIResponse> SecureRequest(APIRequest apiRequest)
+        {
+            return base.SecureRequest(apiRequest);
         }
 
-        private APIResponse APIResponseByCommand(CommandReply commandReply, APIResponse apiResponse)
-        { 
-            try
-            {
-                apiResponse.data = commandReply.data; // TODO: Safe Check on Data
-                string signature = Sign(commandReply.data); // TODO: Safe Check Data
-                apiResponse.signature= signature; // Sign Data 
-                
-                apiResponse.message.code = string.IsNullOrEmpty(commandReply.code) ? "400" : commandReply.code;
-                apiResponse.message.description = string.IsNullOrEmpty(commandReply.message) ? "Bad Request" : commandReply.message;
+        [HttpPost("open")]
+        public override ActionResult<object> OpenRequest(APIRequest apiRequest)
+        {
+            return base.OpenRequest(apiRequest);
+        }
 
-                if(apiResponse.error != null) 
-                {
-                    apiResponse.error.exception =  string.IsNullOrEmpty(commandReply.exception) ? "" : commandReply.exception;
-                    apiResponse.error.shortDescription = string.IsNullOrEmpty(commandReply.shortDescription) ? "" : commandReply.shortDescription;
-                    apiResponse.error.fullDescription = string.IsNullOrEmpty(commandReply.fullDescription) ? "" : commandReply.fullDescription;
-                }
+        [HttpGet("query/{methodId}")]
+        public override ActionResult<object> OpenRequest(string methodId, string username, int duration)
+        {
+            return base.OpenRequest(methodId, username, duration);
+        }
 
+        [HttpGet("version")]
+        public override ActionResult<object> GetVersion()
+        {
+            return "20210219_144630";
+        }
 
-            }
-            catch (System.Exception ex)
-            {
-                apiResponse.message.code = "400";
-                apiResponse.message.description = "Cannot Prepare Response";
-                apiResponse.error.exception =  "Exception : " + ex.ToString();
-            }
-
-            return apiResponse;
-            
+        [HttpGet("env")]
+        public ActionResult<object> GetEnv()
+        {
+            return System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         }
 
         #endregion

@@ -1,3 +1,4 @@
+using PSW.ITMS.Common.Pagination;
 using System.Net;
 using System.Text.Json;
 
@@ -11,11 +12,10 @@ namespace PSW.ITMS.Service.Command
         public string fullDescription { get; set; }
         public string code { get; set; }
         public string message { set; get; }
-         public CommandReply()
+        public ServerPaginationModel pagination { get; set; }
+        public CommandReply()
         {
             this.data = JsonDocument.Parse(JsonSerializer.SerializeToUtf8Bytes(new {})).RootElement;
         }
     }
-
-
 }
