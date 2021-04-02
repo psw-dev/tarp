@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Authorization;
 namespace PSW.ITMS.Api.Contollers
 {
 
-    [Route("api/v1/itms/[controller]")]
+    [Route("api/v1/tarp/[controller]")]
     [ApiController]
-    public class ItmsController : BaseController
+    public class TarpController(IItmsService service, IItmsOpenService openService, IUnitOfWork uow, IHttpContextAccessor httpContextAccessor) : base(service, openService, uow)
     {
 
         #region Properties
@@ -22,7 +22,7 @@ namespace PSW.ITMS.Api.Contollers
 
         #region Constructors
 
-        public ItmsController(IItmsService service, IItmsOpenService openService, IUnitOfWork uow, IHttpContextAccessor httpContextAccessor) : base(service, openService, uow)
+        public TarpController(IItmsService service,IUnitOfWork uow)
         {
             // Dependency Injection of services
             this.service = service;
