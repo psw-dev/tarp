@@ -231,9 +231,16 @@ namespace PSW.ITMS.Common
         {
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-        } 
+        }
+
+        /// <summary>
+        /// String Splitter
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static List<string> StringSplitter(string value)
+        {
+            return value.Split(',').ToList();
+        }
     }
-
-
-
 }

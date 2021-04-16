@@ -9,6 +9,7 @@ namespace PSW.ITMS.Data.Repositories
 {
     public interface IHSCodeTARPRepository : IRepository<HSCodeTARP>
     {
-        List<string> GetHSCode(object propertyValues);
+        List<(string, string)> GetHSCode(object propertyValues);
+        List<HSCodeTARP> SearchHSCodes(object searchFilters, int agencyId);
     }
 }

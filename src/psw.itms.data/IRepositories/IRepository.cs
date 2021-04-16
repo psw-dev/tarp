@@ -26,8 +26,8 @@ namespace PSW.ITMS.Data.Repositories
 
         int Count(string ColumnValue, string ColumnName);
 
+        T Find(int id);
 
-
-		#endregion
+        #endregion
     }
 }
