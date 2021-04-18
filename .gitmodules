@@ -4,7 +4,3 @@
 [submodule "lib/librabbitmq"]
 	path = lib/librabbitmq
 	url = https://git.psw.gov.pk/dev/librabbitmq.git
-[submodule "lib/libcommon"]
-	path = lib/libcommon
-	url = https://git.psw.gov.pk/dev/libcommon.git
-	branch = develop
