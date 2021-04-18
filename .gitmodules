@@ -7,4 +7,3 @@
 [submodule "lib/libcommon"]
 	path = lib/libcommon
 	url = https://git.psw.gov.pk/dev/libcommon.git
-	branch = develop
