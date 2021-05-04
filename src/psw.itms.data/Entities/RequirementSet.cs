@@ -20,6 +20,7 @@ namespace PSW.ITMS.Data.Entities
 		private short _agencyID;
 		private DateTime _createdOn;
 		private int _createdBy;
+		private System.Byte[] _lastChange;
 
 		#endregion
 
@@ -30,6 +31,7 @@ namespace PSW.ITMS.Data.Entities
 		public short AgencyID { get { return _agencyID; } set { _agencyID = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
+		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
 
 		#endregion
 
@@ -47,13 +49,20 @@ namespace PSW.ITMS.Data.Entities
 				{"Name", Name},
 				{"AgencyID", AgencyID},
 				{"CreatedOn", CreatedOn},
-				{"CreatedBy", CreatedBy}
+				{"CreatedBy", CreatedBy},
+				{"LastChange", LastChange}
 			};
         }
 
 		#endregion
 
 		#region Constructors
+
+		public RequirementSet()
+		{
+			TableName = "RequirementSet";
+			PrimaryKeyName = "ID";
+		}
 		
 		#endregion
 	}

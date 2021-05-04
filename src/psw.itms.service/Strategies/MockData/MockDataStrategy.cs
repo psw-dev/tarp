@@ -307,8 +307,8 @@ namespace PSW.ITMS.Service.Strategies
                 this.Command.UnitOfWork.BeginTransaction();
 
                 // Query Database 
-                IEnumerable<TradePurpose> ImportPurposeList =
-                    this.Command.UnitOfWork.TradePurposeRepository.Get();
+                IEnumerable<TradePurpose> ImportPurposeList = null;
+                    //this.Command.UnitOfWork.TradePurposeRepository.Get();
 
                 // Commit Transaction  
                 this.Command.UnitOfWork.Commit();

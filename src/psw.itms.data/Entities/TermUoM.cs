@@ -17,6 +17,7 @@ namespace PSW.ITMS.Data.Entities
 		
 		private System.SByte _iD;
 		private string _name;
+		private System.Byte[] _lastChange;
 
 		#endregion
 
@@ -24,6 +25,7 @@ namespace PSW.ITMS.Data.Entities
 		
 		public System.SByte ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
 		public string Name { get { return _name; } set { _name = value;  }}
+		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
 
 		#endregion
 
@@ -38,13 +40,20 @@ namespace PSW.ITMS.Data.Entities
             return new Dictionary<string, object> 
 			{
 				{"ID", ID},
-				{"Name", Name}
+				{"Name", Name},
+				{"LastChange", LastChange}
 			};
         }
 
 		#endregion
 
 		#region Constructors
+
+		public TermUoM()
+		{
+			TableName = "TermUoM";
+			PrimaryKeyName = "ID";
+		}
 		
 		#endregion
 	}

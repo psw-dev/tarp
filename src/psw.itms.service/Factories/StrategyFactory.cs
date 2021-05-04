@@ -32,11 +32,12 @@ namespace PSW.ITMS.Service.Strategies
         {
             switch (request.methodId)
             {
-                case "1710": return new MockDataStrategy(request);
-                case "1711": return new GetHSCodeListStrategy(request);
-                case "1712": return new GetHsCodeRequirementStrategy(request);
-                case "1713": return new GetRequiredDocumentTypeStrategy(request);
-                case "1714": return new SearchHSCodesStrategy(request);
+                // case "1710": return new MockDataStrategy(request);
+                // case "1711": return new GetHSCodeListStrategy(request);
+                // case "1712": return new GetHsCodeRequirementStrategy(request);
+                // case "1713": return new GetRequiredDocumentTypeStrategy(request);
+                //case "1714": return new SearchHSCodesStrategy(request);
+                case "1716": return new GetAgencyListStrategy(request);
                 case "removelater": return null;
                 
                 default: break;

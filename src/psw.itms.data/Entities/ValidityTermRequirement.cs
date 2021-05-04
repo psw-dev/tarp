@@ -21,6 +21,7 @@ namespace PSW.ITMS.Data.Entities
 		private short _quantity;
 		private DateTime _createdOn;
 		private int _createdBy;
+		private System.Byte[] _lastChange;
 
 		#endregion
 
@@ -32,6 +33,7 @@ namespace PSW.ITMS.Data.Entities
 		public short Quantity { get { return _quantity; } set { _quantity = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
+		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
 
 		#endregion
 
@@ -50,13 +52,20 @@ namespace PSW.ITMS.Data.Entities
 				{"TermUoMID", TermUoMID},
 				{"Quantity", Quantity},
 				{"CreatedOn", CreatedOn},
-				{"CreatedBy", CreatedBy}
+				{"CreatedBy", CreatedBy},
+				{"LastChange", LastChange}
 			};
         }
 
 		#endregion
 
 		#region Constructors
+
+		public ValidityTermRequirement()
+		{
+			TableName = "ValidityTermRequirement";
+			PrimaryKeyName = "ID";
+		}
 		
 		#endregion
 	}
