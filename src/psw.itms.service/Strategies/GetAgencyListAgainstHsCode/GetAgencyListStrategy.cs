@@ -13,6 +13,7 @@ using PSW.ITMS.Service.Mapper;
 using System.Net.Http;
 using System.Text;
 using System.Net.Http.Headers;
+using PSW.ITMS.Data.Repositories;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -38,6 +39,22 @@ namespace PSW.ITMS.Service.Strategies
         {
             try 
             {
+                if(string.IsNullOrEmpty(RequestDTO.HsCode))
+                {
+                    return BadRequestReply("Please provide valid Hscode");
+                }
+
+                List<AgencyList> TempAgencyList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode);
+
+                if(TempAgencyList.Count == 0)
+                {
+                    return BadRequestReply("Agency details not found against provided Hscode");
+                }
+
+                ResponseDTO = new GetListOfAgencyAgainstHscodeResponse
+                {
+                    AgencyList = TempAgencyList
+                };
                 
                 // Send Command Reply 
                 return OKReply();
@@ -47,7 +64,6 @@ namespace PSW.ITMS.Service.Strategies
                 return InternalServerErrorReply(ex);
             }
         }
-        
         #endregion 
     }
 }
