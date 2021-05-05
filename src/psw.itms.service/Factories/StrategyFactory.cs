@@ -38,6 +38,7 @@ namespace PSW.ITMS.Service.Strategies
                 // case "1713": return new GetRequiredDocumentTypeStrategy(request);
                 //case "1714": return new SearchHSCodesStrategy(request);
                 case "1716": return new GetAgencyListStrategy(request);
+                case "1718": return new GetFactorListStrategy(request);
                 case "removelater": return null;
                 
                 default: break;

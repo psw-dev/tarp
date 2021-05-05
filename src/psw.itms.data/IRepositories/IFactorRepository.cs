@@ -3,10 +3,21 @@ You can find the source code of the code generator from here -> https://git.psw.
 
 using PSW.ITMS.Data.Entities;
 
+using System.Collections.Generic;
+
 namespace PSW.ITMS.Data.Repositories
 {
     public interface IFactorRepository : IRepository<Factor>
     {
+        List<Factors> GetFactorsData(List<long> FactorIdList);
+    }
 
+    public class Factors
+    {
+        public string Label { get; set; }
+
+        public string Description { get; set; }
+
+        public int IsLOV { get; set; }
     }
 }

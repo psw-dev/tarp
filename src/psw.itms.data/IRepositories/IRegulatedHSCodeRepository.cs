@@ -16,6 +16,5 @@ namespace PSW.ITMS.Data.Repositories
     {
         public string Id { get; set; }
         public string Name { get; set; }
-
     }
 }
