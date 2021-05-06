@@ -2,6 +2,10 @@
 You can find the source code of the code generator from here -> https://git.psw.gov.pk/unais.vayani/DalGenerator*/
 
 using System.Data;
+using System.Collections.Generic;
+using Dapper;
+using System.Threading.Tasks;
+using System.Linq;
 
 using PSW.ITMS.Data.Entities;
 using PSW.ITMS.Data.Repositories;
@@ -21,6 +25,11 @@ namespace PSW.ITMS.Data.Sql.Repositories
 		#endregion
 
 		#region Public methods
+
+        public  List<FactorLOVItems> GetLOVItems(string FactorLabel)
+        {
+            return _connection.Query<FactorLOVItems>(string.Format("SELECT ItemKey, ItemValue, AltItemKey FROM LOVITEM LI INNER JOIN LOV L on LI.LOVID = L.ID  WHERE L.ID = (SELECT LOVID FROM FACTOR WHERE LABEL = '{0}')",FactorLabel)).ToList(); 
+        }
 
 		#endregion
     }

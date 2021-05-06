@@ -36,9 +36,10 @@ namespace PSW.ITMS.Service.Strategies
                 // case "1711": return new GetHSCodeListStrategy(request);
                 // case "1712": return new GetHsCodeRequirementStrategy(request);
                 // case "1713": return new GetRequiredDocumentTypeStrategy(request);
-                //case "1714": return new SearchHSCodesStrategy(request);
+                // case "1714": return new SearchHSCodesStrategy(request);
                 case "1716": return new GetAgencyListStrategy(request);
                 case "1718": return new GetFactorListStrategy(request);
+                case "1720": return new GetFactorLOVItemsStrategy(request);
                 case "removelater": return null;
                 
                 default: break;

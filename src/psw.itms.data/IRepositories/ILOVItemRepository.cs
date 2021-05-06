@@ -2,11 +2,19 @@
 You can find the source code of the code generator from here -> https://git.psw.gov.pk/unais.vayani/DalGenerator*/
 
 using PSW.ITMS.Data.Entities;
+using System.Collections.Generic;
 
 namespace PSW.ITMS.Data.Repositories
 {
     public interface ILOVItemRepository : IRepository<LOVItem>
     {
+        List<FactorLOVItems> GetLOVItems(string FactorLabel);
+    }
 
+    public class FactorLOVItems 
+    {
+        public string ItemKey { get; set; }
+        public string ItemValue { get; set; }
+        public string AltItemKey { get; set; }
     }
 }
