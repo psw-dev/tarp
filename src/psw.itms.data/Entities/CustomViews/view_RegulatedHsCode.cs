@@ -9,6 +9,6 @@ namespace PSW.ITMS.Data.Entities
     {
         public string HsCode { get; set; }
         public string PctCode { get; set; }
-        public string ItemDescriptionn { get; set; }
+        public string ItemDescription { get; set; }
     }
 }
