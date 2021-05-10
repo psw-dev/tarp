@@ -1,19 +1,10 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Collections.Generic;
-using System.Linq;
 
 
 using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Data.Entities;
 using System;
-using AutoMapper;
-using PSW.ITMS.Service.Mapper;
-using System.Net.Http;
-using System.Text;
-using System.Net.Http.Headers;
-using PSW.ITMS.Data.Repositories;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -46,7 +37,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 List<AgencyList> TempAgencyList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode);
 
-                if(TempAgencyList.Count == 0)
+                if(TempAgencyList == null || TempAgencyList.Count == 0)
                 {
                     return BadRequestReply("Agency details not found against provided Hscode");
                 }

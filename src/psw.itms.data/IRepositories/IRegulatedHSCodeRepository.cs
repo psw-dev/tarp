@@ -8,13 +8,8 @@ namespace PSW.ITMS.Data.Repositories
 {
     public interface IRegulatedHSCodeRepository : IRepository<RegulatedHSCode>
     {
-    List<AgencyList> GetAgencyListAgainstHscode (string hscode);
-
-    }
-
-    public class AgencyList
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
+        List<AgencyList> GetAgencyListAgainstHscode(string hscode);
+        List<RegulatedHsCode> GetRegulatedHsCodeList();
+        List<RegulatedHsCode> GetRegulatedHsCodeList(string agencyId);
     }
 }

@@ -11,13 +11,4 @@ namespace PSW.ITMS.Data.Repositories
     {
         List<Factors> GetFactorsData(List<long> FactorIdList);
     }
-
-    public class Factors
-    {
-        public string Label { get; set; }
-
-        public string Description { get; set; }
-
-        public int IsLOV { get; set; }
-    }
 }

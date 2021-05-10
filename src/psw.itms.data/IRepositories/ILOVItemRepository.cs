@@ -10,11 +10,4 @@ namespace PSW.ITMS.Data.Repositories
     {
         List<FactorLOVItems> GetLOVItems(string FactorLabel);
     }
-
-    public class FactorLOVItems 
-    {
-        public string ItemKey { get; set; }
-        public string ItemValue { get; set; }
-        public string AltItemKey { get; set; }
-    }
 }

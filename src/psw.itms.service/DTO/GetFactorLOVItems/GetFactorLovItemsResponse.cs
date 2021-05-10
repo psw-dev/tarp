@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
 
-using PSW.ITMS.Data.Repositories;
+using PSW.ITMS.Data.Entities;
 
 namespace PSW.ITMS.Service.DTO
 {

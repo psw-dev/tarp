@@ -18,7 +18,7 @@ namespace PSW.ITMS.Service.AutoMapper
 
         public EntityToDTOMappingProfile()
         {
-            CreateMap<HSCodeTARP, HSCodesData>();
+            
         }
     }
 }

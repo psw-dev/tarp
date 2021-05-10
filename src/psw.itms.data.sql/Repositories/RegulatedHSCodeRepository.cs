@@ -31,6 +31,16 @@ namespace PSW.ITMS.Data.Sql.Repositories
             return _connection.Query<AgencyList>(string.Format("SELECT A.ID, A.NAME FROM REGULATEDHSCODE RHS INNER JOIN SHRD.DBO.AGENCY A ON RHS.AGENCYID = A.ID WHERE HSCODE = '{0}'",hscode)).ToList(); 
         }
 
+        public List<RegulatedHsCode> GetRegulatedHsCodeList()
+        {
+            return _connection.Query<RegulatedHsCode>(string.Format("SELECT HsCode, HSCodeExt AS PctCode, ItemDescription FROM REGULATEDHSCODE")).ToList();
+        }
+
+        public List<RegulatedHsCode> GetRegulatedHsCodeList(string agencyId)
+        {
+            return _connection.Query<RegulatedHsCode>(string.Format("SELECT HsCode, HSCodeExt AS PctCode, ItemDescription FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'",agencyId)).ToList();
+        }
+
 		#endregion
     }
 }
