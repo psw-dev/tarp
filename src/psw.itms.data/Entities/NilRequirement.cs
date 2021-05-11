@@ -20,6 +20,7 @@ namespace PSW.ITMS.Data.Entities
 		private string _displayText;
 		private DateTime _createdOn;
 		private int _createdBy;
+		private System.Byte[] _lastChange;
 
 		#endregion
 
@@ -30,6 +31,7 @@ namespace PSW.ITMS.Data.Entities
 		public string DisplayText { get { return _displayText; } set { _displayText = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
+		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
 
 		#endregion
 
@@ -47,13 +49,20 @@ namespace PSW.ITMS.Data.Entities
 				{"RequirementID", RequirementID},
 				{"DisplayText", DisplayText},
 				{"CreatedOn", CreatedOn},
-				{"CreatedBy", CreatedBy}
+				{"CreatedBy", CreatedBy},
+				{"LastChange", LastChange}
 			};
         }
 
 		#endregion
 
 		#region Constructors
+
+		public NilRequirement()
+		{
+			TableName = "NilRequirement";
+			PrimaryKeyName = "ID";
+		}
 		
 		#endregion
 	}

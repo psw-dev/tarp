@@ -22,6 +22,7 @@ namespace PSW.ITMS.Data.Entities
 		private bool _isMandatory;
 		private DateTime _createdOn;
 		private int _createdBy;
+		private System.Byte[] _lastChange;
 
 		#endregion
 
@@ -34,6 +35,7 @@ namespace PSW.ITMS.Data.Entities
 		public bool IsMandatory { get { return _isMandatory; } set { _isMandatory = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
+		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
 
 		#endregion
 
@@ -53,13 +55,20 @@ namespace PSW.ITMS.Data.Entities
 				{"Name", Name},
 				{"IsMandatory", IsMandatory},
 				{"CreatedOn", CreatedOn},
-				{"CreatedBy", CreatedBy}
+				{"CreatedBy", CreatedBy},
+				{"LastChange", LastChange}
 			};
         }
 
 		#endregion
 
 		#region Constructors
+
+		public Requirement()
+		{
+			TableName = "Requirement";
+			PrimaryKeyName = "ID";
+		}
 		
 		#endregion
 	}

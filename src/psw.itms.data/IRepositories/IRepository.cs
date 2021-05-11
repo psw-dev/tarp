@@ -3,14 +3,13 @@ You can find the source code of the code generator from here -> https://git.psw.
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 
 using PSW.ITMS.Data.Entities;
 
 namespace PSW.ITMS.Data.Repositories
 {
-	public interface IRepository<T> : IRepositoryTransaction
+    public interface IRepository<T> : IRepositoryTransaction
     {
         #region Methods
 
@@ -24,9 +23,10 @@ namespace PSW.ITMS.Data.Repositories
         List<T> Where(object propertyValues);
         int Update(Entity _entity);
 
+        T Find(int id);
+        T Find(string id);
         int Count(string ColumnValue, string ColumnName);
 
-        T Find(int id);
 
         #endregion
     }

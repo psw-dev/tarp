@@ -23,6 +23,7 @@ namespace PSW.ITMS.Data.Entities
 		private System.SByte _requirementStageID;
 		private DateTime _createdOn;
 		private int _createdBy;
+		private System.Byte[] _lastChange;
 
 		#endregion
 
@@ -36,6 +37,7 @@ namespace PSW.ITMS.Data.Entities
 		public System.SByte RequirementStageID { get { return _requirementStageID; } set { _requirementStageID = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
+		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
 
 		#endregion
 
@@ -56,13 +58,20 @@ namespace PSW.ITMS.Data.Entities
 				{"IsMandatory", IsMandatory},
 				{"RequirementStageID", RequirementStageID},
 				{"CreatedOn", CreatedOn},
-				{"CreatedBy", CreatedBy}
+				{"CreatedBy", CreatedBy},
+				{"LastChange", LastChange}
 			};
         }
 
 		#endregion
 
 		#region Constructors
+
+		public DocumentRequirement()
+		{
+			TableName = "DocumentRequirement";
+			PrimaryKeyName = "ID";
+		}
 		
 		#endregion
 	}

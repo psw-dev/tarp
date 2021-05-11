@@ -21,6 +21,7 @@ namespace PSW.ITMS.Data.Entities
 		private string _declarationText;
 		private DateTime _createdOn;
 		private int _createdBy;
+		private System.Byte[] _lastChange;
 
 		#endregion
 
@@ -32,6 +33,7 @@ namespace PSW.ITMS.Data.Entities
 		public string DeclarationText { get { return _declarationText; } set { _declarationText = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
+		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
 
 		#endregion
 
@@ -50,13 +52,20 @@ namespace PSW.ITMS.Data.Entities
 				{"DeclarationCategoryID", DeclarationCategoryID},
 				{"DeclarationText", DeclarationText},
 				{"CreatedOn", CreatedOn},
-				{"CreatedBy", CreatedBy}
+				{"CreatedBy", CreatedBy},
+				{"LastChange", LastChange}
 			};
         }
 
 		#endregion
 
 		#region Constructors
+
+		public AddDeclarationRequirement()
+		{
+			TableName = "AddDeclarationRequirement";
+			PrimaryKeyName = "ID";
+		}
 		
 		#endregion
 	}

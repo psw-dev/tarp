@@ -11,6 +11,8 @@ using System.Linq;
 
 using PSW.ITMS.Data.Entities;
 using PSW.ITMS.Data.Repositories;
+using SqlKata;
+using SqlKata.Compilers;
 
 namespace PSW.ITMS.Data.Sql.Repositories
 {
@@ -25,6 +27,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         protected IDbConnection _connection;
         protected IDbTransaction _transaction;
+        protected SqlServerCompiler _sqlCompiler;
 
         #endregion
 
@@ -46,6 +49,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
         protected Repository(IDbConnection connection)
         {
             _connection = connection;
+            _sqlCompiler = new SqlServerCompiler();
         }
 
         #endregion
@@ -54,29 +58,32 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public virtual T Get(int id)
         {
-            return _connection.Query<T>(string.Format("SELECT TOP 1 * FROM {0} WHERE [{2}] = '{1}'", TableName, id, PrimaryKeyName),
-                                        transaction: _transaction).FirstOrDefault();
+            // Using parametrized query for security
+            return _connection.Query<T>(string.Format("SELECT TOP 1 * FROM {0} WHERE [{1}] = @_id", TableName, PrimaryKeyName),
+                                            new { _id = id },
+                                            transaction: _transaction).FirstOrDefault();
         }
 
         public virtual T Get(string id)
         {
-            return _connection.Query<T>(string.Format("SELECT TOP 1 * FROM {0} WHERE [{2}] = '{1}'", TableName, id, PrimaryKeyName),
-                                        transaction: _transaction).FirstOrDefault();
+            // Using parametrized query for security
+            return _connection.QueryFirst<T>(string.Format("SELECT TOP 1 * FROM {0} WHERE [{1}] = @_id", TableName, PrimaryKeyName),
+                                         new { _id = id },
+                                         transaction: _transaction);
         }
 
-        public virtual IEnumerable<T> Get()
+        public IEnumerable<T> Get()
         {
             return (IEnumerable<T>)_connection.Query<T>(string.Format("SELECT * FROM {0}", TableName),
                                                         transaction: _transaction);
         }
 
-
-        public virtual int Add(T _entity)
+        public int Add(T _entity)
         {
             var Entity = _entity;
-            var query = "INSERT INTO {0} ({1}) VALUES({2}); SELECT SCOPE_IDENTITY()";
+            var query  = "INSERT INTO {0} ({1}) VALUES({2}); SELECT SCOPE_IDENTITY()";
 
-            var cols = new StringBuilder();
+            var cols   = new StringBuilder();
             var values = new StringBuilder();
 
 
@@ -92,13 +99,18 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
             query = string.Format(query, Entity.TableName, cols.ToString().TrimEnd(','), values.ToString().TrimEnd(',')) + ";";
 
-            int result = _connection.ExecuteScalar<int>(query,
+            var sqlQuery = "Declare @id table (ID Bigint); " + query + " SELECT ID FROM @id;";
+            sqlQuery.Replace("VALUES", "OUTPUT inserted.ID Into @id VALUES");
+
+            int result = _connection.ExecuteScalar<int>(sqlQuery,
                                                         transaction: _transaction);
             return result;
         }
-        public virtual void Delete(Entity _entity)
+
+        public void Delete(Entity _entity)
         {
             var Entity = _entity;
+
             var query = string.Format("DELETE {0} WHERE {2} = '{1}';", Entity.TableName, Entity.PrimaryKey, Entity.PrimaryKeyName);
             _connection.Execute(query,
                                 transaction: _transaction);
@@ -106,27 +118,27 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public virtual void Delete(int id)
         {
-            _connection.Query<T>(string.Format("DELETE FROM {0} WHERE {2} = '{1}'", TableName, id, PrimaryKeyName),
-                                 transaction: _transaction).FirstOrDefault();
-        }
-
-        public virtual List<T> Where(object propertyValues)
-        {
-            const string query = "SELECT * FROM {0} WHERE {1}";
-
-            var whereBulder = new StringBuilder();
-            var objectType = propertyValues.GetType();
-            var first = true;
-            foreach (var property in objectType.GetProperties())
+            // Using parametrized query for security
+            _connection.Query<T>(string.Format("DELETE FROM {0} WHERE {1} = @_id", TableName, PrimaryKeyName), new
             {
-                whereBulder.AppendFormat("{2} {0} = '{1}'", property.Name, property.GetValue(propertyValues).ToString().Replace("'", "''"), first ? "" : "AND");
-                first = false;
-            }
-            return _connection.Query<T>(string.Format(query, TableName, whereBulder),
-                                        transaction: _transaction).ToList();
+                _id = id
+            },
+            transaction: _transaction).FirstOrDefault();
         }
 
-        public virtual List<T> GetPage(int pageNumber, int pageSize)
+        public List<T> Where(object propertyValues)
+        {
+            var query = new Query().FromRaw(TableName);
+            query = query.Where(propertyValues);
+
+            var result = _sqlCompiler.Compile(query);
+            var sql = result.Sql;
+            var parameters = new DynamicParameters(result.NamedBindings);
+
+            return _connection.Query<T>(sql, param: parameters, transaction: _transaction).ToList();
+        }
+
+        public List<T> GetPage(int pageNumber, int pageSize)
         {
             if (string.IsNullOrWhiteSpace(TableName) || pageSize < 1 || pageNumber < 1 || string.IsNullOrWhiteSpace(PrimaryKeyName))
                 return new List<T>();
@@ -138,7 +150,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
                                         transaction: _transaction).ToList();
         }
 
-        public virtual int Update(Entity entity)
+        public int Update(Entity entity)
         {
 
             StringBuilder values = new StringBuilder();
@@ -163,7 +175,15 @@ namespace PSW.ITMS.Data.Sql.Repositories
             return numberOfRowsUpdated;
         }
 
-        public virtual T Find(int id)
+        public T Find(int id)
+        {
+            return _connection.Query<T>(
+                string.Format("SELECT top 1 * FROM {0} where {1} = {2}", this.TableName, this.PrimaryKeyName, id),
+                param: new { TableName = this.TableName, PrimaryKeyName = this.PrimaryKeyName, Id = id },
+                transaction: _transaction
+                ).FirstOrDefault();
+        }
+        public T Find(string id)
         {
             return _connection.Query<T>(
                 string.Format("SELECT top 1 * FROM {0} where {1} = {2}", this.TableName, this.PrimaryKeyName, id),
@@ -172,12 +192,12 @@ namespace PSW.ITMS.Data.Sql.Repositories
                 ).FirstOrDefault();
         }
 
-        public virtual void SetTransaction(IDbTransaction transaction)
+        public void SetTransaction(IDbTransaction transaction)
         {
             _transaction = transaction;
         }
 
-        public virtual int Count(string ColumnValue, string ColumnName)
+        public int Count(string ColumnValue, string ColumnName)
         {
             string query = string.Format("SELECT count({0}) FROM {1} where {0} = '{2}'", ColumnName, this.TableName, ColumnValue);
             int numberOfRecords = _connection.ExecuteScalar<int>(query, transaction: _transaction);

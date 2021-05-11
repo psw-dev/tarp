@@ -19,20 +19,26 @@ namespace PSW.ITMS.Data.Sql
 
     public class UnitOfWork : IUnitOfWork
     {
-        #region Private Properties SHRD
+        #region Private Properties TARP
         private IAddDeclarationRequirementRepository _addDeclarationRequirementRepository;
+        private IBinaryOperatorRepository _binaryOperatorRepository;
+        private IDataTypeRepository _dataTypeRepository;
+        private IDecisionMatrixRepository _decisionMatrixRepository;
         private IDeclarationCategoryRepository _declarationCategoryRepository;
         private IDocumentRequirementRepository _documentRequirementRepository;
+        private IFactorRepository _factorRepository;
         private IFinancialRequirementRepository _financialRequirementRepository;
-        private IHSCodeTARPRepository _hSCodeTARPRepository;
-        private ILogicOperatorRepository _logicOperatorRepository;
+        private ILOVRepository _lOVRepository;
+        private ILOVItemRepository _lOVItemRepository;
+        private ILOVScopeRepository _lOVScopeRepository;
         private INilRequirementRepository _nilRequirementRepository;
         private IRefusalIntimationRepository _refusalIntimationRepository;
-        private IRequestTypeRepository _requestTypeRepository;
+        private IRegulatedHSCodeRepository _regulatedHSCodeRepository;
         private IRequirementRepository _requirementRepository;
         private IRequirementCategoryRepository _requirementCategoryRepository;
         private IRequirementSetRepository _requirementSetRepository;
         private IRequirementStageRepository _requirementStageRepository;
+        private IRuleRepository _ruleRepository;
         private ITermUoMRepository _termUoMRepository;
         private ITestingRequirementRepository _testingRequirementRepository;
         private IValidityTermRequirementRepository _validityTermRequirementRepository;
@@ -65,26 +71,27 @@ namespace PSW.ITMS.Data.Sql
 
         #region Public Properties ITMS
         public IAddDeclarationRequirementRepository AddDeclarationRequirementRepository => _addDeclarationRequirementRepository ?? (_addDeclarationRequirementRepository = new AddDeclarationRequirementRepository(_connection));
-        public IDeclarationCategoryRepository DeclarationCategoryRepository => _declarationCategoryRepository ?? (_declarationCategoryRepository = new DeclarationCategoryRepository(_connection));
-        public IDocumentRequirementRepository DocumentRequirementRepository => _documentRequirementRepository ?? (_documentRequirementRepository = new DocumentRequirementRepository(_connection));
-        public IFinancialRequirementRepository FinancialRequirementRepository => _financialRequirementRepository ?? (_financialRequirementRepository = new FinancialRequirementRepository(_connection));
-        public IHSCodeTARPRepository HSCodeTARPRepository => _hSCodeTARPRepository ?? (_hSCodeTARPRepository = new HSCodeTARPRepository(_connection));
-        public ILogicOperatorRepository LogicOperatorRepository => _logicOperatorRepository ?? (_logicOperatorRepository = new LogicOperatorRepository(_connection));
-        public INilRequirementRepository NilRequirementRepository => _nilRequirementRepository ?? (_nilRequirementRepository = new NilRequirementRepository(_connection));
-        public IRefusalIntimationRepository RefusalIntimationRepository => _refusalIntimationRepository ?? (_refusalIntimationRepository = new RefusalIntimationRepository(_connection));
-        public IRequestTypeRepository RequestTypeRepository => _requestTypeRepository ?? (_requestTypeRepository = new RequestTypeRepository(_connection));
-        public IRequirementRepository RequirementRepository => _requirementRepository ?? (_requirementRepository = new RequirementRepository(_connection));
-        public IRequirementCategoryRepository RequirementCategoryRepository => _requirementCategoryRepository ?? (_requirementCategoryRepository = new RequirementCategoryRepository(_connection));
-        public IRequirementSetRepository RequirementSetRepository => _requirementSetRepository ?? (_requirementSetRepository = new RequirementSetRepository(_connection));
-
-        public IRequirementStageRepository RequirementStageRepository => _requirementStageRepository ?? (_requirementStageRepository = new RequirementStageRepository(_connection));
-        public ITermUoMRepository TermUoMRepository => _termUoMRepository ?? (_termUoMRepository = new TermUoMRepository(_connection));
-        public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
-        public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
-        #endregion
-
-        #region Public Properties ITMS Views
-        public IUV_DocumentaryRequirementRepository UV_DocumentaryRequirementRepository => _uv_DocumentaryRequirementRepository ?? (_uv_DocumentaryRequirementRepository = new UV_DocumentaryRequirementRepository(_connection));
+		public IBinaryOperatorRepository BinaryOperatorRepository => _binaryOperatorRepository ?? (_binaryOperatorRepository = new BinaryOperatorRepository(_connection));
+		public IDataTypeRepository DataTypeRepository => _dataTypeRepository ?? (_dataTypeRepository = new DataTypeRepository(_connection));
+		public IDecisionMatrixRepository DecisionMatrixRepository => _decisionMatrixRepository ?? (_decisionMatrixRepository = new DecisionMatrixRepository(_connection));
+		public IDeclarationCategoryRepository DeclarationCategoryRepository => _declarationCategoryRepository ?? (_declarationCategoryRepository = new DeclarationCategoryRepository(_connection));
+		public IDocumentRequirementRepository DocumentRequirementRepository => _documentRequirementRepository ?? (_documentRequirementRepository = new DocumentRequirementRepository(_connection));
+		public IFactorRepository FactorRepository => _factorRepository ?? (_factorRepository = new FactorRepository(_connection));
+		public IFinancialRequirementRepository FinancialRequirementRepository => _financialRequirementRepository ?? (_financialRequirementRepository = new FinancialRequirementRepository(_connection));
+		public ILOVRepository LOVRepository => _lOVRepository ?? (_lOVRepository = new LOVRepository(_connection));
+		public ILOVItemRepository LOVItemRepository => _lOVItemRepository ?? (_lOVItemRepository = new LOVItemRepository(_connection));
+		public ILOVScopeRepository LOVScopeRepository => _lOVScopeRepository ?? (_lOVScopeRepository = new LOVScopeRepository(_connection));
+		public INilRequirementRepository NilRequirementRepository => _nilRequirementRepository ?? (_nilRequirementRepository = new NilRequirementRepository(_connection));
+		public IRefusalIntimationRepository RefusalIntimationRepository => _refusalIntimationRepository ?? (_refusalIntimationRepository = new RefusalIntimationRepository(_connection));
+		public IRegulatedHSCodeRepository RegulatedHSCodeRepository => _regulatedHSCodeRepository ?? (_regulatedHSCodeRepository = new RegulatedHSCodeRepository(_connection));
+		public IRequirementRepository RequirementRepository => _requirementRepository ?? (_requirementRepository = new RequirementRepository(_connection));
+		public IRequirementCategoryRepository RequirementCategoryRepository => _requirementCategoryRepository ?? (_requirementCategoryRepository = new RequirementCategoryRepository(_connection));
+		public IRequirementSetRepository RequirementSetRepository => _requirementSetRepository ?? (_requirementSetRepository = new RequirementSetRepository(_connection));
+		public IRequirementStageRepository RequirementStageRepository => _requirementStageRepository ?? (_requirementStageRepository = new RequirementStageRepository(_connection));
+		public IRuleRepository RuleRepository => _ruleRepository ?? (_ruleRepository = new RuleRepository(_connection));
+		public ITermUoMRepository TermUoMRepository => _termUoMRepository ?? (_termUoMRepository = new TermUoMRepository(_connection));
+		public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
+		public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
 
         #endregion
 

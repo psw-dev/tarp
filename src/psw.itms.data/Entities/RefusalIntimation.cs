@@ -20,6 +20,7 @@ namespace PSW.ITMS.Data.Entities
 		private string _refusalText;
 		private DateTime _createdOn;
 		private int _createdBy;
+		private System.Byte[] _lastChange;
 
 		#endregion
 
@@ -30,6 +31,7 @@ namespace PSW.ITMS.Data.Entities
 		public string RefusalText { get { return _refusalText; } set { _refusalText = value;  }}
 		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
 		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
+		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
 
 		#endregion
 
@@ -47,13 +49,20 @@ namespace PSW.ITMS.Data.Entities
 				{"RequirementID", RequirementID},
 				{"RefusalText", RefusalText},
 				{"CreatedOn", CreatedOn},
-				{"CreatedBy", CreatedBy}
+				{"CreatedBy", CreatedBy},
+				{"LastChange", LastChange}
 			};
         }
 
 		#endregion
 
 		#region Constructors
+
+		public RefusalIntimation()
+		{
+			TableName = "RefusalIntimation";
+			PrimaryKeyName = "ID";
+		}
 		
 		#endregion
 	}

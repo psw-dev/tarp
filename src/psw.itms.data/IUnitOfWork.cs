@@ -12,18 +12,24 @@ namespace PSW.ITMS.Data
     {
         #region ITMS Repositories
         IAddDeclarationRequirementRepository AddDeclarationRequirementRepository { get; }
+		IBinaryOperatorRepository BinaryOperatorRepository { get; }
+		IDataTypeRepository DataTypeRepository { get; }
+		IDecisionMatrixRepository DecisionMatrixRepository { get; }
 		IDeclarationCategoryRepository DeclarationCategoryRepository { get; }
 		IDocumentRequirementRepository DocumentRequirementRepository { get; }
+		IFactorRepository FactorRepository { get; }
 		IFinancialRequirementRepository FinancialRequirementRepository { get; }
-        IHSCodeTARPRepository HSCodeTARPRepository { get; }		
-        ILogicOperatorRepository LogicOperatorRepository { get; }
+		ILOVRepository LOVRepository { get; }
+		ILOVItemRepository LOVItemRepository { get; }
+		ILOVScopeRepository LOVScopeRepository { get; }
 		INilRequirementRepository NilRequirementRepository { get; }
 		IRefusalIntimationRepository RefusalIntimationRepository { get; }
-		IRequestTypeRepository RequestTypeRepository { get; }
+		IRegulatedHSCodeRepository RegulatedHSCodeRepository { get; }
 		IRequirementRepository RequirementRepository { get; }
 		IRequirementCategoryRepository RequirementCategoryRepository { get; }
 		IRequirementSetRepository RequirementSetRepository { get; }
-        IRequirementStageRepository RequirementStageRepository { get; }
+		IRequirementStageRepository RequirementStageRepository { get; }
+		IRuleRepository RuleRepository { get; }
 		ITermUoMRepository TermUoMRepository { get; }
 		ITestingRequirementRepository TestingRequirementRepository { get; }
 		IValidityTermRequirementRepository ValidityTermRequirementRepository { get; }
@@ -31,7 +37,7 @@ namespace PSW.ITMS.Data
         #endregion
 
         #region TARP View Repositories
-		IUV_DocumentaryRequirementRepository UV_DocumentaryRequirementRepository  { get; }
+		
 
 	   	#endregion
         #region SHRD Repositories
