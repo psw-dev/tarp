@@ -33,12 +33,12 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public List<RegulatedHsCode> GetRegulatedHsCodeList()
         {
-            return _connection.Query<RegulatedHsCode>(string.Format("SELECT HsCode, HSCodeExt AS PctCode, ItemDescription FROM REGULATEDHSCODE")).ToList();
+            return _connection.Query<RegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, HSCodeExt AS PctCode, ItemDescription FROM REGULATEDHSCODE")).ToList();
         }
 
         public List<RegulatedHsCode> GetRegulatedHsCodeList(string agencyId)
         {
-            return _connection.Query<RegulatedHsCode>(string.Format("SELECT HsCode, HSCodeExt AS PctCode, ItemDescription FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'",agencyId)).ToList();
+            return _connection.Query<RegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, HSCodeExt AS PctCode, ItemDescription FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'",agencyId)).ToList();
         }
 
 		#endregion
