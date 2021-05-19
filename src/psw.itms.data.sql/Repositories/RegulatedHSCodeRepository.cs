@@ -26,9 +26,9 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
 		#region Public methods
 
-        public List<AgencyList> GetAgencyListAgainstHscode (string hscode)
+        public List<AgencyList> GetAgencyListAgainstHscode(string hscode, string documentCode)
         {
-            return _connection.Query<AgencyList>(string.Format("SELECT A.ID, A.NAME FROM REGULATEDHSCODE RHS INNER JOIN SHRD.DBO.AGENCY A ON RHS.AGENCYID = A.ID WHERE HSCODE = '{0}'",hscode)).ToList(); 
+            return _connection.Query<AgencyList>(string.Format("SELECT A.ID, A.NAME FROM REGULATEDHSCODE RHS INNER JOIN SHRD.DBO.AGENCY A ON RHS.AGENCYID = A.ID WHERE HSCODE = '{0}' AND RequiredDocumentTypeCode = '{1}'",hscode, documentCode)).ToList(); 
         }
 
         public List<RegulatedHsCode> GetRegulatedHsCodeList()

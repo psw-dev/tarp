@@ -5,6 +5,7 @@ using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Data.Entities;
 using System;
+using System.Linq;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -28,25 +29,27 @@ namespace PSW.ITMS.Service.Strategies
 
         public override CommandReply Execute()
         {
-            try 
+            try
             {
-                if(string.IsNullOrEmpty(RequestDTO.HsCode))
+                if (string.IsNullOrEmpty(RequestDTO.HsCode) || string.IsNullOrEmpty(RequestDTO.DocumentCode))
                 {
                     return BadRequestReply("Please provide valid Hscode");
                 }
 
-                List<AgencyList> TempAgencyList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode);
+                List<AgencyList> TempAgencyList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode, RequestDTO.DocumentCode);
 
-                if(TempAgencyList == null || TempAgencyList.Count == 0)
+                List<AgencyList> DistinctAgencyList = TempAgencyList.Distinct(new objCompare()).ToList();
+
+                if (TempAgencyList == null || TempAgencyList.Count == 0)
                 {
                     return BadRequestReply("Agency details not found against provided Hscode");
                 }
 
                 ResponseDTO = new GetListOfAgencyAgainstHscodeResponse
                 {
-                    AgencyList = TempAgencyList
+                    AgencyList = DistinctAgencyList
                 };
-                
+
                 // Send Command Reply 
                 return OKReply();
             }
@@ -56,5 +59,18 @@ namespace PSW.ITMS.Service.Strategies
             }
         }
         #endregion 
+    }
+
+    public class objCompare : IEqualityComparer<AgencyList>
+    {
+        public bool Equals(AgencyList x, AgencyList y)
+        {
+            return Equals(x.Id, y.Id);
+        }
+
+        public int GetHashCode(AgencyList obj)
+        {
+            return obj.Id.GetHashCode();
+        }
     }
 }
