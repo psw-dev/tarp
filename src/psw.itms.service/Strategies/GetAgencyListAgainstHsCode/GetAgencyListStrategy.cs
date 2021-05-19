@@ -38,12 +38,12 @@ namespace PSW.ITMS.Service.Strategies
 
                 List<AgencyList> TempAgencyList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode, RequestDTO.DocumentCode);
 
-                List<AgencyList> DistinctAgencyList = TempAgencyList.Distinct(new objCompare()).ToList();
-
                 if (TempAgencyList == null || TempAgencyList.Count == 0)
                 {
                     return BadRequestReply("Agency details not found against provided Hscode");
                 }
+
+                List<AgencyList> DistinctAgencyList = TempAgencyList.Distinct(new objCompare()).ToList();
 
                 ResponseDTO = new GetListOfAgencyAgainstHscodeResponse
                 {
