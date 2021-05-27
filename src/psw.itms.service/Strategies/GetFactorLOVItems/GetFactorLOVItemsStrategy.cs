@@ -56,17 +56,19 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion 
 
-        public List<FactorLOVItemsData> GetLOVItemsForProvidedFactors(List<string> factorlabelList)
+        public List<FactorLOVItemsData> GetLOVItemsForProvidedFactors(List<int> factorlabelList)
         {
             List<FactorLOVItemsData> TempFactorDatalist = new List<FactorLOVItemsData>();
 
-            foreach(var factorLabel in factorlabelList)
+            foreach(var factorID in factorlabelList)
             {
                 FactorLOVItemsData TempFactorData = new FactorLOVItemsData();
 
-                TempFactorData.FactorLabel = factorLabel;
+                TempFactorData.FactorID = factorID;
 
-                TempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorLabel);
+                TempFactorData.FactorLabel = Command.UnitOfWork.FactorRepository.Get(factorID).Label;
+
+                TempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorID);
 
                 if(TempFactorData.FactorLOVItems != null || TempFactorData.FactorLOVItems.Count ==0)
                 {

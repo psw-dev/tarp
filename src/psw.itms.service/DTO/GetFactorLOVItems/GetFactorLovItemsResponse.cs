@@ -11,8 +11,11 @@ namespace PSW.ITMS.Service.DTO
         public List<FactorLOVItemsData> FactorLOVItemsList { get; set; }
     }
 
-    public class FactorLOVItemsData 
+    public class FactorLOVItemsData
     {
+        [JsonPropertyName("factorID")]
+        public int FactorID { get; set; }
+
         [JsonPropertyName("factorLabel")]
         public string FactorLabel { get; set; }
 

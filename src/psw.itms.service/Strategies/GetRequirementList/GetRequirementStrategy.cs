@@ -29,9 +29,9 @@ namespace PSW.ITMS.Service.Strategies
 
         public override CommandReply Execute()
         {
-            try 
+            try
             {
-                if(RequestDTO.FactorLabelValuePair == null || RequestDTO.FactorLabelValuePair.Count == 0)
+                if (RequestDTO.FactorCodeValuePair == null || RequestDTO.FactorCodeValuePair.Count == 0)
                 {
                     return BadRequestReply("Please provide valid request parameters");
                 }
@@ -45,28 +45,28 @@ namespace PSW.ITMS.Service.Strategies
                     }
                     ).FirstOrDefault();
 
-                if(TempHsCode == null)
+                if (TempHsCode == null)
                 {
                     return BadRequestReply("Record for hscode does not exist");
                 }
 
                 Rule TempRule = Command.UnitOfWork.RuleRepository.Get(Convert.ToInt16(TempHsCode.RuleID));
 
-                if(TempRule == null)
+                if (TempRule == null)
                 {
                     return BadRequestReply("Record for rule against hscode does not exist");
                 }
 
-                DecisionMatrix TempDecisionMatrix = GetDecisionMatrixBaseOnFactors(RequestDTO.FactorLabelValuePair, TempRule);
+                DecisionMatrix TempDecisionMatrix = GetDecisionMatrixBaseOnFactors(RequestDTO.FactorCodeValuePair, TempRule);
 
-                if(TempDecisionMatrix == null)
+                if (TempDecisionMatrix == null)
                 {
                     return BadRequestReply("Record for decsionMatrix against hscode does not exist");
                 }
 
                 List<DocumentaryRequirement> TempDocumentaryRequirementList = GetRequirements(TempDecisionMatrix.RequirementSetID.ToString());
 
-                if(TempDocumentaryRequirementList == null)
+                if (TempDocumentaryRequirementList == null)
                 {
                     return BadRequestReply("Record for documentary requirements against hscode does not exist");
                 }
@@ -87,31 +87,31 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion 
 
-        public DecisionMatrix GetDecisionMatrixBaseOnFactors (Dictionary<string, string> factorLabelValuePairs, Rule tempRule)
+        public DecisionMatrix GetDecisionMatrixBaseOnFactors(Dictionary<string, FactorData> factorCodeValuePairs, Rule tempRule)
         {
-            string F1Value = tempRule.Factor1ID != 0 ? GetFactorValue(tempRule.Factor1ID.ToString(), factorLabelValuePairs) : null;
-            string F2Value = tempRule.Factor2ID != 0 ? GetFactorValue(tempRule.Factor2ID.ToString(), factorLabelValuePairs) : null;
-            string F3Value = tempRule.Factor3ID != 0 ? GetFactorValue(tempRule.Factor3ID.ToString(), factorLabelValuePairs) : null;
-            string F4Value = tempRule.Factor4ID != 0 ? GetFactorValue(tempRule.Factor4ID.ToString(), factorLabelValuePairs) : null;
-            string F5Value = tempRule.Factor5ID != 0 ? GetFactorValue(tempRule.Factor5ID.ToString(), factorLabelValuePairs) : null;
-            string F6Value = tempRule.Factor6ID != 0 ? GetFactorValue(tempRule.Factor6ID.ToString(), factorLabelValuePairs) : null;
-            string F7Value = tempRule.Factor7ID != 0 ? GetFactorValue(tempRule.Factor7ID.ToString(), factorLabelValuePairs) : null;
-            string F8Value = tempRule.Factor8ID != 0 ? GetFactorValue(tempRule.Factor8ID.ToString(), factorLabelValuePairs) : null;
-            string F9Value = tempRule.Factor9ID != 0 ? GetFactorValue(tempRule.Factor9ID.ToString(), factorLabelValuePairs) : null;
-            string F10Value = tempRule.Factor10ID != 0 ? GetFactorValue(tempRule.Factor10ID.ToString(), factorLabelValuePairs) : null;
-            string F11Value = tempRule.Factor11ID != 0 ? GetFactorValue(tempRule.Factor11ID.ToString(), factorLabelValuePairs) : null;
-            string F12Value = tempRule.Factor12ID != 0 ? GetFactorValue(tempRule.Factor12ID.ToString(), factorLabelValuePairs) : null;
-            string F13Value = tempRule.Factor13ID != 0 ? GetFactorValue(tempRule.Factor13ID.ToString(), factorLabelValuePairs) : null;
-            string F14Value = tempRule.Factor14ID != 0 ? GetFactorValue(tempRule.Factor14ID.ToString(), factorLabelValuePairs) : null;
-            string F15Value = tempRule.Factor15ID != 0 ? GetFactorValue(tempRule.Factor15ID.ToString(), factorLabelValuePairs) : null;
-            string F16Value = tempRule.Factor16ID != 0 ? GetFactorValue(tempRule.Factor16ID.ToString(), factorLabelValuePairs) : null;
-            string F17Value = tempRule.Factor17ID != 0 ? GetFactorValue(tempRule.Factor17ID.ToString(), factorLabelValuePairs) : null;
-            string F18Value = tempRule.Factor18ID != 0 ? GetFactorValue(tempRule.Factor18ID.ToString(), factorLabelValuePairs) : null;
-            string F19Value = tempRule.Factor19ID != 0 ? GetFactorValue(tempRule.Factor19ID.ToString(), factorLabelValuePairs) : null;
-            string F20Value = tempRule.Factor20ID != 0 ? GetFactorValue(tempRule.Factor20ID.ToString(), factorLabelValuePairs) : null;
+            string F1Value = tempRule.Factor1ID != 0 ? GetFactorValue(tempRule.Factor1ID.ToString(), factorCodeValuePairs) : null;
+            string F2Value = tempRule.Factor2ID != 0 ? GetFactorValue(tempRule.Factor2ID.ToString(), factorCodeValuePairs) : null;
+            string F3Value = tempRule.Factor3ID != 0 ? GetFactorValue(tempRule.Factor3ID.ToString(), factorCodeValuePairs) : null;
+            string F4Value = tempRule.Factor4ID != 0 ? GetFactorValue(tempRule.Factor4ID.ToString(), factorCodeValuePairs) : null;
+            string F5Value = tempRule.Factor5ID != 0 ? GetFactorValue(tempRule.Factor5ID.ToString(), factorCodeValuePairs) : null;
+            string F6Value = tempRule.Factor6ID != 0 ? GetFactorValue(tempRule.Factor6ID.ToString(), factorCodeValuePairs) : null;
+            string F7Value = tempRule.Factor7ID != 0 ? GetFactorValue(tempRule.Factor7ID.ToString(), factorCodeValuePairs) : null;
+            string F8Value = tempRule.Factor8ID != 0 ? GetFactorValue(tempRule.Factor8ID.ToString(), factorCodeValuePairs) : null;
+            string F9Value = tempRule.Factor9ID != 0 ? GetFactorValue(tempRule.Factor9ID.ToString(), factorCodeValuePairs) : null;
+            string F10Value = tempRule.Factor10ID != 0 ? GetFactorValue(tempRule.Factor10ID.ToString(), factorCodeValuePairs) : null;
+            string F11Value = tempRule.Factor11ID != 0 ? GetFactorValue(tempRule.Factor11ID.ToString(), factorCodeValuePairs) : null;
+            string F12Value = tempRule.Factor12ID != 0 ? GetFactorValue(tempRule.Factor12ID.ToString(), factorCodeValuePairs) : null;
+            string F13Value = tempRule.Factor13ID != 0 ? GetFactorValue(tempRule.Factor13ID.ToString(), factorCodeValuePairs) : null;
+            string F14Value = tempRule.Factor14ID != 0 ? GetFactorValue(tempRule.Factor14ID.ToString(), factorCodeValuePairs) : null;
+            string F15Value = tempRule.Factor15ID != 0 ? GetFactorValue(tempRule.Factor15ID.ToString(), factorCodeValuePairs) : null;
+            string F16Value = tempRule.Factor16ID != 0 ? GetFactorValue(tempRule.Factor16ID.ToString(), factorCodeValuePairs) : null;
+            string F17Value = tempRule.Factor17ID != 0 ? GetFactorValue(tempRule.Factor17ID.ToString(), factorCodeValuePairs) : null;
+            string F18Value = tempRule.Factor18ID != 0 ? GetFactorValue(tempRule.Factor18ID.ToString(), factorCodeValuePairs) : null;
+            string F19Value = tempRule.Factor19ID != 0 ? GetFactorValue(tempRule.Factor19ID.ToString(), factorCodeValuePairs) : null;
+            string F20Value = tempRule.Factor20ID != 0 ? GetFactorValue(tempRule.Factor20ID.ToString(), factorCodeValuePairs) : null;
 
             var DecisionMatrix = this.Command.UnitOfWork.DecisionMatrixRepository.Where(
-                new 
+                new
                 {
                     RuleID = tempRule.ID,
                     Factor1Value = F1Value,
@@ -140,15 +140,15 @@ namespace PSW.ITMS.Service.Strategies
             return DecisionMatrix;
         }
 
-        public string GetFactorValue(string FactorID, Dictionary<string, string> factorLabelValuePairs)
+        public string GetFactorValue(string FactorID, Dictionary<string, FactorData> factorCodeValuePairs)
         {
             string FactorValue = "";
 
             var factor = this.Command.UnitOfWork.FactorRepository.Get(FactorID);
 
-            if(factorLabelValuePairs.ContainsKey(factor.Label))
+            if (factorCodeValuePairs.ContainsKey(factor.FactorCode))
             {
-                FactorValue = factorLabelValuePairs[factor.Label];
+                FactorValue = factorCodeValuePairs[factor.FactorCode].FactorValue;
             }
             else
             {
@@ -167,9 +167,9 @@ namespace PSW.ITMS.Service.Strategies
                 }
             );
 
-             List<DocumentaryRequirement> tempDocumentaryRequirementList = new List<DocumentaryRequirement>();
+            List<DocumentaryRequirement> tempDocumentaryRequirementList = new List<DocumentaryRequirement>();
 
-            foreach(var requirement in RequirementList)
+            foreach (var requirement in RequirementList)
             {
                 DocumentaryRequirement tempRequirement = new DocumentaryRequirement();
 
@@ -177,7 +177,7 @@ namespace PSW.ITMS.Service.Strategies
                 tempRequirement.IsMandatory = requirement.IsMandatory;
                 tempRequirement.RequirementType = this.Command.UnitOfWork.RequirementCategoryRepository.Get(requirement.RequirementCategoryID).Name;
 
-                if(tempRequirement.RequirementType == "Financial")
+                if (tempRequirement.RequirementType == "Financial")
                 {
                     var FinancialRequirement = this.Command.UnitOfWork.FinancialRequirementRepository.Where
                     (
@@ -191,7 +191,7 @@ namespace PSW.ITMS.Service.Strategies
                     tempRequirement.Amount = FinancialRequirement.Amount;
                 }
 
-                else if(tempRequirement.RequirementType == "Documentary")
+                else if (tempRequirement.RequirementType == "Documentary")
                 {
                     var DocumentaryRequirement = this.Command.UnitOfWork.DocumentRequirementRepository.Where
                     (
@@ -204,7 +204,7 @@ namespace PSW.ITMS.Service.Strategies
                     tempRequirement.DocumentTypeCode = DocumentaryRequirement.DocumentTypeCode;
                     tempRequirement.DocumentName = this.Command.UnitOfWork.DocumentTypeRepository.Get(tempRequirement.DocumentTypeCode).Name;
                 }
-                
+
                 else if (tempRequirement.RequirementType == "Validity Period")
                 {
                     var ValidityRequirement = this.Command.UnitOfWork.ValidityTermRequirementRepository.Where

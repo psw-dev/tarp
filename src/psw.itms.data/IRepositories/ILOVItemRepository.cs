@@ -8,6 +8,6 @@ namespace PSW.ITMS.Data.Repositories
 {
     public interface ILOVItemRepository : IRepository<LOVItem>
     {
-        List<FactorLOVItems> GetLOVItems(string FactorLabel);
+        List<FactorLOVItems> GetLOVItems(int FactorID);
     }
 }

@@ -6,6 +6,6 @@ namespace PSW.ITMS.Service.DTO
     public class GetFactorLovItemsRequest
     {
         [JsonPropertyName("factorList")]
-        public List<string> FactorList { get; set; }
+        public List<int> FactorList { get; set; }
     }
 }
