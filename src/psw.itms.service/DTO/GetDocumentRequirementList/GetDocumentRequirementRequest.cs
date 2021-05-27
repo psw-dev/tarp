@@ -16,6 +16,18 @@ namespace PSW.ITMS.Service.DTO
         public string documentTypeCode { get; set; }
 
         [JsonPropertyName("factorLabelValuePairList")]
-        public Dictionary<string, string> FactorLabelValuePair { get; set; }
+        public Dictionary<string, FactorData> FactorCodeValuePair { get; set; }
+    }
+
+    public class FactorData
+    {
+        [JsonPropertyName("factorID")]
+        public int FactorID { get; set; }
+
+        [JsonPropertyName("factorLabel")]
+        public string FactorLabel { get; set; }
+
+        [JsonPropertyName("factorValue")]
+        public string FactorValue { get; set; }
     }
 }

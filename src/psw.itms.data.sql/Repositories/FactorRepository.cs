@@ -37,7 +37,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
             Factorstring = Factorstring.Substring(0,Factorstring.Length - 1);
 
-            return _connection.Query<Factors>(string.Format("SELECT ID, LABEL, DESCRIPTION, ISLOV FROM FACTOR WHERE ID IN ({0})",Factorstring)).ToList();
+            return _connection.Query<Factors>(string.Format("SELECT ID, LABEL, DESCRIPTION, ISLOV, FACTORCODE FROM FACTOR WHERE ID IN ({0})",Factorstring)).ToList();
         }
 
 		#endregion

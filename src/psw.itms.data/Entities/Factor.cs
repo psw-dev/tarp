@@ -28,6 +28,7 @@ namespace PSW.ITMS.Data.Entities
 		private DateTime _updatedOn;
 		private int _updatedBy;
 		private System.Byte[] _lastChange;
+		private string _factorCode;
 
 		#endregion
 
@@ -46,6 +47,7 @@ namespace PSW.ITMS.Data.Entities
 		public DateTime UpdatedOn { get { return _updatedOn; } set { _updatedOn = value;  }}
 		public int UpdatedBy { get { return _updatedBy; } set { _updatedBy = value;  }}
 		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
+		public string FactorCode { get { return _factorCode; } set { _factorCode = value; }}
 
 		#endregion
 
@@ -71,7 +73,8 @@ namespace PSW.ITMS.Data.Entities
 				{"CreatedBy", CreatedBy},
 				{"UpdatedOn", UpdatedOn},
 				{"UpdatedBy", UpdatedBy},
-				{"LastChange", LastChange}
+				{"LastChange", LastChange},
+				{"FactorCode", FactorCode}
 			};
         }
 
