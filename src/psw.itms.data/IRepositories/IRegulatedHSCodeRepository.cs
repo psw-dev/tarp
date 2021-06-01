@@ -11,5 +11,6 @@ namespace PSW.ITMS.Data.Repositories
         List<AgencyList> GetAgencyListAgainstHscode(string hscode, string documentCode);
         List<RegulatedHsCode> GetRegulatedHsCodeList();
         List<RegulatedHsCode> GetRegulatedHsCodeList(string agencyId);
+        List<string> GetPCTCodeList(string hscode);
     }
 }
