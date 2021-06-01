@@ -42,6 +42,7 @@ namespace PSW.ITMS.Service.Strategies
                 case "1720": return new GetFactorLOVItemsStrategy(request);
                 case "1722": return new GetRequirementStrategy(request);
                 case "1724": return new GetRegulatedHscodeListStrategy(request);
+                case "1726": return new GetPCTCodeListStrategy(request);
                 case "removelater": return null;
                 
                 default: break;
