@@ -39,7 +39,7 @@ namespace PSW.ITMS.Service.Strategies
                 RegulatedHSCode TempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
                     new
                     {
-                        HSCode = RequestDTO.HsCode,
+                        HSCodeExt = RequestDTO.HsCode,
                         AgencyID = RequestDTO.AgencyId,
                         RequiredDocumentTypeCode = RequestDTO.documentTypeCode
                     }

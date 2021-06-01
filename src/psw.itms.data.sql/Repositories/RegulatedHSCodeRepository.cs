@@ -28,7 +28,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public List<AgencyList> GetAgencyListAgainstHscode(string hscode, string documentCode)
         {
-            return _connection.Query<AgencyList>(string.Format("SELECT A.ID, A.NAME FROM REGULATEDHSCODE RHS INNER JOIN SHRD.DBO.AGENCY A ON RHS.AGENCYID = A.ID WHERE HSCODE = '{0}' AND RequiredDocumentTypeCode = '{1}'",hscode, documentCode)).ToList(); 
+            return _connection.Query<AgencyList>(string.Format("SELECT A.ID, A.NAME FROM REGULATEDHSCODE RHS INNER JOIN SHRD.DBO.AGENCY A ON RHS.AGENCYID = A.ID WHERE HSCODEEXT = '{0}' AND RequiredDocumentTypeCode = '{1}'",hscode, documentCode)).ToList(); 
         }
 
         public List<RegulatedHsCode> GetRegulatedHsCodeList()
@@ -39,6 +39,11 @@ namespace PSW.ITMS.Data.Sql.Repositories
         public List<RegulatedHsCode> GetRegulatedHsCodeList(string agencyId)
         {
             return _connection.Query<RegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, HSCodeExt AS PctCode, ItemDescription FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'",agencyId)).ToList();
+        }
+
+        public List<string> GetPCTCodeList(string hscode)
+        {
+            return _connection.Query<string>(string.Format("SELECT DISTINCT PRODUCTCODE FROM REGULATEDHSCODE WHERE HSCODE = '{0}'",hscode)).ToList(); 
         }
 
 		#endregion
