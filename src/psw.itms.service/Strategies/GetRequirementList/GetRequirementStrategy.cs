@@ -203,6 +203,7 @@ namespace PSW.ITMS.Service.Strategies
 
                     tempRequirement.DocumentTypeCode = DocumentaryRequirement.DocumentTypeCode;
                     tempRequirement.DocumentName = this.Command.UnitOfWork.DocumentTypeRepository.Get(tempRequirement.DocumentTypeCode).Name;
+                    tempRequirement.AttachedObjectFormatID = DocumentaryRequirement.AttachedObjectFormatID;
                 }
 
                 else if (tempRequirement.RequirementType == "Validity Period")
