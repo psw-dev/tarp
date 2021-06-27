@@ -31,6 +31,9 @@ namespace PSW.ITMS.Service.DTO
         [JsonPropertyName("documentName")]
         public string DocumentName { get; set; }
 
+        [JsonPropertyName("attachedObjectFormatID")]
+        public int AttachedObjectFormatID { get; set; }
+
         //Properties for Financial Requirement
 
         [JsonPropertyName("postingBillingAccountID")]

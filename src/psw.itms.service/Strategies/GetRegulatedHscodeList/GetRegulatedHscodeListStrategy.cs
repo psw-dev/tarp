@@ -32,7 +32,7 @@ namespace PSW.ITMS.Service.Strategies
             {
                 if (RequestDTO.AgencyId != null)
                 {
-                    List<RegulatedHsCode> RegulatedHsCodeListSearchedByAgency = SearchWithAgencyID(RequestDTO.AgencyId);
+                    List<ViewRegulatedHsCode> RegulatedHsCodeListSearchedByAgency = SearchWithAgencyID(RequestDTO.AgencyId);
 
                     if (RegulatedHsCodeListSearchedByAgency == null || RegulatedHsCodeListSearchedByAgency.Count == 0)
                     {
@@ -45,11 +45,18 @@ namespace PSW.ITMS.Service.Strategies
                     };
                 }
 
-                List<RegulatedHsCode> RegulatedHsCodeList = GetHsCodeList();
+                List<ViewRegulatedHsCode> RegulatedHsCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList();
 
                 if (RegulatedHsCodeList == null || RegulatedHsCodeList.Count == 0)
                 {
                     return BadRequestReply("Hscodes not available against provided Agency");
+                }
+
+                //Get ProductCodeList of Hscode
+
+                foreach(var regulatedHscode in RegulatedHsCodeList)
+                {
+                    regulatedHscode.ProductCode = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetPCTCodeList(regulatedHscode.HsCode);
                 }
 
                 ResponseDTO = new GetRegulatedHscodeListResponse
@@ -67,16 +74,9 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion
 
-        public List<RegulatedHsCode> GetHsCodeList()
+        public List<ViewRegulatedHsCode> SearchWithAgencyID(string agencyId)
         {
-            List<RegulatedHsCode> RegulatedHsCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList();
-
-            return RegulatedHsCodeList;
-        }
-
-        public List<RegulatedHsCode> SearchWithAgencyID(string agencyId)
-        {
-            List<RegulatedHsCode> RegulatedHsCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(agencyId);
+            List<ViewRegulatedHsCode> RegulatedHsCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(agencyId);
 
             return RegulatedHsCodeList;
         }
