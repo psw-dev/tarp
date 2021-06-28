@@ -59,15 +59,23 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Record for rule against hscode does not exist");
                 }
 
-
-
                 List<long> FactorsIDAppliedTORule = GetFactorAppliedInRule(TempRule);
+                
+                if(FactorsIDAppliedTORule.Count == 0)
+                {
+                    return BadRequestReply("No factor found in rule");
+                }
 
                 List<Factors> FactorDataList = LoadFactorData(FactorsIDAppliedTORule);
 
                 MongoDbRecordFetcher MDbRecordFetcher = new MongoDbRecordFetcher("TARP","DPP");
 
                 BsonDocument doc = MDbRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+
+                if(doc == null)
+                {
+                    return BadRequestReply("No record found for Hscode : " + RequestDTO.HsCode);
+                }
 
                 string RecordChecker = CheckFactorInMongoRecord(FactorDataList, doc, RequestDTO.FactorCodeValuePair);
 
@@ -76,6 +84,10 @@ namespace PSW.ITMS.Service.Strategies
                 if(RecordChecker == "Checked")
                 {
                     TempDocumentaryRequirementList = GetRequirements(doc, RequestDTO.documentTypeCode);   
+                }
+                else
+                {
+                    return BadRequestReply(RecordChecker);
                 }
                 //Have to remove
                 // DecisionMatrix TempDecisionMatrix = GetDecisionMatrixBaseOnFactors(RequestDTO.FactorCodeValuePair, TempRule);
