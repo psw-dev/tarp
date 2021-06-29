@@ -16,7 +16,8 @@ namespace PSW.ITMS.Service.MongoDB
         {
             this.DbName = dbName;
             this.CollectionName = collectionName;
-            this.MClient = new MongoClient("mongodb://localhost");
+            //this.MClient = new MongoClient("mongodb://localhost");  //localhost
+            this.MClient = new MongoClient("mongodb://172.18.0.1:27017");
         }
 
         public BsonDocument GetFilteredRecord (string hscode, string purpose)
