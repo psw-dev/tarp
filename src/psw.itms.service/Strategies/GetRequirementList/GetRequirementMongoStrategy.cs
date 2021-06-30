@@ -8,6 +8,7 @@ using PSW.ITMS.Data.Entities;
 using System;
 using MongoDB.Bson;
 using PSW.ITMS.Service.MongoDB;
+using PSW.Lib.Logs;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -38,6 +39,8 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide valid request parameters");
                 }
 
+                Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
+
                 RegulatedHSCode TempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
                     new
                     {
@@ -46,6 +49,8 @@ namespace PSW.ITMS.Service.Strategies
                         RequiredDocumentTypeCode = RequestDTO.documentTypeCode
                     }
                     ).FirstOrDefault();
+
+                Log.Information("|{0}|{1}| RegulatedHSCode DbRecord {@TempHsCode}", StrategyName, MethodID, TempHsCode);
 
                 if (TempHsCode == null)
                 {
@@ -59,6 +64,8 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Record for rule against hscode does not exist");
                 }
 
+                Log.Information("|{0}|{1}| Rule DbRecord {@TempRule}", StrategyName, MethodID, TempRule);
+
                 List<long> FactorsIDAppliedTORule = GetFactorAppliedInRule(TempRule);
                 
                 if(FactorsIDAppliedTORule.Count == 0)
@@ -66,11 +73,17 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("No factor found in rule");
                 }
 
+                Log.Information("|{0}|{1}| FactorID's Applied To Rule DbRecord {@FactorsIDAppliedTORule}", StrategyName, MethodID, FactorsIDAppliedTORule);
+
                 List<Factors> FactorDataList = LoadFactorData(FactorsIDAppliedTORule);
+
+                Log.Information("|{0}|{1}| FactorData DbRecord {@FactorDataList}", StrategyName, MethodID, FactorDataList);
 
                 MongoDbRecordFetcher MDbRecordFetcher = new MongoDbRecordFetcher("TARP","DPP");
 
                 BsonDocument doc = MDbRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+
+                Log.Information("|{0}|{1}| Mongo Record fetched {@doc}", StrategyName, MethodID, doc);
 
                 if(doc == null)
                 {
@@ -83,7 +96,9 @@ namespace PSW.ITMS.Service.Strategies
 
                 if(RecordChecker == "Checked")
                 {
-                    TempDocumentaryRequirementList = GetRequirements(doc, RequestDTO.documentTypeCode);   
+                    TempDocumentaryRequirementList = GetRequirements(doc, RequestDTO.documentTypeCode);
+
+                    Log.Information("|{0}|{1}| Documentary Requirements {@TempDocumentaryRequirementList}", StrategyName, MethodID, TempDocumentaryRequirementList);   
                 }
                 else
                 {
@@ -95,12 +110,15 @@ namespace PSW.ITMS.Service.Strategies
                     DocumentaryRequirementList = TempDocumentaryRequirementList
                 };
 
+                Log.Information("|{0}|{1}| Response {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);
+
 
                 // Send Command Reply 
                 return OKReply();
             }
             catch (Exception ex)
             {
+                Log.Information("|{0}|{1}| Exception Occurred {@ex}", StrategyName, MethodID, ex);
                 return InternalServerErrorReply(ex);
             }
         }
