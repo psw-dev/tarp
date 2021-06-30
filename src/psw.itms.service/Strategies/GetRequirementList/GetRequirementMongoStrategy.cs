@@ -238,10 +238,21 @@ namespace PSW.ITMS.Service.Strategies
             //For RO 
             else if(RequiredDocumentTypeCode == "D03")
             {
-                var ipDocRequirements = mongoRecord["RO DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                var roDocRequirements = mongoRecord["RO  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+
+                List<string> roDocRequirementsTrimmed = new List<string>();
+
+                foreach(var lpco in roDocRequirements)
+                {
+                    var removespaces = lpco.Trim();
+                    roDocRequirementsTrimmed.Add(removespaces.TrimEnd('\n'));
+                }
+
+                roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
+                roDocRequirementsTrimmed.Remove("Fee Challan");
 
                 //DocumentaryRequirements
-                foreach(var doc in ipDocRequirements)
+                foreach(var doc in roDocRequirementsTrimmed)
                 {
                     DocumentaryRequirement tempReq = new DocumentaryRequirement();
 
