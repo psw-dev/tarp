@@ -20,10 +20,19 @@ namespace PSW.ITMS.Service.Strategies
         /// </summary>
         public T2 ResponseDTO { get; set; }
 
+        /// <summary>
+        /// Strategy name
+        /// </summary>
+        public string StrategyName { get; set; }
+        public string MethodID { get; set; }
+
         public ApiStrategy(CommandRequest request) : base(request)
         {
             this.Command = request;
             this.IsValidated = false;
+
+            this.StrategyName = GetType().Name;
+            this.MethodID = request.methodId;
 
             // Get Json Data From Command
             var jsonString = this.Command.data.GetRawText();
