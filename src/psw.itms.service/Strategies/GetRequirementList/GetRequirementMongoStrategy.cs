@@ -79,7 +79,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 Log.Information("|{0}|{1}| FactorData DbRecord {@FactorDataList}", StrategyName, MethodID, FactorDataList);
 
-                MongoDbRecordFetcher MDbRecordFetcher = new MongoDbRecordFetcher("TARP","DPP");
+                MongoDbRecordFetcher MDbRecordFetcher = new MongoDbRecordFetcher("TARP",TempHsCode.CollectionName);
 
                 BsonDocument doc = MDbRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
 
@@ -209,8 +209,8 @@ namespace PSW.ITMS.Service.Strategies
                     ipDocRequirementsTrimmed.Add(lpco.Trim());
                 }
 
-                ipDocRequirementsTrimmed.Remove("Application on DPP form 14 [ Rule 19 (1) of PQR 2019]");
-                ipDocRequirementsTrimmed.Remove("Fee Challan");
+                // ipDocRequirementsTrimmed.Remove("Application on DPP form 14 [ Rule 19 (1) of PQR 2019]");
+                // ipDocRequirementsTrimmed.Remove("Fee Challan");
 
                 //DocumentaryRequirements
                 foreach(var doc in ipDocRequirementsTrimmed)
@@ -266,8 +266,8 @@ namespace PSW.ITMS.Service.Strategies
                     roDocRequirementsTrimmed.Add(removespaces.TrimEnd('\n'));
                 }
 
-                roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
-                roDocRequirementsTrimmed.Remove("Fee Challan");
+                // roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
+                // roDocRequirementsTrimmed.Remove("Fee Challan");
 
                 //DocumentaryRequirements
                 foreach(var doc in roDocRequirementsTrimmed)
