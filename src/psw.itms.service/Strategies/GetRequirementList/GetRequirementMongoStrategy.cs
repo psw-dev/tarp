@@ -168,9 +168,9 @@ namespace PSW.ITMS.Service.Strategies
             {
                 if (FactorCodeValuePair.ContainsKey(factor.FactorCode))
                 {
-                    var listStrLineElements = mongoDoc[factor.FactorCode].ToString().Split('|').ToList();
+                    var ItemList = mongoDoc[factor.FactorCode].ToString().Split('|').ToList();
 
-                    if (listStrLineElements.Contains(FactorCodeValuePair[factor.FactorCode].FactorValue) || listStrLineElements.Contains("ALL"))
+                    if (ItemList.Contains(FactorCodeValuePair[factor.FactorCode].FactorValue) || ItemList.Contains("ALL"))
                     {
                         count+=1;
                     }
