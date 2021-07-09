@@ -24,7 +24,8 @@
       "environmentVariables": {
         "ASPNETCORE_URLS": "http://localhost:5002",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "SEQ_URL": "http://localhost:5341/"
+        "SEQ_URL": "http://localhost:5341/",
+        "MONGODBConnString": "mongodb://172.18.0.1:27017"
       }
     }
   }

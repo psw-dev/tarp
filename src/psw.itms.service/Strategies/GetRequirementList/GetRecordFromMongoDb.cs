@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
+using System;
 
 namespace PSW.ITMS.Service.MongoDB
 {
@@ -14,7 +15,7 @@ namespace PSW.ITMS.Service.MongoDB
             this.DbName = dbName;
             this.CollectionName = collectionName;
             //this.MClient = new MongoClient("mongodb://localhost");  //localhost
-            this.MClient = new MongoClient("mongodb://172.18.0.1:27017");
+            this.MClient = new MongoClient( Environment.GetEnvironmentVariable("MONGODBConnString")); 
         }
 
         public BsonDocument GetFilteredRecord(string hscode, string purpose)
