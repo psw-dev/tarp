@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.Command;
 using System;
+using System.Linq;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -29,14 +30,14 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-                if(RequestDTO.FactorList == null || RequestDTO.FactorList.Count == 0)
+                if (RequestDTO.FactorList == null || RequestDTO.FactorList.Count == 0)
                 {
                     return BadRequestReply("Please provide valid request parameters");
                 }
 
-                var TempFactorLOVItems =  GetLOVItemsForProvidedFactors(RequestDTO.FactorList);
+                var TempFactorLOVItems = GetLOVItemsForProvidedFactors(RequestDTO.FactorList);
 
-                if(TempFactorLOVItems == null || TempFactorLOVItems.Count ==0)
+                if (TempFactorLOVItems == null || TempFactorLOVItems.Count == 0)
                 {
                     return BadRequestReply("LOV data not available for provided factor list");
                 }
@@ -45,7 +46,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     FactorLOVItemsList = TempFactorLOVItems
                 };
-                
+
                 // Send Command Reply 
                 return OKReply();
             }
@@ -60,19 +61,30 @@ namespace PSW.ITMS.Service.Strategies
         {
             List<FactorLOVItemsData> TempFactorDatalist = new List<FactorLOVItemsData>();
 
-            foreach(var factorID in factorlabelList)
+            foreach (var factorID in factorlabelList)
             {
                 FactorLOVItemsData TempFactorData = new FactorLOVItemsData();
 
                 TempFactorData.FactorID = factorID;
 
-                TempFactorData.FactorLabel = Command.UnitOfWork.FactorRepository.Get(factorID).Label;
 
-                TempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorID);
+                var factorData = Command.UnitOfWork.FactorRepository?.Where(new { ID = factorID, ISLOV = 1 }).FirstOrDefault();
 
-                if(TempFactorData.FactorLOVItems != null || TempFactorData.FactorLOVItems.Count ==0)
+                if (factorData == null)
                 {
-                    TempFactorDatalist.Add(TempFactorData);
+                    continue;
+                }
+                else
+                {
+
+                    TempFactorData.FactorLabel = factorData.Label;
+
+                    TempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorData.LOVID);
+
+                    if (TempFactorData.FactorLOVItems != null || TempFactorData.FactorLOVItems.Count == 0)
+                    {
+                        TempFactorDatalist.Add(TempFactorData);
+                    }
                 }
             }
 
