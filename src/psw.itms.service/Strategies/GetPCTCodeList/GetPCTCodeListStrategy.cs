@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.Command;
 using System;
+using PSW.Lib.Logs;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -44,6 +45,8 @@ namespace PSW.ITMS.Service.Strategies
                         Message = "Product codes does not exist for the provided hscode."
                     };
 
+                    Log.Information("|{0}|{1}| Response DTO : {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);
+
                     return OKReply();
                 }
 
@@ -52,12 +55,15 @@ namespace PSW.ITMS.Service.Strategies
                     Message = "Product codes exist for provided hscode.",
                     PctCodeList = TempPctCodeList
                 };
+
+                Log.Information("|{0}|{1}| Response DTO : {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);
                 
                 // Send Command Reply 
                 return OKReply();
             }
             catch (Exception ex)
             {
+                Log.Error("|{0}|{1}| Exception Occurred {@ex}", StrategyName, MethodID, ex);
                 return InternalServerErrorReply(ex);
             }
         }

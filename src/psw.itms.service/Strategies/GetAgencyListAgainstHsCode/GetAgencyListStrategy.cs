@@ -6,6 +6,7 @@ using PSW.ITMS.Service.Command;
 using PSW.ITMS.Data.Entities;
 using System;
 using System.Linq;
+using PSW.Lib.Logs;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -38,6 +39,8 @@ namespace PSW.ITMS.Service.Strategies
 
                 List<AgencyList> TempAgencyList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode, RequestDTO.DocumentCode);
 
+                Log.Information("|{0}|{1}| Agency list fetched for database {@TempAgencyList}", StrategyName, MethodID, TempAgencyList);
+
                 if (TempAgencyList == null || TempAgencyList.Count == 0)
                 {
                     return BadRequestReply("Agency details not found against provided Hscode");
@@ -50,11 +53,14 @@ namespace PSW.ITMS.Service.Strategies
                     AgencyList = DistinctAgencyList
                 };
 
+                Log.Information("|{0}|{1}| Response {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);
+
                 // Send Command Reply 
                 return OKReply();
             }
             catch (Exception ex)
             {
+                Log.Error("|{0}|{1}| Exception Occurred {@ex}", StrategyName, MethodID, ex);
                 return InternalServerErrorReply(ex);
             }
         }
