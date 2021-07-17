@@ -33,6 +33,7 @@ namespace PSW.ITMS.Data.Entities
 		private int? _authorizedBy;
 		private System.Byte[] _lastChange;
 		private string _collectionName;
+		private string _technicalName;
 
 		#endregion
 
@@ -56,6 +57,7 @@ namespace PSW.ITMS.Data.Entities
 		public int? AuthorizedBy { get { return _authorizedBy; } set { _authorizedBy = value;  }}
 		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
 		public string CollectionName { get { return _collectionName; } set { _collectionName = value;  }}
+		public string TechnicalName { get { return _technicalName; } set { _technicalName = value;  }}
 
 		#endregion
 
@@ -86,7 +88,8 @@ namespace PSW.ITMS.Data.Entities
 				{"AuthorizedOn", AuthorizedOn},
 				{"AuthorizedBy", AuthorizedBy},
 				{"LastChange", LastChange},
-				{"CollectionName", CollectionName}
+				{"CollectionName", CollectionName},
+				{"TechnicalName", TechnicalName}
 			};
         }
 
