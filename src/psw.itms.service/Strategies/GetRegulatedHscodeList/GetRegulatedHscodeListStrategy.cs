@@ -5,6 +5,7 @@ using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Data.Entities;
 using System;
+using PSW.Lib.Logs;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -69,6 +70,7 @@ namespace PSW.ITMS.Service.Strategies
             }
             catch (Exception ex)
             {
+                Log.Error("|{0}|{1}| Exception Occurred {@ex}", StrategyName, MethodID, ex);
                 return InternalServerErrorReply(ex);
             }
         }
