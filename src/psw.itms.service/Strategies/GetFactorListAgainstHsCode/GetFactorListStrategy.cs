@@ -6,6 +6,7 @@ using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Data.Entities;
 using System;
+using PSW.Lib.Logs;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -50,12 +51,16 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Record for hscode does not exist");
                 }
 
+                Log.Information("|{0}|{1}| RegulatedHscode record fetched from db: {@TempHsCode}", StrategyName, MethodID, TempHsCode);
+
                 Rule TempRule = Command.UnitOfWork.RuleRepository.Get(Convert.ToInt16(TempHsCode.RuleID));
 
                 if(TempRule == null)
                 {
                     return BadRequestReply("Record for rule against hscode does not exist");
                 }
+
+                Log.Information("|{0}|{1}| Rule record fetched from db: {@TempRule}", StrategyName, MethodID, TempRule);
 
                 List<long> FactorsApplicable = FactorsPresentInRule(TempRule);
 
@@ -64,9 +69,13 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Factors data not available");
                 }
 
+                Log.Information("|{0}|{1}| Applicable factor ID applied in rule : {@FactorsApplicable}", StrategyName, MethodID, FactorsApplicable);
+
                 List<Factors> FactorsData = new List<Factors>();
 
                 FactorsData = Command.UnitOfWork.FactorRepository.GetFactorsData(FactorsApplicable);
+
+                Log.Information("|{0}|{1}| Factor data fetched from rule : {@FactorsData}", StrategyName, MethodID, FactorsData);
 
                 if(FactorsData == null || FactorsData.Count == 0)
                 {
@@ -78,11 +87,14 @@ namespace PSW.ITMS.Service.Strategies
                     FactorList = FactorsData
                 };
 
+                Log.Information("|{0}|{1}| Get factorList responseDTO : {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);
+
                 // Send Command Reply 
                 return OKReply();
             }
             catch (Exception ex)
             {
+                Log.Error("|{0}|{1}| Exception Occurred {@ex}", StrategyName, MethodID, ex);
                 return InternalServerErrorReply(ex);
             }
         }

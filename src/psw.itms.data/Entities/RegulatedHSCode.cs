@@ -32,6 +32,8 @@ namespace PSW.ITMS.Data.Entities
 		private DateTime? _authorizedOn;
 		private int? _authorizedBy;
 		private System.Byte[] _lastChange;
+		private string _collectionName;
+		private string _technicalName;
 
 		#endregion
 
@@ -54,6 +56,8 @@ namespace PSW.ITMS.Data.Entities
 		public DateTime? AuthorizedOn { get { return _authorizedOn; } set { _authorizedOn = value;  }}
 		public int? AuthorizedBy { get { return _authorizedBy; } set { _authorizedBy = value;  }}
 		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
+		public string CollectionName { get { return _collectionName; } set { _collectionName = value;  }}
+		public string TechnicalName { get { return _technicalName; } set { _technicalName = value;  }}
 
 		#endregion
 
@@ -83,7 +87,9 @@ namespace PSW.ITMS.Data.Entities
 				{"UpdatedBy", UpdatedBy},
 				{"AuthorizedOn", AuthorizedOn},
 				{"AuthorizedBy", AuthorizedBy},
-				{"LastChange", LastChange}
+				{"LastChange", LastChange},
+				{"CollectionName", CollectionName},
+				{"TechnicalName", TechnicalName}
 			};
         }
 

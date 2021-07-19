@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PSW.Lib.Logs;
 
 namespace PSW.ITMS.Api
 {
@@ -13,6 +14,9 @@ namespace PSW.ITMS.Api
     {
         public static void Main(string[] args)
         {
+            // Configure logger using library
+            Log.Configure();
+            
             CreateHostBuilder(args).Build().Run();
         }
 

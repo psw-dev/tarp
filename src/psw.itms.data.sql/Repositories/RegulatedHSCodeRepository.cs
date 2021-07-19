@@ -33,12 +33,12 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public List<ViewRegulatedHsCode> GetRegulatedHsCodeList()
         {
-            return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, ItemDescription, ItemDescriptionExt, AgencyID FROM REGULATEDHSCODE")).ToList();
+            return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, ItemDescription, ItemDescriptionExt, AgencyID, TechnicalName FROM REGULATEDHSCODE")).ToList();
         }
 
         public List<ViewRegulatedHsCode> GetRegulatedHsCodeList(string agencyId)
         {
-            return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, ItemDescription, ItemDescriptionExt, AgencyID FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'",agencyId)).ToList();
+            return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, ItemDescription, ItemDescriptionExt, AgencyID, TechnicalName FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'",agencyId)).ToList();
         }
 
         public List<string> GetPCTCodeList(string hscode)

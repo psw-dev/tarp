@@ -12,5 +12,6 @@ namespace PSW.ITMS.Data.Entities
         public string ItemDescription { get; set; }
         public string ItemDescriptionext { get; set; }
         public int AgencyID { get; set; }
+        public string TechnicalName { get; set; }
     }
 }

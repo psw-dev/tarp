@@ -8,6 +8,7 @@
     <ProjectReference Include="..\..\lib\libconsul\src\psw.lib.consul\psw.lib.consul.csproj" />
     <ProjectReference Include="..\..\lib\librabbitmq\src\psw.rabbitmq\psw.rabbitmq.csproj" />
     <ProjectReference Include="..\..\lib\libcommon\src\psw.security\psw.security.csproj" />
+    <ProjectReference Include="..\..\lib\liblogs\src\psw.lib.logs\psw.lib.logs.csproj" />
   </ItemGroup>
 
    <ItemGroup>

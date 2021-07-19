@@ -40,9 +40,10 @@ namespace PSW.ITMS.Service.Strategies
                 case "1716": return new GetAgencyListStrategy(request);
                 case "1718": return new GetFactorListStrategy(request);
                 case "1720": return new GetFactorLOVItemsStrategy(request);
-                case "1722": return new GetRequirementStrategy(request);
+                case "1722": return new GetRequirementMongoStrategy(request);
                 case "1724": return new GetRegulatedHscodeListStrategy(request);
                 case "1726": return new GetPCTCodeListStrategy(request);
+                case "1728": return new UpdateMongoRecordStrategy(request);
                 case "removelater": return null;
                 
                 default: break;

@@ -21,10 +21,11 @@
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "tarp",
-      //"applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_URLS": "http://localhost:5002",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SEQ_URL": "http://localhost:5341/",
+        "MONGODBConnString": "mongodb://172.18.0.1:27017"
       }
     }
   }

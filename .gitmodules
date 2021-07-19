@@ -7,3 +7,7 @@
 [submodule "lib/libconsul"]
 	path = lib/libconsul
 	url = https://git.psw.gov.pk/dev/libconsul.git
+[submodule "lib/liblogs"]
+	path = lib/liblogs
+	url = https://git.psw.gov.pk/dev/liblogs.git
+	branch = develop

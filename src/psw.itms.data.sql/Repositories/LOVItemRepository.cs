@@ -26,9 +26,9 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
 		#region Public methods
 
-        public  List<FactorLOVItems> GetLOVItems(int FactorID)
+        public  List<FactorLOVItems> GetLOVItems(int? LOVID)
         {
-            return _connection.Query<FactorLOVItems>(string.Format("SELECT ItemKey, ItemValue, AltItemKey FROM LOVITEM LI INNER JOIN LOV L on LI.LOVID = L.ID  WHERE L.ID = (SELECT LOVID FROM FACTOR WHERE ID = '{0}' AND ISLOV = 1)",FactorID)).ToList(); 
+            return _connection.Query<FactorLOVItems>(string.Format("SELECT ItemKey, ItemValue, AltItemKey FROM LOVITEM WHERE LOVID = '{0}'",LOVID)).ToList(); 
         }
 
 		#endregion
