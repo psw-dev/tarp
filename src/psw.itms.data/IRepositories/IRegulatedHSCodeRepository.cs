@@ -10,7 +10,8 @@ namespace PSW.ITMS.Data.Repositories
     {
         List<AgencyList> GetAgencyListAgainstHscode(string hscode, string documentCode);
         List<ViewRegulatedHsCode> GetRegulatedHsCodeList();
-        List<ViewRegulatedHsCode> GetRegulatedHsCodeList(string agencyId);
+        List<ViewRegulatedHsCode> GetRegulatedHsCodeList(int agencyId);
+        List<ViewRegulatedHsCode> GetRegulatedHsCodeList(int agencyId, string documentTypeCode);
         List<string> GetPCTCodeList(string hscode);
     }
 }

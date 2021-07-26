@@ -31,31 +31,42 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-                if (RequestDTO.AgencyId != null)
-                {
-                    List<ViewRegulatedHsCode> RegulatedHsCodeListSearchedByAgency = SearchWithAgencyID(RequestDTO.AgencyId);
+                List<ViewRegulatedHsCode> RegulatedHsCodeList = new List<ViewRegulatedHsCode>();
 
-                    if (RegulatedHsCodeListSearchedByAgency == null || RegulatedHsCodeListSearchedByAgency.Count == 0)
+                //Get Regulated Hscode list filtered on base of AgencyId 
+                if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode == null)
+                {
+                    RegulatedHsCodeList = SearchWithAgencyID(RequestDTO.AgencyId);
+
+                    if (RegulatedHsCodeList == null || RegulatedHsCodeList.Count == 0)
                     {
                         return BadRequestReply("Hscodes not available against provided Agency");
                     }
-
-                    ResponseDTO = new GetRegulatedHscodeListResponse
-                    {
-                        RegulatedHsCodeList = RegulatedHsCodeListSearchedByAgency
-                    };
                 }
 
-                List<ViewRegulatedHsCode> RegulatedHsCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList();
-
-                if (RegulatedHsCodeList == null || RegulatedHsCodeList.Count == 0)
+                //Get Regulated Hscode list filtered on base of AgencyId and DocumentTypeCode
+                else if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode != null)
                 {
-                    return BadRequestReply("Hscodes not available against provided Agency");
+                    RegulatedHsCodeList = SearchWithAgencyIDAndDocumentTypeCode(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode);
+
+                    if (RegulatedHsCodeList == null || RegulatedHsCodeList.Count == 0)
+                    {
+                        return BadRequestReply("Hscodes not available against provided Agency");
+                    }
                 }
 
-                //Get ProductCodeList of Hscode
+                else
+                {
+                   RegulatedHsCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList();
 
-                foreach(var regulatedHscode in RegulatedHsCodeList)
+                    if (RegulatedHsCodeList == null || RegulatedHsCodeList.Count == 0)
+                    {
+                        return BadRequestReply("Hscodes not available against provided Agency");
+                    }
+                }
+
+                //Get Product Code List
+                foreach (var regulatedHscode in RegulatedHsCodeList)
                 {
                     regulatedHscode.ProductCode = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetPCTCodeList(regulatedHscode.HsCode);
                 }
@@ -76,9 +87,16 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion
 
-        public List<ViewRegulatedHsCode> SearchWithAgencyID(string agencyId)
+        public List<ViewRegulatedHsCode> SearchWithAgencyID(int agencyId)
         {
             List<ViewRegulatedHsCode> RegulatedHsCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(agencyId);
+
+            return RegulatedHsCodeList;
+        }
+
+        public List<ViewRegulatedHsCode> SearchWithAgencyIDAndDocumentTypeCode(int agencyId, string documentTypeCode)
+        {
+            List<ViewRegulatedHsCode> RegulatedHsCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(agencyId, documentTypeCode);
 
             return RegulatedHsCodeList;
         }

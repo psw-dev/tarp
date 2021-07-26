@@ -6,6 +6,7 @@ namespace PSW.ITMS.Service.DTO
 {
     public class GetRegulatedHscodeListResponse
     {
+         [JsonPropertyName("regulatedHsCodeList")]
         public List<ViewRegulatedHsCode> RegulatedHsCodeList { set; get; }
     }
 }
