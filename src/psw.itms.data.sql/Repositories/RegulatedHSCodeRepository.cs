@@ -33,22 +33,27 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public List<ViewRegulatedHsCode> GetRegulatedHsCodeList()
         {
-            return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, ItemDescription, ItemDescriptionExt, AgencyID, TechnicalName FROM REGULATEDHSCODE")).ToList();
+            return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, AgencyID FROM REGULATEDHSCODE")).ToList();
         }
 
         public List<ViewRegulatedHsCode> GetRegulatedHsCodeList(int agencyId)
         {
-            return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, ItemDescription, ItemDescriptionExt, AgencyID, TechnicalName FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'",agencyId)).ToList();
+            return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, AgencyID FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'",agencyId)).ToList();
         }
 
         public List<ViewRegulatedHsCode> GetRegulatedHsCodeList(int agencyId, string documentTypeCode)
         {
-            return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, ItemDescription, ItemDescriptionExt, AgencyID, TechnicalName FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND REQUIREDDOCUMENTTYPECODE = '{1}'",agencyId, documentTypeCode)).ToList();
+            return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, AgencyID FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND REQUIREDDOCUMENTTYPECODE = '{1}'",agencyId, documentTypeCode)).ToList();
+        }
+
+        public List<HscodeDetails> GetHsCodeDetailList(string hscode)
+        {
+            return _connection.Query<HscodeDetails>(string.Format("SELECT DISTINCT ITEMDESCRIPTION, PRODUCTCODE, ITEMDESCRIPTIONEXT, TECHNICALNAME FROM REGULATEDHSCODE WHERE HSCODE = '{0}'",hscode)).ToList(); 
         }
 
         public List<string> GetPCTCodeList(string hscode)
         {
-            return _connection.Query<string>(string.Format("SELECT DISTINCT ProductCode FROM REGULATEDHSCODE WHERE HSCODE = '{0}'",hscode)).ToList(); 
+            return _connection.Query<string>(string.Format("SELECT DISTINCT PRODUCTCODE FROM REGULATEDHSCODE WHERE HSCODE = '{0}'",hscode)).ToList(); 
         }
 
 		#endregion

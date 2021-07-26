@@ -65,10 +65,10 @@ namespace PSW.ITMS.Service.Strategies
                     }
                 }
 
-                //Get Product Code List
+                //Get hscodeDetails
                 foreach (var regulatedHscode in RegulatedHsCodeList)
                 {
-                    regulatedHscode.ProductCode = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetPCTCodeList(regulatedHscode.HsCode);
+                    regulatedHscode.HsCodeDetailsList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetHsCodeDetailList(regulatedHscode.HsCode);
                 }
 
                 ResponseDTO = new GetRegulatedHscodeListResponse
