@@ -46,7 +46,8 @@ namespace PSW.ITMS.Service.Strategies
                     {
                         HSCodeExt = RequestDTO.HsCode,
                         AgencyID = RequestDTO.AgencyId,
-                        RequiredDocumentTypeCode = RequestDTO.documentTypeCode
+                        RequiredDocumentTypeCode = RequestDTO.documentTypeCode,
+                        TradeTranTypeID = RequestDTO.TradeTranTypeID
                     }
                     ).FirstOrDefault();
 

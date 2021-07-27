@@ -34,6 +34,7 @@ namespace PSW.ITMS.Data.Entities
 		private System.Byte[] _lastChange;
 		private string _collectionName;
 		private string _technicalName;
+		private int _tranTranTypeID;
 
 		#endregion
 
@@ -58,6 +59,7 @@ namespace PSW.ITMS.Data.Entities
 		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
 		public string CollectionName { get { return _collectionName; } set { _collectionName = value;  }}
 		public string TechnicalName { get { return _technicalName; } set { _technicalName = value;  }}
+		public int TradeTranTypeID { get { return _tranTranTypeID; } set { _tranTranTypeID = value; }}
 
 		#endregion
 
@@ -89,7 +91,8 @@ namespace PSW.ITMS.Data.Entities
 				{"AuthorizedBy", AuthorizedBy},
 				{"LastChange", LastChange},
 				{"CollectionName", CollectionName},
-				{"TechnicalName", TechnicalName}
+				{"TechnicalName", TechnicalName},
+				{"TradeTranTypeID", TradeTranTypeID}
 			};
         }
 
