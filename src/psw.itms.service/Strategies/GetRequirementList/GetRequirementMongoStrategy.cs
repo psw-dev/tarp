@@ -299,6 +299,51 @@ namespace PSW.ITMS.Service.Strategies
                 tarpRequirements.Add(tempReqFinancial);
 
             }
+            //For Phythosanitary Certificate
+            else if(RequiredDocumentTypeCode == "D15")
+            {
+                var roDocRequirements = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+
+                List<string> roDocRequirementsTrimmed = new List<string>();
+
+                foreach(var lpco in roDocRequirements)
+                {
+                    var removespaces = lpco.Trim();
+                    roDocRequirementsTrimmed.Add(removespaces.TrimEnd('\n'));
+                }
+
+                // roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
+                // roDocRequirementsTrimmed.Remove("Fee Challan");
+
+                //DocumentaryRequirements
+                foreach(var doc in roDocRequirementsTrimmed)
+                {
+                    DocumentaryRequirement tempReq = new DocumentaryRequirement();
+
+                    tempReq.Name = doc + " For " + " Phythosanitary Certificate"; 
+                    tempReq.DocumentName = doc;
+                    tempReq.IsMandatory = true;
+                    tempReq.RequirementType = "Documentary";
+
+                    tempReq.DocumentTypeCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new {Name = doc}).FirstOrDefault().Code;
+                    tempReq.AttachedObjectFormatID = 1;
+
+                    tarpRequirements.Add(tempReq);
+                }
+
+                //Financial Requirements
+                DocumentaryRequirement tempReqFinancial = new DocumentaryRequirement();
+
+                tempReqFinancial.Name = "Fee Challan For Phythosanitary Certificate"; 
+                tempReqFinancial.IsMandatory = true;
+                tempReqFinancial.RequirementType = "Financial";
+
+                tempReqFinancial.PostingBillingAccountID = "123"; //change afterward with proper billing account
+                tempReqFinancial.Amount = mongoRecord["PHYTOSANITARY  FEES"].ToInt64();
+
+                tarpRequirements.Add(tempReqFinancial);
+
+            }
 
             return tarpRequirements;
         }
