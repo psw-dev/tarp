@@ -68,8 +68,8 @@ namespace PSW.ITMS.Service.Strategies
                 Log.Information("|{0}|{1}| Rule DbRecord {@TempRule}", StrategyName, MethodID, TempRule);
 
                 List<long> FactorsIDAppliedTORule = GetFactorAppliedInRule(TempRule);
-                
-                if(FactorsIDAppliedTORule.Count == 0)
+
+                if (FactorsIDAppliedTORule.Count == 0)
                 {
                     return BadRequestReply("No factor found in rule");
                 }
@@ -80,13 +80,23 @@ namespace PSW.ITMS.Service.Strategies
 
                 Log.Information("|{0}|{1}| FactorData DbRecord {@FactorDataList}", StrategyName, MethodID, FactorDataList);
 
-                MongoDbRecordFetcher MDbRecordFetcher = new MongoDbRecordFetcher("TARP",TempHsCode.CollectionName);
+                BsonDocument doc = new BsonDocument();
 
-                BsonDocument doc = MDbRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                try
+                {
+                    MongoDbRecordFetcher MDbRecordFetcher = new MongoDbRecordFetcher("TARP", TempHsCode.CollectionName);
+                    doc = MDbRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                }
+                catch(SystemException ex)
+                {
+                   Log.Error("|{0}|{1}| Error occured in fetching record from MongoDB {@ex}", StrategyName, MethodID, ex.ToString()); 
+
+                   return BadRequestReply("Error occured in fetching record from MongoDB");
+                }
 
                 Log.Information("|{0}|{1}| Mongo Record fetched {@doc}", StrategyName, MethodID, doc);
 
-                if(doc == null)
+                if (doc == null)
                 {
                     return BadRequestReply("No record found for Hscode : " + RequestDTO.HsCode);
                 }
@@ -95,11 +105,11 @@ namespace PSW.ITMS.Service.Strategies
 
                 List<DocumentaryRequirement> TempDocumentaryRequirementList = new List<DocumentaryRequirement>();
 
-                if(RecordChecker == "Checked")
+                if (RecordChecker == "Checked")
                 {
                     TempDocumentaryRequirementList = GetRequirements(doc, RequestDTO.documentTypeCode);
 
-                    Log.Information("|{0}|{1}| Documentary Requirements {@TempDocumentaryRequirementList}", StrategyName, MethodID, TempDocumentaryRequirementList);   
+                    Log.Information("|{0}|{1}| Documentary Requirements {@TempDocumentaryRequirementList}", StrategyName, MethodID, TempDocumentaryRequirementList);
                 }
                 else
                 {
@@ -173,7 +183,7 @@ namespace PSW.ITMS.Service.Strategies
 
                     if (ItemList.Contains(FactorCodeValuePair[factor.FactorCode].FactorValue) || ItemList.Contains("ALL"))
                     {
-                        count+=1;
+                        count += 1;
                     }
                     else
                     {
@@ -182,11 +192,11 @@ namespace PSW.ITMS.Service.Strategies
                 }
                 else
                 {
-                    return "Factors provided does not contain FactorData that is required in Rule " + factor.FactorCode +" not provided";
+                    return "Factors provided does not contain FactorData that is required in Rule " + factor.FactorCode + " not provided";
                 }
             }
 
-            if(count == FactorDataList.Count)
+            if (count == FactorDataList.Count)
             {
                 return "Checked";
             }
@@ -196,16 +206,16 @@ namespace PSW.ITMS.Service.Strategies
             }
         }
 
-        public List<DocumentaryRequirement> GetRequirements (BsonDocument mongoRecord, string RequiredDocumentTypeCode)
+        public List<DocumentaryRequirement> GetRequirements(BsonDocument mongoRecord, string RequiredDocumentTypeCode)
         {
             List<DocumentaryRequirement> tarpRequirements = new List<DocumentaryRequirement>();
 
-            if(RequiredDocumentTypeCode == "D12")
+            if (RequiredDocumentTypeCode == "D12")
             {
                 var ipDocRequirements = mongoRecord["IP DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
                 List<string> ipDocRequirementsTrimmed = new List<string>();
 
-                foreach(var lpco in ipDocRequirements)
+                foreach (var lpco in ipDocRequirements)
                 {
                     ipDocRequirementsTrimmed.Add(lpco.Trim());
                 }
@@ -214,7 +224,7 @@ namespace PSW.ITMS.Service.Strategies
                 // ipDocRequirementsTrimmed.Remove("Fee Challan");
 
                 //DocumentaryRequirements
-                foreach(var doc in ipDocRequirementsTrimmed)
+                foreach (var doc in ipDocRequirementsTrimmed)
                 {
                     DocumentaryRequirement tempReq = new DocumentaryRequirement();
 
@@ -223,7 +233,7 @@ namespace PSW.ITMS.Service.Strategies
                     tempReq.IsMandatory = true;
                     tempReq.RequirementType = "Documentary";
 
-                    tempReq.DocumentTypeCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new {Name = doc}).FirstOrDefault().Code;
+                    tempReq.DocumentTypeCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                     tempReq.AttachedObjectFormatID = 1;
 
                     tarpRequirements.Add(tempReq);
@@ -249,19 +259,19 @@ namespace PSW.ITMS.Service.Strategies
                 tempReqValidityTerm.RequirementType = "Validity Period";
                 tempReqValidityTerm.UomName = "Month";
                 string uomPeriod = mongoRecord["IP VALIDITY"].ToString();
-                tempReqValidityTerm.Quantity = Convert.ToInt32(uomPeriod.Substring(0,2));
+                tempReqValidityTerm.Quantity = Convert.ToInt32(uomPeriod.Substring(0, 2));
 
                 tarpRequirements.Add(tempReqValidityTerm);
 
             }
             //For RO 
-            else if(RequiredDocumentTypeCode == "D03")
+            else if (RequiredDocumentTypeCode == "D03")
             {
                 var roDocRequirements = mongoRecord["RO  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
 
                 List<string> roDocRequirementsTrimmed = new List<string>();
 
-                foreach(var lpco in roDocRequirements)
+                foreach (var lpco in roDocRequirements)
                 {
                     var removespaces = lpco.Trim();
                     roDocRequirementsTrimmed.Add(removespaces.TrimEnd('\n'));
@@ -271,7 +281,7 @@ namespace PSW.ITMS.Service.Strategies
                 // roDocRequirementsTrimmed.Remove("Fee Challan");
 
                 //DocumentaryRequirements
-                foreach(var doc in roDocRequirementsTrimmed)
+                foreach (var doc in roDocRequirementsTrimmed)
                 {
                     DocumentaryRequirement tempReq = new DocumentaryRequirement();
 
@@ -280,7 +290,7 @@ namespace PSW.ITMS.Service.Strategies
                     tempReq.IsMandatory = true;
                     tempReq.RequirementType = "Documentary";
 
-                    tempReq.DocumentTypeCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new {Name = doc}).FirstOrDefault().Code;
+                    tempReq.DocumentTypeCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                     tempReq.AttachedObjectFormatID = 1;
 
                     tarpRequirements.Add(tempReq);
@@ -300,13 +310,13 @@ namespace PSW.ITMS.Service.Strategies
 
             }
             //For Phythosanitary Certificate
-            else if(RequiredDocumentTypeCode == "D15")
+            else if (RequiredDocumentTypeCode == "D15")
             {
                 var roDocRequirements = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
 
                 List<string> roDocRequirementsTrimmed = new List<string>();
 
-                foreach(var lpco in roDocRequirements)
+                foreach (var lpco in roDocRequirements)
                 {
                     var removespaces = lpco.Trim();
                     roDocRequirementsTrimmed.Add(removespaces.TrimEnd('\n'));
@@ -316,16 +326,16 @@ namespace PSW.ITMS.Service.Strategies
                 // roDocRequirementsTrimmed.Remove("Fee Challan");
 
                 //DocumentaryRequirements
-                foreach(var doc in roDocRequirementsTrimmed)
+                foreach (var doc in roDocRequirementsTrimmed)
                 {
                     DocumentaryRequirement tempReq = new DocumentaryRequirement();
 
-                    tempReq.Name = doc + " For " + " Phythosanitary Certificate"; 
+                    tempReq.Name = doc + " For " + " Phythosanitary Certificate";
                     tempReq.DocumentName = doc;
                     tempReq.IsMandatory = true;
                     tempReq.RequirementType = "Documentary";
 
-                    tempReq.DocumentTypeCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new {Name = doc}).FirstOrDefault().Code;
+                    tempReq.DocumentTypeCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                     tempReq.AttachedObjectFormatID = 1;
 
                     tarpRequirements.Add(tempReq);
@@ -334,7 +344,7 @@ namespace PSW.ITMS.Service.Strategies
                 //Financial Requirements
                 DocumentaryRequirement tempReqFinancial = new DocumentaryRequirement();
 
-                tempReqFinancial.Name = "Fee Challan For Phythosanitary Certificate"; 
+                tempReqFinancial.Name = "Fee Challan For Phythosanitary Certificate";
                 tempReqFinancial.IsMandatory = true;
                 tempReqFinancial.RequirementType = "Financial";
 
