@@ -9,6 +9,7 @@ using System;
 using MongoDB.Bson;
 using PSW.ITMS.Service.MongoDB;
 using PSW.Lib.Logs;
+using psw.security.Encryption;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -260,7 +261,7 @@ namespace PSW.ITMS.Service.Strategies
                 tempReqFinancial.RequirementType = "Financial";
 
                 tempReqFinancial.PostingBillingAccountID = "123"; //change afterward with proper billing account
-                tempReqFinancial.Amount = mongoRecord["IP FEES"].ToInt64();
+                tempReqFinancial.Amount = PSWEncryption.encrypt(mongoRecord["IP FEES"].ToString());
 
                 tarpRequirements.Add(tempReqFinancial);
 
@@ -317,7 +318,7 @@ namespace PSW.ITMS.Service.Strategies
                 tempReqFinancial.RequirementType = "Financial";
 
                 tempReqFinancial.PostingBillingAccountID = "123"; //change afterward with proper billing account
-                tempReqFinancial.Amount = mongoRecord["RO FEES"].ToInt64();
+                tempReqFinancial.Amount = PSWEncryption.encrypt(mongoRecord["RO FEES"].ToString());
 
                 tarpRequirements.Add(tempReqFinancial);
 
@@ -362,7 +363,7 @@ namespace PSW.ITMS.Service.Strategies
                 tempReqFinancial.RequirementType = "Financial";
 
                 tempReqFinancial.PostingBillingAccountID = "123"; //change afterward with proper billing account
-                tempReqFinancial.Amount = mongoRecord["PHYTOSANITARY  FEES"].ToInt64();
+                tempReqFinancial.Amount = PSWEncryption.encrypt(mongoRecord["PHYTOSANITARY  FEES"].ToString());
 
                 tarpRequirements.Add(tempReqFinancial);
 
