@@ -40,7 +40,7 @@ namespace PSW.ITMS.Service.DTO
         public string PostingBillingAccountID { get; set; }
 
         [JsonPropertyName("amount")]
-        public decimal Amount { get; set; }
+        public string Amount { get; set; }
 
         //Properties for Nil Requirements
 
