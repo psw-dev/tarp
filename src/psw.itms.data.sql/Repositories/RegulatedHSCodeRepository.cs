@@ -56,6 +56,11 @@ namespace PSW.ITMS.Data.Sql.Repositories
             return _connection.Query<string>(string.Format("SELECT DISTINCT PRODUCTCODE FROM REGULATEDHSCODE WHERE HSCODE = '{0}'",hscode)).ToList(); 
         }
 
+        public List<string> GetExtHsCodeList(int agencyId, string requiredDocumentTypeCode, int tradeTransitTypeId)
+        {
+            return _connection.Query<string>(string.Format("SELECT HSCODEEXT FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND TRADETRANTYPEID = '{1}' AND REQUIREDDOCUMENTTYPECODE = '{2}'",agencyId, tradeTransitTypeId, requiredDocumentTypeCode)).ToList();
+        }
+
 		#endregion
     }
 }
