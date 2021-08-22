@@ -82,9 +82,22 @@ namespace PSW.ITMS.Service.Strategies
 
                 BsonDocument doc = new BsonDocument();
 
+                MongoDbRecordFetcher MDbRecordFetcher;
+
                 try
                 {
-                    MongoDbRecordFetcher MDbRecordFetcher = new MongoDbRecordFetcher("TARP", TempHsCode.CollectionName);
+                    MDbRecordFetcher = new MongoDbRecordFetcher("TARP", TempHsCode.CollectionName);
+                }
+                catch(SystemException ex)
+                {
+                    Log.Error("|{0}|{1}| Error occured in connecting to MongoDB {@ex}", StrategyName, MethodID, ex.ToString()); 
+
+                   return BadRequestReply("Error occured in connecting to MongoDB");
+                }
+
+                try
+                {
+                    //MongoDbRecordFetcher MDbRecordFetcher = new MongoDbRecordFetcher("TARP", TempHsCode.CollectionName);
                     doc = MDbRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
                 }
                 catch(SystemException ex)
