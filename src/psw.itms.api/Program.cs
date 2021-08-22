@@ -16,12 +16,13 @@ namespace PSW.ITMS.Api
         {
             // Configure logger using library
             Log.Configure();
-            
+
             CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UsePSWLog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

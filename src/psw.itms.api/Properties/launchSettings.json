@@ -24,8 +24,15 @@
       "environmentVariables": {
         "ASPNETCORE_URLS": "http://localhost:5002",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "SEQ_URL": "http://localhost:5341/",
-        "MONGODBConnString": "mongodb://172.18.0.1:27017"
+        "MONGODBConnString": "mongodb://172.18.0.1:27017",
+        "LOG_SINK_CONSOLE": "true",
+        "LOG_SINK_FILE": "true",
+        "LOG_SINK_SEQ": "true",
+        "LOG_FILE_PATH": "../tmp/psw_logs/IRMS/IRMS_.log",
+        "LOG_SEQ_URL": "http://localhost:5341",
+        "LOG_OUTPUT_TEMPLATE": "{Timestamp:dd-MM-yyyy HH:mm:ss.fff} [{Level:u3}] | Thread: {ThreadId,2} | Machine: {MachineName} | {CorrelationId} {Message:l}{NewLine}{Exception}",
+        "LOG_SERVICE_NAME": "IRMS",
+        "LOG_MINIMUM_LEVEL": "Information"
       }
     }
   }
