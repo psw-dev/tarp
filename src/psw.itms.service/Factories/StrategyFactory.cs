@@ -44,6 +44,7 @@ namespace PSW.ITMS.Service.Strategies
                 case "1724": return new GetRegulatedHscodeListStrategy(request);
                 case "1726": return new GetPCTCodeListStrategy(request);
                 case "1728": return new UpdateMongoRecordStrategy(request);
+                case "1729": return new GetRegulatedHsCodePurposeStrategy(request);
                 case "removelater": return null;
                 
                 default: break;

@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 using System;
+using System.Collections.Generic;
 
 namespace PSW.ITMS.Service.MongoDB
 {
@@ -56,6 +57,14 @@ namespace PSW.ITMS.Service.MongoDB
                 }
             }
             return false;
+        }
+
+        public IMongoCollection<BsonDocument> GetCollection()
+        {
+            var database = MClient.GetDatabase(DbName);
+            var collection = database.GetCollection<BsonDocument>(CollectionName);
+            
+            return collection;
         }
     }
 }
