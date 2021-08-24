@@ -68,7 +68,7 @@ namespace PSW.ITMS.Service.Strategies
                 //Get hscodeDetails
                 foreach (var regulatedHscode in RegulatedHsCodeList)
                 {
-                    regulatedHscode.HsCodeDetailsList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetHsCodeDetailList(regulatedHscode.HsCode);
+                    regulatedHscode.HsCodeDetailsList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetHsCodeDetailList(regulatedHscode.HsCode, RequestDTO.DocumentTypeCode, RequestDTO.AgencyId);
                 }
 
                 ResponseDTO = new GetRegulatedHscodeListResponse
