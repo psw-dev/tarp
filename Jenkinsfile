@@ -7,6 +7,7 @@ pipeline {
     stages {
         stage('Dotnet Restore and Publish') {
             steps {
+                sh "dotnet clean"
                 sh "dotnet restore"
                 sh "dotnet publish -c Release -o out"
             }
@@ -17,7 +18,7 @@ pipeline {
             }
             steps {
                 sh "docker build -f Dockerfile.Jenkins . -t $BUILD_IMAGE_REPO_TAG --network=host"
-                sh "docker tag $BUILD_IMAGE_REPO_TAG ${env.IMAGE_REPO_NAME}:${env.BRANCH_NAME}$BUILD_NUMBER"
+                sh "docker tag $BUILD_IMAGE_REPO_TAG ${env.IMAGE_REPO_NAME}:${env.BRANCH_NAME}_$BUILD_NUMBER"
             }
         }
         stage('Docker Push') {
@@ -26,7 +27,7 @@ pipeline {
             }
             steps {
                     sh "docker push $BUILD_IMAGE_REPO_TAG"
-                    sh "docker push ${env.IMAGE_REPO_NAME}:${env.BRANCH_NAME}$BUILD_NUMBER"
+                    sh "docker push ${env.IMAGE_REPO_NAME}:${env.BRANCH_NAME}_$BUILD_NUMBER"
             }
         }
     }
