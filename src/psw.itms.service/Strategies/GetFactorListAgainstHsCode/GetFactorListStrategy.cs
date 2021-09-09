@@ -1,12 +1,10 @@
+using PSW.ITMS.Data.Entities;
+using PSW.ITMS.Service.Command;
+using PSW.ITMS.Service.DTO;
+using PSW.Lib.Logs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
-
-using PSW.ITMS.Service.DTO;
-using PSW.ITMS.Service.Command;
-using PSW.ITMS.Data.Entities;
-using System;
-using PSW.Lib.Logs;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -15,7 +13,7 @@ namespace PSW.ITMS.Service.Strategies
         #region Constructors 
         public GetFactorListStrategy(CommandRequest request) : base(request)
         {
-            this.Reply = new CommandReply();
+            Reply = new CommandReply();
         }
         #endregion 
 
@@ -37,54 +35,55 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide valid request parameters");
                 }
 
-                RegulatedHSCode TempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
+                var tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
                     new
                     {
                         HSCodeExt = RequestDTO.HsCode,
                         AgencyID = RequestDTO.AgencyId,
-                        RequiredDocumentTypeCode = RequestDTO.documentTypeCode
+                        RequiredDocumentTypeCode = RequestDTO.documentTypeCode,
+                        TradeTranTypeID = RequestDTO.TradeTranTypeID
                     }
                     ).FirstOrDefault();
 
-                if(TempHsCode == null)
+                if (tempHsCode == null)
                 {
                     return BadRequestReply("Record for hscode does not exist");
                 }
 
-                Log.Information("|{0}|{1}| RegulatedHscode record fetched from db: {@TempHsCode}", StrategyName, MethodID, TempHsCode);
+                Log.Information("|{0}|{1}| RegulatedHscode record fetched from db: {@tempHsCode}", StrategyName, MethodID, tempHsCode);
 
-                Rule TempRule = Command.UnitOfWork.RuleRepository.Get(Convert.ToInt16(TempHsCode.RuleID));
+                var tempRule = Command.UnitOfWork.RuleRepository.Get(Convert.ToInt16(tempHsCode.RuleID));
 
-                if(TempRule == null)
+                if (tempRule == null)
                 {
                     return BadRequestReply("Record for rule against hscode does not exist");
                 }
 
-                Log.Information("|{0}|{1}| Rule record fetched from db: {@TempRule}", StrategyName, MethodID, TempRule);
+                Log.Information("|{0}|{1}| Rule record fetched from db: {@tempRule}", StrategyName, MethodID, tempRule);
 
-                List<long> FactorsApplicable = FactorsPresentInRule(TempRule);
+                var factorsApplicable = FactorsPresentInRule(tempRule);
 
-                if(FactorsApplicable.Count == 0)
+                if (factorsApplicable.Count == 0)
                 {
                     return BadRequestReply("Factors data not available");
                 }
 
-                Log.Information("|{0}|{1}| Applicable factor ID applied in rule : {@FactorsApplicable}", StrategyName, MethodID, FactorsApplicable);
+                Log.Information("|{0}|{1}| Applicable factor ID applied in rule : {@factorsApplicable}", StrategyName, MethodID, factorsApplicable);
 
-                List<Factors> FactorsData = new List<Factors>();
+                var factorsData = new List<Factors>();
 
-                FactorsData = Command.UnitOfWork.FactorRepository.GetFactorsData(FactorsApplicable);
+                factorsData = Command.UnitOfWork.FactorRepository.GetFactorsData(factorsApplicable);
 
-                Log.Information("|{0}|{1}| Factor data fetched from rule : {@FactorsData}", StrategyName, MethodID, FactorsData);
+                Log.Information("|{0}|{1}| Factor data fetched from rule : {@factorsData}", StrategyName, MethodID, factorsData);
 
-                if(FactorsData == null || FactorsData.Count == 0)
+                if (factorsData == null || factorsData.Count == 0)
                 {
                     return BadRequestReply("Factors Details not available");
                 }
 
                 ResponseDTO = new GetFactorListAgainstHscodeResponse
                 {
-                    FactorList = FactorsData
+                    FactorList = factorsData
                 };
 
                 Log.Information("|{0}|{1}| Get factorList responseDTO : {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);
@@ -100,92 +99,92 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion 
 
-        public List<long> FactorsPresentInRule (Rule rule)
+        public List<long> FactorsPresentInRule(Rule rule)
         {
-            List<long> FactorIdList = new List<long>();
+            var factorIdList = new List<long>();
 
-            if(rule.Factor1ID != 0)
+            if (rule.Factor1ID != 0)
             {
-                FactorIdList.Add(rule.Factor1ID);
+                factorIdList.Add(rule.Factor1ID);
             }
-            if(rule.Factor2ID != 0)
+            if (rule.Factor2ID != 0)
             {
-                FactorIdList.Add(rule.Factor2ID);
+                factorIdList.Add(rule.Factor2ID);
             }
-            if(rule.Factor3ID != 0)
+            if (rule.Factor3ID != 0)
             {
-                FactorIdList.Add(rule.Factor3ID);
+                factorIdList.Add(rule.Factor3ID);
             }
-            if(rule.Factor4ID != 0)
+            if (rule.Factor4ID != 0)
             {
-                FactorIdList.Add(rule.Factor4ID);
+                factorIdList.Add(rule.Factor4ID);
             }
-            if(rule.Factor5ID != 0)
+            if (rule.Factor5ID != 0)
             {
-                FactorIdList.Add(rule.Factor5ID);
+                factorIdList.Add(rule.Factor5ID);
             }
-            if(rule.Factor6ID != 0)
+            if (rule.Factor6ID != 0)
             {
-                FactorIdList.Add(rule.Factor6ID);
+                factorIdList.Add(rule.Factor6ID);
             }
-            if(rule.Factor7ID != 0)
+            if (rule.Factor7ID != 0)
             {
-                FactorIdList.Add(rule.Factor7ID);
+                factorIdList.Add(rule.Factor7ID);
             }
-            if(rule.Factor8ID != 0)
+            if (rule.Factor8ID != 0)
             {
-                FactorIdList.Add(rule.Factor8ID);
+                factorIdList.Add(rule.Factor8ID);
             }
-            if(rule.Factor9ID != 0)
+            if (rule.Factor9ID != 0)
             {
-                FactorIdList.Add(rule.Factor9ID);
+                factorIdList.Add(rule.Factor9ID);
             }
-            if(rule.Factor10ID != 0)
+            if (rule.Factor10ID != 0)
             {
-                FactorIdList.Add(rule.Factor10ID);
+                factorIdList.Add(rule.Factor10ID);
             }
-            if(rule.Factor11ID != 0)
+            if (rule.Factor11ID != 0)
             {
-                FactorIdList.Add(rule.Factor11ID);
+                factorIdList.Add(rule.Factor11ID);
             }
-            if(rule.Factor12ID != 0)
+            if (rule.Factor12ID != 0)
             {
-                FactorIdList.Add(rule.Factor12ID);
+                factorIdList.Add(rule.Factor12ID);
             }
-            if(rule.Factor13ID != 0)
+            if (rule.Factor13ID != 0)
             {
-                FactorIdList.Add(rule.Factor13ID);
+                factorIdList.Add(rule.Factor13ID);
             }
-            if(rule.Factor14ID != 0)
+            if (rule.Factor14ID != 0)
             {
-                FactorIdList.Add(rule.Factor14ID);
+                factorIdList.Add(rule.Factor14ID);
             }
-            if(rule.Factor15ID != 0)
+            if (rule.Factor15ID != 0)
             {
-                FactorIdList.Add(rule.Factor15ID);
+                factorIdList.Add(rule.Factor15ID);
             }
-            if(rule.Factor16ID != 0)
+            if (rule.Factor16ID != 0)
             {
-                FactorIdList.Add(rule.Factor16ID);
+                factorIdList.Add(rule.Factor16ID);
             }
-            if(rule.Factor17ID != 0)
+            if (rule.Factor17ID != 0)
             {
-                FactorIdList.Add(rule.Factor17ID);
+                factorIdList.Add(rule.Factor17ID);
             }
-            if(rule.Factor18ID != 0)
+            if (rule.Factor18ID != 0)
             {
-                FactorIdList.Add(rule.Factor18ID);
+                factorIdList.Add(rule.Factor18ID);
             }
-            if(rule.Factor19ID != 0)
+            if (rule.Factor19ID != 0)
             {
-                FactorIdList.Add(rule.Factor19ID);
+                factorIdList.Add(rule.Factor19ID);
             }
-            if(rule.Factor20ID != 0)
+            if (rule.Factor20ID != 0)
             {
-                FactorIdList.Add(rule.Factor20ID);
+                factorIdList.Add(rule.Factor20ID);
             }
 
-            return FactorIdList;
+            return factorIdList;
         }
     }
 }

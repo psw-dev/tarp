@@ -1,17 +1,10 @@
 using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Configuration;
-using System.Collections.Generic;
-
-using Microsoft.Extensions.Configuration;
-
-using PSW.ITMS.Service.DTO;
 using System.Threading.Tasks;
 
 namespace PSW.ITMS.Service
 {
-    public class ServiceHttpClient 
+    public class ServiceHttpClient
     {
         public string URL;
 
@@ -25,16 +18,16 @@ namespace PSW.ITMS.Service
 
         public async Task<string> GetHttpResponse()
         {
-            HttpClient client = new HttpClient();
-            StringContent queryString = new StringContent(JsonData);
+            var client = new HttpClient();
+            var queryString = new StringContent(JsonData);
 
-            HttpResponseMessage response = await client.PostAsync(new Uri(URL), queryString);
+            var response = await client.PostAsync(new Uri(URL), queryString);
 
             response.EnsureSuccessStatusCode();
             //return responseBody;
             if (response.IsSuccessStatusCode)
             {
-                string responseBody = await response.Content.ReadAsStringAsync();
+                var responseBody = await response.Content.ReadAsStringAsync();
 
                 //close HttpClient
                 client.Dispose();

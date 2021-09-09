@@ -12,5 +12,8 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("documentTypeCode")]
         public string documentTypeCode { get; set; }
+
+        [JsonPropertyName("tradeTranTypeId")]
+        public int TradeTranTypeID { get; set; }
     }
 }

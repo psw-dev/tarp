@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-
 namespace PSW.ITMS.Data.Entities
 {
     public class FactorLOVItems

@@ -1,6 +1,4 @@
 using AutoMapper;
-using PSW.ITMS.Data.Entities;
-using PSW.ITMS.Service.DTO;
 
 namespace PSW.ITMS.Service.Mapper
 {

@@ -2,13 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using PSW.RabbitMq;
-using PSW.RabbitMq.ServiceCommand;
 
 namespace PSW.ITMS.Common
 {
@@ -26,7 +21,7 @@ namespace PSW.ITMS.Common
         {
             StringBuilder Sb = new StringBuilder();
 
-            using (var hash = SHA256.Create())
+            using (SHA256 hash = SHA256.Create())
             {
                 Encoding enc = Encoding.UTF8;
                 Byte[] result = hash.ComputeHash(enc.GetBytes(value));
@@ -46,9 +41,9 @@ namespace PSW.ITMS.Common
         /// <returns></returns>
         public static bool IsAssignableToGenericType(Type givenType, Type genericType)
         {
-            var interfaceTypes = givenType.GetInterfaces();
+            Type[] interfaceTypes = givenType.GetInterfaces();
 
-            foreach (var it in interfaceTypes)
+            foreach (Type it in interfaceTypes)
             {
                 if (it.IsGenericType && it.GetGenericTypeDefinition() == genericType)
                     return true;
@@ -124,13 +119,13 @@ namespace PSW.ITMS.Common
                 aesAlg.GenerateIV();
                 IV = aesAlg.IV;
 
-                var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
-                using (var msEncrypt = new MemoryStream())
+                using (MemoryStream msEncrypt = new MemoryStream())
                 {
-                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                     {
-                        using (var swEncrypt = new StreamWriter(csEncrypt))
+                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
                         {
                             swEncrypt.Write(input);
                         }
@@ -177,11 +172,11 @@ namespace PSW.ITMS.Common
 
                     ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
-                    using (var msDecrypt = new MemoryStream(Encoded))
+                    using (MemoryStream msDecrypt = new MemoryStream(Encoded))
                     {
-                        using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                        using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                         {
-                            using (var srDecrypt = new StreamReader(csDecrypt))
+                            using (StreamReader srDecrypt = new StreamReader(csDecrypt))
                             {
                                 plaintext = srDecrypt.ReadToEnd();
                             }
@@ -204,7 +199,7 @@ namespace PSW.ITMS.Common
         /// <returns>Key</returns>
         public static byte[] CreateKey(string password, byte[] salt)
         {
-            using (var rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, salt))
+            using (Rfc2898DeriveBytes rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, salt))
                 return rfc2898DeriveBytes.GetBytes(32);
         }
 
@@ -214,8 +209,8 @@ namespace PSW.ITMS.Common
         /// <returns>salt</returns>
         private static byte[] GetSalt()
         {
-            var salt = new byte[32];
-            using (var random = new RNGCryptoServiceProvider())
+            byte[] salt = new byte[32];
+            using (RNGCryptoServiceProvider random = new RNGCryptoServiceProvider())
             {
                 random.GetNonZeroBytes(salt);
             }
@@ -224,12 +219,12 @@ namespace PSW.ITMS.Common
 
         public static string Base64Encode(string plainText)
         {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            byte[] plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return System.Convert.ToBase64String(plainTextBytes);
         }
         public static string Base64Decode(string base64EncodedData)
         {
-            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            byte[] base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 

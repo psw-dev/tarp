@@ -1,25 +1,23 @@
-using System.Collections.Generic;
-
-
-using PSW.ITMS.Service.DTO;
-using PSW.ITMS.Service.Command;
 using PSW.ITMS.Data.Entities;
-using System;
+using PSW.ITMS.Service.Command;
+using PSW.ITMS.Service.DTO;
 using PSW.Lib.Logs;
+using System;
+using System.Collections.Generic;
 
 namespace PSW.ITMS.Service.Strategies
 {
-    public class GetRegulatedHscodeListStrategy : ApiStrategy<GetRegulatedHscodeListRequest, GetRegulatedHscodeListResponse>
+    public class GetRegulatedHSCodeListStrategy : ApiStrategy<GetRegulatedHscodeListRequest, GetRegulatedHscodeListResponse>
     {
         #region Constructors 
-        public GetRegulatedHscodeListStrategy(CommandRequest request) : base(request)
+        public GetRegulatedHSCodeListStrategy(CommandRequest request) : base(request)
         {
-            this.Reply = new CommandReply();
+            Reply = new CommandReply();
         }
         #endregion 
 
         #region Distructors 
-        ~GetRegulatedHscodeListStrategy()
+        ~GetRegulatedHSCodeListStrategy()
         {
 
         }
@@ -31,38 +29,49 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-                if (RequestDTO.AgencyId != null)
-                {
-                    List<ViewRegulatedHsCode> RegulatedHsCodeListSearchedByAgency = SearchWithAgencyID(RequestDTO.AgencyId);
+                var regulatedHSCodeList = new List<ViewRegulatedHsCode>();
 
-                    if (RegulatedHsCodeListSearchedByAgency == null || RegulatedHsCodeListSearchedByAgency.Count == 0)
+                //Get Regulated Hscode list filtered on base of AgencyId 
+                if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode == null)
+                {
+                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(RequestDTO.AgencyId);
+
+                    if (regulatedHSCodeList == null || regulatedHSCodeList.Count == 0)
                     {
                         return BadRequestReply("Hscodes not available against provided Agency");
                     }
+                }
 
-                    ResponseDTO = new GetRegulatedHscodeListResponse
+                //Get Regulated Hscode list filtered on base of AgencyId and DocumentTypeCode
+                else if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode != null)
+                {
+                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode);
+
+                    if (regulatedHSCodeList == null || regulatedHSCodeList.Count == 0)
                     {
-                        RegulatedHsCodeList = RegulatedHsCodeListSearchedByAgency
-                    };
+                        return BadRequestReply("Hscodes not available against provided Agency");
+                    }
                 }
 
-                List<ViewRegulatedHsCode> RegulatedHsCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList();
-
-                if (RegulatedHsCodeList == null || RegulatedHsCodeList.Count == 0)
+                else
                 {
-                    return BadRequestReply("Hscodes not available against provided Agency");
+                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList();
+
+                    if (regulatedHSCodeList == null || regulatedHSCodeList.Count == 0)
+                    {
+                        return BadRequestReply("Hscodes not available against provided Agency");
+                    }
                 }
 
-                //Get ProductCodeList of Hscode
-
-                foreach(var regulatedHscode in RegulatedHsCodeList)
+                //Get hscodeDetails
+                foreach (var regulatedHscode in regulatedHSCodeList)
                 {
-                    regulatedHscode.ProductCode = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetPCTCodeList(regulatedHscode.HsCode);
+                    regulatedHscode.HsCodeDetailsList = Command.UnitOfWork.RegulatedHSCodeRepository.GetHsCodeDetailList(regulatedHscode.HsCode, RequestDTO.DocumentTypeCode, RequestDTO.AgencyId);
                 }
 
                 ResponseDTO = new GetRegulatedHscodeListResponse
                 {
-                    RegulatedHsCodeList = RegulatedHsCodeList
+                    RegulatedHsCodeList = regulatedHSCodeList
                 };
 
                 // Send Command Reply 
@@ -75,12 +84,5 @@ namespace PSW.ITMS.Service.Strategies
             }
         }
         #endregion
-
-        public List<ViewRegulatedHsCode> SearchWithAgencyID(string agencyId)
-        {
-            List<ViewRegulatedHsCode> RegulatedHsCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(agencyId);
-
-            return RegulatedHsCodeList;
-        }
     }
 }

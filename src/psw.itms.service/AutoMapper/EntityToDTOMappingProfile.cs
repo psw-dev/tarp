@@ -1,8 +1,4 @@
-using System.Collections.Generic;
 using AutoMapper;
-using PSW.ITMS.Data.Entities;
-using PSW.ITMS.Service.DTO;
-using PSW.ITMS.Data.Objects.Views;
 
 namespace PSW.ITMS.Service.AutoMapper
 {
@@ -18,7 +14,7 @@ namespace PSW.ITMS.Service.AutoMapper
 
         public EntityToDTOMappingProfile()
         {
-            
+
         }
     }
 }

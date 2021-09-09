@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-
-
-using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.Command;
-using System;
+using PSW.ITMS.Service.DTO;
 using PSW.Lib.Logs;
+using System;
+using System.Collections.Generic;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -13,7 +11,7 @@ namespace PSW.ITMS.Service.Strategies
         #region Constructors 
         public GetPCTCodeListStrategy(CommandRequest request) : base(request)
         {
-            this.Reply = new CommandReply();
+            Reply = new CommandReply();
         }
         #endregion 
 
@@ -30,16 +28,16 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-                if(string.IsNullOrEmpty(RequestDTO.HsCode))
+                if (string.IsNullOrEmpty(RequestDTO.HsCode))
                 {
                     return BadRequestReply("Hscode cannot be null");
                 }
 
-                List<string> TempPctCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetPCTCodeList(RequestDTO.HsCode);
+                var tempPctCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetPCTCodeList(RequestDTO.HsCode);
 
-                if(TempPctCodeList == null || TempPctCodeList.Count == 0)
+                if (tempPctCodeList == null || tempPctCodeList.Count == 0)
                 {
-                    ResponseDTO = new GetPCTCodeListResponse 
+                    ResponseDTO = new GetPCTCodeListResponse
                     {
                         PctCodeList = new List<string>(),
                         Message = "Product codes does not exist for the provided hscode."
@@ -53,11 +51,11 @@ namespace PSW.ITMS.Service.Strategies
                 ResponseDTO = new GetPCTCodeListResponse
                 {
                     Message = "Product codes exist for provided hscode.",
-                    PctCodeList = TempPctCodeList
+                    PctCodeList = tempPctCodeList
                 };
 
                 Log.Information("|{0}|{1}| Response DTO : {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);
-                
+
                 // Send Command Reply 
                 return OKReply();
             }

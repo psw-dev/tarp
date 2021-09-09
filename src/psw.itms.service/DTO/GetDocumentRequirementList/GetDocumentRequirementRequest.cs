@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 
 namespace PSW.ITMS.Service.DTO
@@ -17,6 +17,9 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("factorLabelValuePairList")]
         public Dictionary<string, FactorData> FactorCodeValuePair { get; set; }
+
+        [JsonPropertyName("tradeTranTypeId")]
+        public int TradeTranTypeID { get; set; }
     }
 
     public class FactorData

@@ -1,14 +1,12 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Text.Json;
 using PSW.ITMS.Api.ApiCommand;
-using PSW.ITMS.Service;
-using PSW.ITMS.Service.Strategies;
-using PSW.ITMS.Service.Exceptions;
 using PSW.ITMS.Data;
+using PSW.ITMS.Service;
 using PSW.ITMS.Service.Command;
+using PSW.ITMS.Service.Strategies;
+using System;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace PSW.ITMS.Api.Contollers
 {
@@ -22,13 +20,13 @@ namespace PSW.ITMS.Api.Contollers
 
         private IItmsService service { get; set; }
         // private Logger _logger { get; set; }
-       
+
         #endregion
 
 
         #region Constructors
 
-        public TarpController(IItmsService service,IUnitOfWork uow)
+        public TarpController(IItmsService service, IUnitOfWork uow)
         {
             // Dependency Injection of services
             this.service = service;
@@ -36,22 +34,23 @@ namespace PSW.ITMS.Api.Contollers
             this.service.StrategyFactory = new StrategyFactory(uow);
         }
 
-        #endregion 
-        
+        #endregion
+
         #region End Points 
-        
+
         // TODO: Authentication
         // Assuming Request is Authenticated.
-        [HttpPost("secure")]   
-        public ActionResult<APIResponse> SecureRequest(APIRequest apiRequest) 
+        [HttpPost("secure")]
+        public ActionResult<APIResponse> SecureRequest(APIRequest apiRequest)
         {
             //TODO: Client Id Authentication here
             APIResponse apiResponse = new APIResponse()
             {
                 methodId = apiRequest.methodId,
-                message = new ResponseMessage(){
+                message = new ResponseMessage()
+                {
                     code = "404",
-                    description="Action not found."
+                    description = "Action not found."
                 },
                 //TODO: Add error object if required
                 error = new ErrorModel(),
@@ -64,30 +63,31 @@ namespace PSW.ITMS.Api.Contollers
                 //TODO: Resourse Authorization (Middleware)
                 //TODO: Pass User Detials and Method ID to Middleware for Action/Method/Resourse Authorization
                 // Assuming Request is Authenticated 
-                bool authenticated = true;  
-                if(authenticated) 
+                bool authenticated = true;
+                if (authenticated)
                 {
                     // Crate JsonElement for service
                     // Calling Service 
-                     CommandReply commandReply = service.invokeMethod(
-                        new CommandRequest() {
-                            methodId = apiRequest.methodId,
-                            data = apiRequest.data                                                    
-                        } 
-                    );
+                    CommandReply commandReply = service.invokeMethod(
+                       new CommandRequest()
+                       {
+                           methodId = apiRequest.methodId,
+                           data = apiRequest.data
+                       }
+                   );
 
                     // Preparing Resposnse 
                     apiResponse = APIResponseByCommand(commandReply, apiResponse);
 
-                } 
+                }
                 else
-                {                    
+                {
                     apiResponse.message.code = "404";
                     apiResponse.message.description = "Not Authorized";
-                } 
-                
+                }
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // Log 
                 //  _logger.Log(ex.Message);
@@ -104,17 +104,17 @@ namespace PSW.ITMS.Api.Contollers
             //     apiResponse.message.message = "Error : " + ex.Message;
             //     // throw;
             // }
-            
+
             // Log 
             // _logger.Log("Sending This Response");
 
             // Send Response 
             return apiResponse;
-        } 
+        }
 
 
-        [HttpPost("open")]   
-        public ActionResult<object> OpenRequest(APIRequest apiRequest) 
+        [HttpPost("open")]
+        public ActionResult<object> OpenRequest(APIRequest apiRequest)
         {
             APIResponse apiResponse = new APIResponse()
             {
@@ -128,27 +128,28 @@ namespace PSW.ITMS.Api.Contollers
                 //TODO: Resourse Authorization (Middleware)
                 //TODO: Pass User Detials and Method ID to Middleware for Action/Method/Resourse Authorization
                 // Assuming Request is Authenticated 
-                
-      
-                
-                    // Calling Service 
-                     CommandReply commandReply = service.invokeMethod(
-                        new CommandRequest() {
-                            methodId = apiRequest.methodId,
-                            data =  apiRequest.data
-                        } 
-                    );
-
-                    // Write a function to do this 
-                    // Preparing Resposnse 
-                  apiResponse = APIResponseByCommand(commandReply, apiResponse);
-                    
 
 
-                
-               
+
+                // Calling Service 
+                CommandReply commandReply = service.invokeMethod(
+                   new CommandRequest()
+                   {
+                       methodId = apiRequest.methodId,
+                       data = apiRequest.data
+                   }
+               );
+
+                // Write a function to do this 
+                // Preparing Resposnse 
+                apiResponse = APIResponseByCommand(commandReply, apiResponse);
+
+
+
+
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // Log 
                 //  _logger.Log(ex.Message);
@@ -165,29 +166,30 @@ namespace PSW.ITMS.Api.Contollers
             //     apiResponse.message.message = "Error : " + ex.Message;
             //     // throw;
             // }
-            
+
             // Log 
             // _logger.Log("Sending This Response");
 
             // Send Response 
             return apiResponse;
-        } 
+        }
 
-        [HttpGet("query/{methodId}")]   
-        public ActionResult<object> OpenRequest(string methodId,string username,int duration) 
+        [HttpGet("query/{methodId}")]
+        public ActionResult<object> OpenRequest(string methodId, string username, int duration)
         {
             //TODO: Client Id Authentication here
             APIResponse apiResponse = new APIResponse()
             {
                 methodId = methodId,
-                message=new ResponseMessage(){
-                    code="404",
-                    description="Action not found."
+                message = new ResponseMessage()
+                {
+                    code = "404",
+                    description = "Action not found."
                 },
                 //TODO: Add error object if required
-                error=null,
+                error = null,
                 //TODO: Add pagination if required
-                pagination=null
+                pagination = null
             };
 
             try
@@ -195,19 +197,20 @@ namespace PSW.ITMS.Api.Contollers
                 //TODO: Resourse Authorization (Middleware)
                 //TODO: Pass User Detials and Method ID to Middleware for Action/Method/Resourse Authorization
                 // Assuming Request is Authenticated 
-                bool authenticated = true;  
-                if(authenticated) 
+                bool authenticated = true;
+                if (authenticated)
                 {
                     // Crate JsonElement for service
-                    string json = "{"+string.Format(@"""username"":""{0}"",""duration"":{1}",username,duration)+"}";
-                    JsonElement element = JsonDocument.Parse(json).RootElement; 
+                    string json = "{" + string.Format(@"""username"":""{0}"",""duration"":{1}", username, duration) + "}";
+                    JsonElement element = JsonDocument.Parse(json).RootElement;
                     // Calling Service 
-                     CommandReply commandReply = service.invokeMethod(
-                        new CommandRequest() {
-                            methodId = methodId,
-                            data = element                                                    
-                        } 
-                    );
+                    CommandReply commandReply = service.invokeMethod(
+                       new CommandRequest()
+                       {
+                           methodId = methodId,
+                           data = element
+                       }
+                   );
 
                     // Write a function to do this 
                     // Preparing Resposnse 
@@ -216,19 +219,19 @@ namespace PSW.ITMS.Api.Contollers
                     apiResponse.message.description = commandReply.message;
                     //   -- Sign Data 
                     string signature = Sign(commandReply.data);
-                    apiResponse.signature= signature;
-                    
+                    apiResponse.signature = signature;
 
 
-                } 
+
+                }
                 else
-                {                    
+                {
                     apiResponse.message.code = "404";
                     apiResponse.message.description = "Not Authorized";
-                } 
-                
+                }
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // Log 
                 //  _logger.Log(ex.Message);
@@ -245,41 +248,41 @@ namespace PSW.ITMS.Api.Contollers
             //     apiResponse.message.message = "Error : " + ex.Message;
             //     // throw;
             // }
-            
+
             // Log 
             // _logger.Log("Sending This Response");
 
             // Send Response 
             return apiResponse;
-        } 
+        }
 
         #endregion
 
-     
-       
+
+
 
         #region Helper Methods 
         private string Sign(JsonElement data)
-        {            
+        {
             // TODO Call Sign API to Get Signature  
             using (HashAlgorithm algorithm = SHA256.Create())
-                return System.Convert.ToBase64String(algorithm.ComputeHash(System.Text.UTF8Encoding.UTF8.GetBytes(data.ToString())));            
+                return System.Convert.ToBase64String(algorithm.ComputeHash(System.Text.UTF8Encoding.UTF8.GetBytes(data.ToString())));
         }
 
         private APIResponse APIResponseByCommand(CommandReply commandReply, APIResponse apiResponse)
-        { 
+        {
             try
             {
                 apiResponse.data = commandReply.data; // TODO: Safe Check on Data
                 string signature = Sign(commandReply.data); // TODO: Safe Check Data
-                apiResponse.signature= signature; // Sign Data 
-                
+                apiResponse.signature = signature; // Sign Data 
+
                 apiResponse.message.code = string.IsNullOrEmpty(commandReply.code) ? "400" : commandReply.code;
                 apiResponse.message.description = string.IsNullOrEmpty(commandReply.message) ? "Bad Request" : commandReply.message;
 
-                if(apiResponse.error != null) 
+                if (apiResponse.error != null)
                 {
-                    apiResponse.error.exception =  string.IsNullOrEmpty(commandReply.exception) ? "" : commandReply.exception;
+                    apiResponse.error.exception = string.IsNullOrEmpty(commandReply.exception) ? "" : commandReply.exception;
                     apiResponse.error.shortDescription = string.IsNullOrEmpty(commandReply.shortDescription) ? "" : commandReply.shortDescription;
                     apiResponse.error.fullDescription = string.IsNullOrEmpty(commandReply.fullDescription) ? "" : commandReply.fullDescription;
                 }
@@ -290,13 +293,13 @@ namespace PSW.ITMS.Api.Contollers
             {
                 apiResponse.message.code = "400";
                 apiResponse.message.description = "Cannot Prepare Response";
-                apiResponse.error.exception =  "Exception : " + ex.ToString();
+                apiResponse.error.exception = "Exception : " + ex.ToString();
             }
 
             return apiResponse;
-            
+
         }
 
         #endregion
     }
-} 
+}
