@@ -1,15 +1,12 @@
+using MongoDB.Bson;
+using psw.security.Encryption;
+using PSW.ITMS.Data.Entities;
+using PSW.ITMS.Service.Command;
+using PSW.ITMS.Service.DTO;
+using PSW.ITMS.Service.MongoDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
-
-using PSW.ITMS.Service.DTO;
-using PSW.ITMS.Service.Command;
-using PSW.ITMS.Data.Entities;
-using System;
-using MongoDB.Bson;
-using PSW.ITMS.Service.MongoDB;
-using PSW.Lib.Logs;
-using psw.security.Encryption;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -18,7 +15,7 @@ namespace PSW.ITMS.Service.Strategies
         #region Constructors 
         public GetRequirementMongoStrategy(CommandRequest request) : base(request)
         {
-            this.Reply = new CommandReply();
+            Reply = new CommandReply();
         }
         #endregion 
 
@@ -42,7 +39,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
 
-                RegulatedHSCode TempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
+                var TempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
                     new
                     {
                         HSCodeExt = RequestDTO.HsCode,
@@ -59,7 +56,7 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Record for hscode does not exist");
                 }
 
-                Rule TempRule = Command.UnitOfWork.RuleRepository.Get(Convert.ToInt16(TempHsCode.RuleID));
+                var TempRule = Command.UnitOfWork.RuleRepository.Get(Convert.ToInt16(TempHsCode.RuleID));
 
                 if (TempRule == null)
                 {
@@ -68,7 +65,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 Log.Information("|{0}|{1}| Rule DbRecord {@TempRule}", StrategyName, MethodID, TempRule);
 
-                List<long> FactorsIDAppliedTORule = GetFactorAppliedInRule(TempRule);
+                var FactorsIDAppliedTORule = GetFactorAppliedInRule(TempRule);
 
                 if (FactorsIDAppliedTORule.Count == 0)
                 {
@@ -77,11 +74,11 @@ namespace PSW.ITMS.Service.Strategies
 
                 Log.Information("|{0}|{1}| FactorID's Applied To Rule DbRecord {@FactorsIDAppliedTORule}", StrategyName, MethodID, FactorsIDAppliedTORule);
 
-                List<Factors> FactorDataList = LoadFactorData(FactorsIDAppliedTORule);
+                var FactorDataList = LoadFactorData(FactorsIDAppliedTORule);
 
                 Log.Information("|{0}|{1}| FactorData DbRecord {@FactorDataList}", StrategyName, MethodID, FactorDataList);
 
-                BsonDocument doc = new BsonDocument();
+                var doc = new BsonDocument();
 
                 MongoDbRecordFetcher MDbRecordFetcher;
 
@@ -89,11 +86,11 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     MDbRecordFetcher = new MongoDbRecordFetcher("TARP", TempHsCode.CollectionName);
                 }
-                catch(SystemException ex)
+                catch (SystemException ex)
                 {
-                    Log.Error("|{0}|{1}| Error occured in connecting to MongoDB {@ex}", StrategyName, MethodID, ex.ToString()); 
+                    Log.Error("|{0}|{1}| Error occured in connecting to MongoDB {@ex}", StrategyName, MethodID, ex.ToString());
 
-                   return BadRequestReply("Error occured in connecting to MongoDB");
+                    return BadRequestReply("Error occured in connecting to MongoDB");
                 }
 
                 try
@@ -101,11 +98,11 @@ namespace PSW.ITMS.Service.Strategies
                     //MongoDbRecordFetcher MDbRecordFetcher = new MongoDbRecordFetcher("TARP", TempHsCode.CollectionName);
                     doc = MDbRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
                 }
-                catch(SystemException ex)
+                catch (SystemException ex)
                 {
-                   Log.Error("|{0}|{1}| Error occured in fetching record from MongoDB {@ex}", StrategyName, MethodID, ex.ToString()); 
+                    Log.Error("|{0}|{1}| Error occured in fetching record from MongoDB {@ex}", StrategyName, MethodID, ex.ToString());
 
-                   return BadRequestReply("Error occured in fetching record from MongoDB");
+                    return BadRequestReply("Error occured in fetching record from MongoDB");
                 }
 
                 Log.Information("|{0}|{1}| Mongo Record fetched {@doc}", StrategyName, MethodID, doc);
@@ -115,9 +112,9 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("No record found for Hscode : " + RequestDTO.HsCode);
                 }
 
-                string RecordChecker = CheckFactorInMongoRecord(FactorDataList, doc, RequestDTO.FactorCodeValuePair);
+                var RecordChecker = CheckFactorInMongoRecord(FactorDataList, doc, RequestDTO.FactorCodeValuePair);
 
-                List<DocumentaryRequirement> TempDocumentaryRequirementList = new List<DocumentaryRequirement>();
+                var TempDocumentaryRequirementList = new List<DocumentaryRequirement>();
 
                 if (RecordChecker == "Checked")
                 {
@@ -147,11 +144,11 @@ namespace PSW.ITMS.Service.Strategies
                 return InternalServerErrorReply(ex);
             }
         }
-        #endregion 
+        #endregion
 
-        public List<long> GetFactorAppliedInRule(Rule tempRule)
+        private static List<long> GetFactorAppliedInRule(Rule tempRule)
         {
-            List<long> FactorsIDAppliedInRule = new List<long>();
+            var FactorsIDAppliedInRule = new List<long>();
 
             if (tempRule.Factor1ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor1ID);
             if (tempRule.Factor2ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor2ID);
@@ -177,18 +174,18 @@ namespace PSW.ITMS.Service.Strategies
             return FactorsIDAppliedInRule;
         }
 
-        public List<Factors> LoadFactorData(List<long> FactorIDAppliedInRule)
+        private List<Factors> LoadFactorData(List<long> FactorIDAppliedInRule)
         {
-            List<Factors> FactorDataList = new List<Factors>();
+            var FactorDataList = new List<Factors>();
 
-            FactorDataList = this.Command.UnitOfWork.FactorRepository.GetFactorsData(FactorIDAppliedInRule);
+            FactorDataList = Command.UnitOfWork.FactorRepository.GetFactorsData(FactorIDAppliedInRule);
 
             return FactorDataList;
         }
 
         public string CheckFactorInMongoRecord(List<Factors> FactorDataList, BsonDocument mongoDoc, Dictionary<string, FactorData> FactorCodeValuePair)
         {
-            int count = 0;
+            var count = 0;
             foreach (var factor in FactorDataList)
             {
                 if (FactorCodeValuePair.ContainsKey(factor.FactorCode))
@@ -201,12 +198,12 @@ namespace PSW.ITMS.Service.Strategies
                     }
                     else
                     {
-                        return "Factor: " + factor.Label + " Value : " + FactorCodeValuePair[factor.FactorCode] + " does not match in record";
+                        return $"Factor: {factor.Label} Value : {FactorCodeValuePair[factor.FactorCode]} does not match in record";
                     }
                 }
                 else
                 {
-                    return "Factors provided does not contain FactorData that is required in Rule " + factor.FactorCode + " not provided";
+                    return $"Factors provided does not contain FactorData that is required in Rule {factor.FactorCode} not provided";
                 }
             }
 
@@ -222,12 +219,12 @@ namespace PSW.ITMS.Service.Strategies
 
         public List<DocumentaryRequirement> GetRequirements(BsonDocument mongoRecord, string RequiredDocumentTypeCode)
         {
-            List<DocumentaryRequirement> tarpRequirements = new List<DocumentaryRequirement>();
+            var tarpRequirements = new List<DocumentaryRequirement>();
 
             if (RequiredDocumentTypeCode == "D12")
             {
                 var ipDocRequirements = mongoRecord["IP DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
-                List<string> ipDocRequirementsTrimmed = new List<string>();
+                var ipDocRequirementsTrimmed = new List<string>();
 
                 foreach (var lpco in ipDocRequirements)
                 {
@@ -240,21 +237,21 @@ namespace PSW.ITMS.Service.Strategies
                 //DocumentaryRequirements
                 foreach (var doc in ipDocRequirementsTrimmed)
                 {
-                    DocumentaryRequirement tempReq = new DocumentaryRequirement();
+                    var tempReq = new DocumentaryRequirement();
 
                     tempReq.Name = doc + " For " + " DPP Import Permit"; //replace DPP with collectionName 
                     tempReq.DocumentName = doc;
                     tempReq.IsMandatory = true;
                     tempReq.RequirementType = "Documentary";
 
-                    tempReq.DocumentTypeCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                    tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                     tempReq.AttachedObjectFormatID = 1;
 
                     tarpRequirements.Add(tempReq);
                 }
 
                 //Financial Requirements
-                DocumentaryRequirement tempReqFinancial = new DocumentaryRequirement();
+                var tempReqFinancial = new DocumentaryRequirement();
 
                 tempReqFinancial.Name = "Fee Challan For DPP Import Permit"; //replace DPP with collectionName 
                 tempReqFinancial.IsMandatory = true;
@@ -266,13 +263,13 @@ namespace PSW.ITMS.Service.Strategies
                 tarpRequirements.Add(tempReqFinancial);
 
                 //ValidityTerm Requirements
-                DocumentaryRequirement tempReqValidityTerm = new DocumentaryRequirement();
+                var tempReqValidityTerm = new DocumentaryRequirement();
 
                 tempReqValidityTerm.Name = "Validity Period For DPP Import Permit"; //replace DPP with collectionName 
                 tempReqValidityTerm.IsMandatory = true;
                 tempReqValidityTerm.RequirementType = "Validity Period";
                 tempReqValidityTerm.UomName = "Month";
-                string uomPeriod = mongoRecord["IP VALIDITY"].ToString();
+                var uomPeriod = mongoRecord["IP VALIDITY"].ToString();
                 tempReqValidityTerm.Quantity = Convert.ToInt32(uomPeriod.Substring(0, 2));
 
                 tarpRequirements.Add(tempReqValidityTerm);
@@ -283,7 +280,7 @@ namespace PSW.ITMS.Service.Strategies
             {
                 var roDocRequirements = mongoRecord["RO  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
 
-                List<string> roDocRequirementsTrimmed = new List<string>();
+                var roDocRequirementsTrimmed = new List<string>();
 
                 foreach (var lpco in roDocRequirements)
                 {
@@ -297,21 +294,21 @@ namespace PSW.ITMS.Service.Strategies
                 //DocumentaryRequirements
                 foreach (var doc in roDocRequirementsTrimmed)
                 {
-                    DocumentaryRequirement tempReq = new DocumentaryRequirement();
+                    var tempReq = new DocumentaryRequirement();
 
                     tempReq.Name = doc + " For " + " DPP Release Order"; //replace DPP with collectionName 
                     tempReq.DocumentName = doc;
                     tempReq.IsMandatory = true;
                     tempReq.RequirementType = "Documentary";
 
-                    tempReq.DocumentTypeCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                    tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                     tempReq.AttachedObjectFormatID = 1;
 
                     tarpRequirements.Add(tempReq);
                 }
 
                 //Financial Requirements
-                DocumentaryRequirement tempReqFinancial = new DocumentaryRequirement();
+                var tempReqFinancial = new DocumentaryRequirement();
 
                 tempReqFinancial.Name = "Fee Challan For DPP Release Order"; //replace DPP with collectionName 
                 tempReqFinancial.IsMandatory = true;
@@ -328,12 +325,12 @@ namespace PSW.ITMS.Service.Strategies
             {
                 var roDocRequirements = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
 
-                List<string> roDocRequirementsTrimmed = new List<string>();
+                var roDocRequirementsTrimmed = new List<string>();
 
                 foreach (var lpco in roDocRequirements)
                 {
-                    var removespaces = lpco.Trim();
-                    roDocRequirementsTrimmed.Add(removespaces.TrimEnd('\n'));
+                    var removeSpaces = lpco.Trim();
+                    roDocRequirementsTrimmed.Add(removeSpaces.TrimEnd('\n'));
                 }
 
                 // roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
@@ -342,21 +339,21 @@ namespace PSW.ITMS.Service.Strategies
                 //DocumentaryRequirements
                 foreach (var doc in roDocRequirementsTrimmed)
                 {
-                    DocumentaryRequirement tempReq = new DocumentaryRequirement();
+                    var tempReq = new DocumentaryRequirement();
 
                     tempReq.Name = doc + " For " + " Phythosanitary Certificate";
                     tempReq.DocumentName = doc;
                     tempReq.IsMandatory = true;
                     tempReq.RequirementType = "Documentary";
 
-                    tempReq.DocumentTypeCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                    tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                     tempReq.AttachedObjectFormatID = 1;
 
                     tarpRequirements.Add(tempReq);
                 }
 
                 //Financial Requirements
-                DocumentaryRequirement tempReqFinancial = new DocumentaryRequirement();
+                var tempReqFinancial = new DocumentaryRequirement();
 
                 tempReqFinancial.Name = "Fee Challan For Phythosanitary Certificate";
                 tempReqFinancial.IsMandatory = true;

@@ -31,16 +31,16 @@ namespace PSW.ITMS.Service
             try
             {
                 // Initialize Mapper in Command Request 
-                request._mapper = this._mapper;
+                request._mapper = _mapper;
                 //check if UnitOfWork is set otherwise set the service's UoW as default
-                request.UnitOfWork = request.UnitOfWork ?? this.UnitOfWork;
+                request.UnitOfWork = request.UnitOfWork ?? UnitOfWork;
 
                 //create strategy based on request. it can be dynamic
-                Strategy strategy = this.StrategyFactory.CreateStrategy(request);
+                var strategy = StrategyFactory.CreateStrategy(request);
                 //validate request for strategy
-                bool isValide = strategy.Validate();
+                var isValide = strategy.Validate();
                 //Execute strategy
-                CommandReply reply = strategy.Execute();
+                var reply = strategy.Execute();
                 return reply;
             }
             catch (ServiceException ex)

@@ -1,9 +1,7 @@
 /*This code is a generated one , Change the source code of the generator if you want some change in this code
 You can find the source code of the code generator from here -> https://git.psw.gov.pk/unais.vayani/DalGenerator*/
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace PSW.ITMS.Data.Entities
@@ -12,44 +10,44 @@ namespace PSW.ITMS.Data.Entities
     /// This class represents the DialingCode table in the database 
     /// </summary>
 	public class DialingCode : Entity
-	{
-		#region Fields
-		
-		private short _iD;
-		private string _countryCode;
-		private string _dialCode;
+    {
+        #region Fields
 
-		#endregion
+        private short _iD;
+        private string _countryCode;
+        private string _dialCode;
 
-		#region Properties
-		
-		public short ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
-		public string CountryCode { get { return _countryCode; } set { _countryCode = value;  }}
-		public string DialCode { get { return _dialCode; } set { _dialCode = value;  }}
+        #endregion
 
-		#endregion
+        #region Properties
 
-		#region Methods
+        public short ID { get { return _iD; } set { _iD = value; PrimaryKey = value; } }
+        public string CountryCode { get { return _countryCode; } set { _countryCode = value; } }
+        public string DialCode { get { return _dialCode; } set { _dialCode = value; } }
 
-		#endregion
+        #endregion
 
-		#region public Methods
+        #region Methods
 
-		public override Dictionary<string, object> GetColumns()
+        #endregion
+
+        #region public Methods
+
+        public override Dictionary<string, object> GetColumns()
         {
-            return new Dictionary<string, object> 
-			{
-				{"ID", ID},
-				{"CountryCode", CountryCode},
-				{"DialCode", DialCode}
-			};
+            return new Dictionary<string, object>
+            {
+                {"ID", ID},
+                {"CountryCode", CountryCode},
+                {"DialCode", DialCode}
+            };
         }
 
-		#endregion
+        #endregion
 
-		#region Constructors
-		
-		#endregion
-	}
-} 
+        #region Constructors
+
+        #endregion
+    }
+}
 

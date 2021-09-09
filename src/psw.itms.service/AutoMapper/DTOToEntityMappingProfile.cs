@@ -1,9 +1,6 @@
-using System;
-using System.Globalization;
 using AutoMapper;
+using System.Globalization;
 // using PSW.ITMS.Common.Helper;
-using PSW.ITMS.Data.Entities;
-using PSW.ITMS.Service.DTO;
 
 namespace PSW.ITMS.Service.AutoMapper
 {

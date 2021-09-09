@@ -1,7 +1,6 @@
-using MongoDB.Driver;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
-using System.Collections.Generic;
 
 namespace PSW.ITMS.Service.MongoDB
 {
@@ -13,10 +12,10 @@ namespace PSW.ITMS.Service.MongoDB
 
         public MongoDbRecordFetcher(string dbName, string collectionName)
         {
-            this.DbName = dbName;
-            this.CollectionName = collectionName;
+            DbName = dbName;
+            CollectionName = collectionName;
             //this.MClient = new MongoClient("mongodb://localhost");  //localhost
-            this.MClient = new MongoClient( Environment.GetEnvironmentVariable("MONGODBConnString")); 
+            MClient = new MongoClient(Environment.GetEnvironmentVariable("MONGODBConnString"));
         }
 
         public BsonDocument GetFilteredRecord(string hscode, string purpose)
@@ -30,9 +29,9 @@ namespace PSW.ITMS.Service.MongoDB
 
             var combinedFilter = Builders<BsonDocument>.Filter.And(hsCodeFilter, purposeFilter);
 
-            BsonDocument FetchedRecord = collection.Find(combinedFilter).FirstOrDefault();
+            var FetchedRecord = collection.Find(combinedFilter).FirstOrDefault();
 
-            if(FetchedRecord == null)
+            if (FetchedRecord == null)
             {
                 return null;
             }
@@ -42,7 +41,7 @@ namespace PSW.ITMS.Service.MongoDB
 
         public bool UpdateRecord(string hscode, string purpose, string propertyToBeUpdated, string updatedValue)
         {
-            BsonDocument recordFetch = GetFilteredRecord(hscode, purpose);
+            var recordFetch = GetFilteredRecord(hscode, purpose);
 
             if (recordFetch != null)
             {
@@ -51,7 +50,7 @@ namespace PSW.ITMS.Service.MongoDB
 
                 var update = Builders<BsonDocument>.Update.Set(propertyToBeUpdated, updatedValue);
 
-                if(collection.UpdateOne(recordFetch, update) != null)
+                if (collection.UpdateOne(recordFetch, update) != null)
                 {
                     return true;
                 }
@@ -63,7 +62,7 @@ namespace PSW.ITMS.Service.MongoDB
         {
             var database = MClient.GetDatabase(DbName);
             var collection = database.GetCollection<BsonDocument>(CollectionName);
-            
+
             return collection;
         }
     }

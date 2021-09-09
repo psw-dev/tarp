@@ -1,6 +1,6 @@
-using System.Text.Json;
-using PSW.ITMS.Data;
 using AutoMapper;
+using PSW.ITMS.Data;
+using System.Text.Json;
 
 namespace PSW.ITMS.Service.Command
 {
