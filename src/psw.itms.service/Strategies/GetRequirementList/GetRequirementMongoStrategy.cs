@@ -66,7 +66,8 @@ namespace PSW.ITMS.Service.Strategies
 
                 Log.Information("|{0}|{1}| Rule DbRecord {@TempRule}", StrategyName, MethodID, TempRule);
 
-                var FactorsIDAppliedTORule = GetFactorAppliedInRule(TempRule);
+                //var FactorsIDAppliedTORule = GetFactorAppliedInRule(TempRule);
+                var FactorsIDAppliedTORule = TempRule.GetFactorAppliedInRule();
 
                 if (FactorsIDAppliedTORule.Count == 0)
                 {
@@ -147,33 +148,7 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion
 
-        private static List<long> GetFactorAppliedInRule(Rule tempRule)
-        {
-            var FactorsIDAppliedInRule = new List<long>();
-
-            if (tempRule.Factor1ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor1ID);
-            if (tempRule.Factor2ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor2ID);
-            if (tempRule.Factor3ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor3ID);
-            if (tempRule.Factor4ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor4ID);
-            if (tempRule.Factor5ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor5ID);
-            if (tempRule.Factor6ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor6ID);
-            if (tempRule.Factor7ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor7ID);
-            if (tempRule.Factor8ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor8ID);
-            if (tempRule.Factor9ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor9ID);
-            if (tempRule.Factor10ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor10ID);
-            if (tempRule.Factor11ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor11ID);
-            if (tempRule.Factor12ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor12ID);
-            if (tempRule.Factor13ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor13ID);
-            if (tempRule.Factor14ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor14ID);
-            if (tempRule.Factor15ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor15ID);
-            if (tempRule.Factor16ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor16ID);
-            if (tempRule.Factor17ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor17ID);
-            if (tempRule.Factor18ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor18ID);
-            if (tempRule.Factor19ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor19ID);
-            if (tempRule.Factor20ID != 0) FactorsIDAppliedInRule.Add(tempRule.Factor20ID);
-
-            return FactorsIDAppliedInRule;
-        }
+        
 
         private List<Factors> LoadFactorData(List<long> FactorIDAppliedInRule)
         {
