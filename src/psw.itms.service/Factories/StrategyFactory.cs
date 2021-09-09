@@ -1,6 +1,6 @@
 
-using PSW.ITMS.Service.Command;
 using PSW.ITMS.Data;
+using PSW.ITMS.Service.Command;
 //using PSW.ITMS.Service.Strategies;
 
 namespace PSW.ITMS.Service.Strategies
@@ -18,7 +18,7 @@ namespace PSW.ITMS.Service.Strategies
         #region Constructor & Destructor
         public StrategyFactory(IUnitOfWork uow)
         {
-            this.UnitOfWork = uow;
+            UnitOfWork = uow;
         }
         #endregion
 
@@ -41,12 +41,12 @@ namespace PSW.ITMS.Service.Strategies
                 case "1718": return new GetFactorListStrategy(request);
                 case "1720": return new GetFactorLOVItemsStrategy(request);
                 case "1722": return new GetRequirementMongoStrategy(request);
-                case "1724": return new GetRegulatedHscodeListStrategy(request);
+                case "1724": return new GetRegulatedHSCodeListStrategy(request);
                 case "1726": return new GetPCTCodeListStrategy(request);
                 case "1728": return new UpdateMongoRecordStrategy(request);
                 case "1729": return new GetRegulatedHsCodePurposeStrategy(request);
                 case "removelater": return null;
-                
+
                 default: break;
             }
 

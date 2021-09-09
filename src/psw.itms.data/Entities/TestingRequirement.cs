@@ -3,7 +3,6 @@ You can find the source code of the code generator from here -> https://git.psw.
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace PSW.ITMS.Data.Entities
@@ -12,65 +11,65 @@ namespace PSW.ITMS.Data.Entities
     /// This class represents the TestingRequirement table in the database 
     /// </summary>
 	public class TestingRequirement : Entity
-	{
-		#region Fields
-		
-		private long _iD;
-		private long _requirementID;
-		private System.SByte _attachedObjectFormatID;
-		private int _testID;
-		private bool _isMandatory;
-		private DateTime _createdOn;
-		private int _createdBy;
-		private System.Byte[] _lastChange;
+    {
+        #region Fields
 
-		#endregion
+        private long _iD;
+        private long _requirementID;
+        private System.SByte _attachedObjectFormatID;
+        private int _testID;
+        private bool _isMandatory;
+        private DateTime _createdOn;
+        private int _createdBy;
+        private System.Byte[] _lastChange;
 
-		#region Properties
-		
-		public long ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
-		public long RequirementID { get { return _requirementID; } set { _requirementID = value;  }}
-		public System.SByte AttachedObjectFormatID { get { return _attachedObjectFormatID; } set { _attachedObjectFormatID = value;  }}
-		public int TestID { get { return _testID; } set { _testID = value;  }}
-		public bool IsMandatory { get { return _isMandatory; } set { _isMandatory = value;  }}
-		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
-		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
-		public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value;  }}
+        #endregion
 
-		#endregion
+        #region Properties
 
-		#region Methods
+        public long ID { get { return _iD; } set { _iD = value; PrimaryKey = value; } }
+        public long RequirementID { get { return _requirementID; } set { _requirementID = value; } }
+        public System.SByte AttachedObjectFormatID { get { return _attachedObjectFormatID; } set { _attachedObjectFormatID = value; } }
+        public int TestID { get { return _testID; } set { _testID = value; } }
+        public bool IsMandatory { get { return _isMandatory; } set { _isMandatory = value; } }
+        public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value; } }
+        public int CreatedBy { get { return _createdBy; } set { _createdBy = value; } }
+        public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value; } }
 
-		#endregion
+        #endregion
 
-		#region public Methods
+        #region Methods
 
-		public override Dictionary<string, object> GetColumns()
+        #endregion
+
+        #region public Methods
+
+        public override Dictionary<string, object> GetColumns()
         {
-            return new Dictionary<string, object> 
-			{
-				{"ID", ID},
-				{"RequirementID", RequirementID},
-				{"AttachedObjectFormatID", AttachedObjectFormatID},
-				{"TestID", TestID},
-				{"IsMandatory", IsMandatory},
-				{"CreatedOn", CreatedOn},
-				{"CreatedBy", CreatedBy},
-				{"LastChange", LastChange}
-			};
+            return new Dictionary<string, object>
+            {
+                {"ID", ID},
+                {"RequirementID", RequirementID},
+                {"AttachedObjectFormatID", AttachedObjectFormatID},
+                {"TestID", TestID},
+                {"IsMandatory", IsMandatory},
+                {"CreatedOn", CreatedOn},
+                {"CreatedBy", CreatedBy},
+                {"LastChange", LastChange}
+            };
         }
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public TestingRequirement()
-		{
-			TableName = "TestingRequirement";
-			PrimaryKeyName = "ID";
-		}
-		
-		#endregion
-	}
-} 
+        public TestingRequirement()
+        {
+            TableName = "TestingRequirement";
+            PrimaryKeyName = "ID";
+        }
+
+        #endregion
+    }
+}
 

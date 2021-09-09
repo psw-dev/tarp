@@ -1,6 +1,5 @@
 using PSW.ITMS.Service.Command;
 using System.Text.Json;
-using PSW.Lib.Logs;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -29,14 +28,14 @@ namespace PSW.ITMS.Service.Strategies
 
         public ApiStrategy(CommandRequest request) : base(request)
         {
-            this.Command = request;
-            this.IsValidated = false;
+            Command = request;
+            IsValidated = false;
 
-            this.StrategyName = GetType().Name;
-            this.MethodID = request.methodId;
+            StrategyName = GetType().Name;
+            MethodID = request.methodId;
 
             // Get Json Data From Command
-            var jsonString = this.Command.data.GetRawText();
+            var jsonString = Command.data.GetRawText();
             // Deserialize Json to DTO
             RequestDTO = JsonSerializer.Deserialize<T1>(jsonString);
         }

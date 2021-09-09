@@ -1,26 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
-using AutoMapper;
-
-
+using PSW.ITMS.Data;
+using PSW.ITMS.Data.Sql;
 // using PSW.ITMS.Resources;
 using PSW.ITMS.Service;
 using PSW.ITMS.Service.AutoMapper;
-
-using PSW.ITMS.Data;
-using PSW.ITMS.Data.Sql;
-
 using PSW.Lib.Consul;
 // using PSW.RabbitMq;
 // using PSW.ITMS.RabbitMq;
@@ -43,22 +31,22 @@ namespace PSW.ITMS.Api
         {
             services.AddControllers();
             services.AddTransient<IItmsService, ItmsService>();
-            services.AddTransient<IUnitOfWork, UnitOfWork>();            
-            
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+
             // Auto Mapper Profiles 
             services.AddAutoMapper(
-                typeof(DTOToEntityMappingProfile), 
+                typeof(DTOToEntityMappingProfile),
                 typeof(EntityToDTOMappingProfile)
             );
 
-            
+
             services.AddControllers()
                     .AddJsonOptions(options =>
                     {
                         options.JsonSerializerOptions.IgnoreNullValues = true;
-                    });;
-           
-           
+                    }); ;
+
+
             // services.AddSingleton<IEventBus, RabbitMqBus>(s => {
             //         var lifetime = s.GetRequiredService<IHostApplicationLifetime>();
             //         return new RabbitMqBus(lifetime, Configuration);
@@ -92,7 +80,7 @@ namespace PSW.ITMS.Api
 
             string UseConsulDev = Configuration.GetSection("UseConsulDev").Value;
 
-            if(UseConsulDev.ToLower() == "true")
+            if (UseConsulDev.ToLower() == "true")
             {
                 app.UseConsul(lifetime);
             }

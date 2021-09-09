@@ -1,18 +1,16 @@
 /*This code is a generated one , Change the source code of the generator if you want some change in this code
 You can find the source code of the code generator from here -> https://git.psw.gov.pk/unais.vayani/DalGenerator*/
 
-using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Dapper;
-
+using Microsoft.Extensions.Configuration;
 using PSW.ITMS.Common;
 using PSW.ITMS.Data.Repositories;
 using PSW.ITMS.Data.Sql.Repositories;
-using PSW.ITMS.Data.Objects.Views;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Reflection;
 
 namespace PSW.ITMS.Data.Sql
 {
@@ -71,27 +69,27 @@ namespace PSW.ITMS.Data.Sql
 
         #region Public Properties ITMS
         public IAddDeclarationRequirementRepository AddDeclarationRequirementRepository => _addDeclarationRequirementRepository ?? (_addDeclarationRequirementRepository = new AddDeclarationRequirementRepository(_connection));
-		public IBinaryOperatorRepository BinaryOperatorRepository => _binaryOperatorRepository ?? (_binaryOperatorRepository = new BinaryOperatorRepository(_connection));
-		public IDataTypeRepository DataTypeRepository => _dataTypeRepository ?? (_dataTypeRepository = new DataTypeRepository(_connection));
-		public IDecisionMatrixRepository DecisionMatrixRepository => _decisionMatrixRepository ?? (_decisionMatrixRepository = new DecisionMatrixRepository(_connection));
-		public IDeclarationCategoryRepository DeclarationCategoryRepository => _declarationCategoryRepository ?? (_declarationCategoryRepository = new DeclarationCategoryRepository(_connection));
-		public IDocumentRequirementRepository DocumentRequirementRepository => _documentRequirementRepository ?? (_documentRequirementRepository = new DocumentRequirementRepository(_connection));
-		public IFactorRepository FactorRepository => _factorRepository ?? (_factorRepository = new FactorRepository(_connection));
-		public IFinancialRequirementRepository FinancialRequirementRepository => _financialRequirementRepository ?? (_financialRequirementRepository = new FinancialRequirementRepository(_connection));
-		public ILOVRepository LOVRepository => _lOVRepository ?? (_lOVRepository = new LOVRepository(_connection));
-		public ILOVItemRepository LOVItemRepository => _lOVItemRepository ?? (_lOVItemRepository = new LOVItemRepository(_connection));
-		public ILOVScopeRepository LOVScopeRepository => _lOVScopeRepository ?? (_lOVScopeRepository = new LOVScopeRepository(_connection));
-		public INilRequirementRepository NilRequirementRepository => _nilRequirementRepository ?? (_nilRequirementRepository = new NilRequirementRepository(_connection));
-		public IRefusalIntimationRepository RefusalIntimationRepository => _refusalIntimationRepository ?? (_refusalIntimationRepository = new RefusalIntimationRepository(_connection));
-		public IRegulatedHSCodeRepository RegulatedHSCodeRepository => _regulatedHSCodeRepository ?? (_regulatedHSCodeRepository = new RegulatedHSCodeRepository(_connection));
-		public IRequirementRepository RequirementRepository => _requirementRepository ?? (_requirementRepository = new RequirementRepository(_connection));
-		public IRequirementCategoryRepository RequirementCategoryRepository => _requirementCategoryRepository ?? (_requirementCategoryRepository = new RequirementCategoryRepository(_connection));
-		public IRequirementSetRepository RequirementSetRepository => _requirementSetRepository ?? (_requirementSetRepository = new RequirementSetRepository(_connection));
-		public IRequirementStageRepository RequirementStageRepository => _requirementStageRepository ?? (_requirementStageRepository = new RequirementStageRepository(_connection));
-		public IRuleRepository RuleRepository => _ruleRepository ?? (_ruleRepository = new RuleRepository(_connection));
-		public ITermUoMRepository TermUoMRepository => _termUoMRepository ?? (_termUoMRepository = new TermUoMRepository(_connection));
-		public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
-		public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
+        public IBinaryOperatorRepository BinaryOperatorRepository => _binaryOperatorRepository ?? (_binaryOperatorRepository = new BinaryOperatorRepository(_connection));
+        public IDataTypeRepository DataTypeRepository => _dataTypeRepository ?? (_dataTypeRepository = new DataTypeRepository(_connection));
+        public IDecisionMatrixRepository DecisionMatrixRepository => _decisionMatrixRepository ?? (_decisionMatrixRepository = new DecisionMatrixRepository(_connection));
+        public IDeclarationCategoryRepository DeclarationCategoryRepository => _declarationCategoryRepository ?? (_declarationCategoryRepository = new DeclarationCategoryRepository(_connection));
+        public IDocumentRequirementRepository DocumentRequirementRepository => _documentRequirementRepository ?? (_documentRequirementRepository = new DocumentRequirementRepository(_connection));
+        public IFactorRepository FactorRepository => _factorRepository ?? (_factorRepository = new FactorRepository(_connection));
+        public IFinancialRequirementRepository FinancialRequirementRepository => _financialRequirementRepository ?? (_financialRequirementRepository = new FinancialRequirementRepository(_connection));
+        public ILOVRepository LOVRepository => _lOVRepository ?? (_lOVRepository = new LOVRepository(_connection));
+        public ILOVItemRepository LOVItemRepository => _lOVItemRepository ?? (_lOVItemRepository = new LOVItemRepository(_connection));
+        public ILOVScopeRepository LOVScopeRepository => _lOVScopeRepository ?? (_lOVScopeRepository = new LOVScopeRepository(_connection));
+        public INilRequirementRepository NilRequirementRepository => _nilRequirementRepository ?? (_nilRequirementRepository = new NilRequirementRepository(_connection));
+        public IRefusalIntimationRepository RefusalIntimationRepository => _refusalIntimationRepository ?? (_refusalIntimationRepository = new RefusalIntimationRepository(_connection));
+        public IRegulatedHSCodeRepository RegulatedHSCodeRepository => _regulatedHSCodeRepository ?? (_regulatedHSCodeRepository = new RegulatedHSCodeRepository(_connection));
+        public IRequirementRepository RequirementRepository => _requirementRepository ?? (_requirementRepository = new RequirementRepository(_connection));
+        public IRequirementCategoryRepository RequirementCategoryRepository => _requirementCategoryRepository ?? (_requirementCategoryRepository = new RequirementCategoryRepository(_connection));
+        public IRequirementSetRepository RequirementSetRepository => _requirementSetRepository ?? (_requirementSetRepository = new RequirementSetRepository(_connection));
+        public IRequirementStageRepository RequirementStageRepository => _requirementStageRepository ?? (_requirementStageRepository = new RequirementStageRepository(_connection));
+        public IRuleRepository RuleRepository => _ruleRepository ?? (_ruleRepository = new RuleRepository(_connection));
+        public ITermUoMRepository TermUoMRepository => _termUoMRepository ?? (_termUoMRepository = new TermUoMRepository(_connection));
+        public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
+        public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
 
         #endregion
 
@@ -233,14 +231,14 @@ namespace PSW.ITMS.Data.Sql
 
         private void SetTransactions(IDbTransaction transaction)
         {
-            var repositories = this.GetType().GetProperties();
+            PropertyInfo[] repositories = GetType().GetProperties();
 
             foreach (PropertyInfo r in repositories)
             {
                 if (Utility.IsAssignableToGenericType(r.PropertyType, typeof(IRepository<>)))
                 {
 
-                    var repo = r.GetValue(this) as IRepositoryTransaction;
+                    IRepositoryTransaction repo = r.GetValue(this) as IRepositoryTransaction;
                     repo.SetTransaction(transaction);
 
                 }

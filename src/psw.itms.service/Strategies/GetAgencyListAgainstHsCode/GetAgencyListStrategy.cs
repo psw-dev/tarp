@@ -1,12 +1,9 @@
-using System.Collections.Generic;
-
-
-using PSW.ITMS.Service.DTO;
-using PSW.ITMS.Service.Command;
 using PSW.ITMS.Data.Entities;
+using PSW.ITMS.Service.Command;
+using PSW.ITMS.Service.DTO;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using PSW.Lib.Logs;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -15,7 +12,7 @@ namespace PSW.ITMS.Service.Strategies
         #region Constructors 
         public GetAgencyListStrategy(CommandRequest request) : base(request)
         {
-            this.Reply = new CommandReply();
+            Reply = new CommandReply();
         }
         #endregion 
 
@@ -37,7 +34,7 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide valid Hscode");
                 }
 
-                List<AgencyList> TempAgencyList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode, RequestDTO.DocumentCode);
+                var TempAgencyList = Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode, RequestDTO.DocumentCode);
 
                 Log.Information("|{0}|{1}| Agency list fetched for database {@TempAgencyList}", StrategyName, MethodID, TempAgencyList);
 
@@ -46,7 +43,7 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Agency details not found against provided Hscode");
                 }
 
-                List<AgencyList> DistinctAgencyList = TempAgencyList.Distinct(new objCompare()).ToList();
+                var DistinctAgencyList = TempAgencyList.Distinct(new objCompare()).ToList();
 
                 ResponseDTO = new GetListOfAgencyAgainstHscodeResponse
                 {

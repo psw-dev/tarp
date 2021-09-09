@@ -1,11 +1,8 @@
-using System.Collections.Generic;
-
-
-using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.Command;
+using PSW.ITMS.Service.DTO;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using PSW.Lib.Logs;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -14,7 +11,7 @@ namespace PSW.ITMS.Service.Strategies
         #region Constructors 
         public GetFactorLOVItemsStrategy(CommandRequest request) : base(request)
         {
-            this.Reply = new CommandReply();
+            Reply = new CommandReply();
         }
         #endregion 
 
@@ -61,11 +58,11 @@ namespace PSW.ITMS.Service.Strategies
 
         public List<FactorLOVItemsData> GetLOVItemsForProvidedFactors(List<int> factorlabelList)
         {
-            List<FactorLOVItemsData> TempFactorDatalist = new List<FactorLOVItemsData>();
+            var TempFactorDatalist = new List<FactorLOVItemsData>();
 
             foreach (var factorID in factorlabelList)
             {
-                FactorLOVItemsData TempFactorData = new FactorLOVItemsData();
+                var TempFactorData = new FactorLOVItemsData();
 
                 TempFactorData.FactorID = factorID;
 

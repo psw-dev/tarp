@@ -1,9 +1,7 @@
 /*This code is a generated one , Change the source code of the generator if you want some change in this code
 You can find the source code of the code generator from here -> https://git.psw.gov.pk/unais.vayani/DalGenerator*/
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace PSW.ITMS.Data.Entities
@@ -12,41 +10,41 @@ namespace PSW.ITMS.Data.Entities
     /// This class represents the Gender table in the database 
     /// </summary>
 	public class Gender : Entity
-	{
-		#region Fields
-		
-		private string _code;
-		private string _name;
+    {
+        #region Fields
 
-		#endregion
+        private string _code;
+        private string _name;
 
-		#region Properties
-		
-		public string Code { get { return _code; } set { _code = value; PrimaryKey = value; }}
-		public string Name { get { return _name; } set { _name = value;  }}
+        #endregion
 
-		#endregion
+        #region Properties
 
-		#region Methods
+        public string Code { get { return _code; } set { _code = value; PrimaryKey = value; } }
+        public string Name { get { return _name; } set { _name = value; } }
 
-		#endregion
+        #endregion
 
-		#region public Methods
+        #region Methods
 
-		public override Dictionary<string, object> GetColumns()
+        #endregion
+
+        #region public Methods
+
+        public override Dictionary<string, object> GetColumns()
         {
-            return new Dictionary<string, object> 
-			{
-				{"Code", Code},
-				{"Name", Name}
-			};
+            return new Dictionary<string, object>
+            {
+                {"Code", Code},
+                {"Name", Name}
+            };
         }
 
-		#endregion
+        #endregion
 
-		#region Constructors
-		
-		#endregion
-	}
-} 
+        #region Constructors
+
+        #endregion
+    }
+}
 
