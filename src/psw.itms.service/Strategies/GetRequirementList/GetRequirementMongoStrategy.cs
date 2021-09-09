@@ -4,6 +4,7 @@ using PSW.ITMS.Data.Entities;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.MongoDB;
+using PSW.Lib.Logs;
 using System;
 using System.Collections.Generic;
 using System.Linq;

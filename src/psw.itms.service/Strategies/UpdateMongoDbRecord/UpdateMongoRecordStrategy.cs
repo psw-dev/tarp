@@ -3,6 +3,7 @@
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.MongoDB;
+using PSW.Lib.Logs;
 using System;
 
 namespace PSW.ITMS.Service.Strategies
