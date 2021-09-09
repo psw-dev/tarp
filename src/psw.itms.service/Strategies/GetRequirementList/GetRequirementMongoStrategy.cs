@@ -40,7 +40,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
 
-                var TempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
+                var tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
                     new
                     {
                         HSCodeExt = RequestDTO.HsCode,
@@ -50,43 +50,48 @@ namespace PSW.ITMS.Service.Strategies
                     }
                     ).FirstOrDefault();
 
-                Log.Information("|{0}|{1}| RegulatedHSCode DbRecord {@TempHsCode}", StrategyName, MethodID, TempHsCode);
+                Log.Information("|{0}|{1}| RegulatedHSCode DbRecord {@tempHsCode}", StrategyName, MethodID, tempHsCode);
 
-                if (TempHsCode == null)
+                if (tempHsCode == null)
                 {
                     return BadRequestReply("Record for hscode does not exist");
                 }
 
-                var TempRule = Command.UnitOfWork.RuleRepository.Get(Convert.ToInt16(TempHsCode.RuleID));
+                var tempRule = Command.UnitOfWork.RuleRepository.Get(Convert.ToInt16(tempHsCode.RuleID));
 
-                if (TempRule == null)
+                if (tempRule == null)
                 {
                     return BadRequestReply("Record for rule against hscode does not exist");
                 }
 
-                Log.Information("|{0}|{1}| Rule DbRecord {@TempRule}", StrategyName, MethodID, TempRule);
+                Log.Information("|{0}|{1}| Rule DbRecord {@tempRule}", StrategyName, MethodID, tempRule);
 
                 //var FactorsIDAppliedTORule = GetFactorAppliedInRule(TempRule);
-                var FactorsIDAppliedTORule = TempRule.GetFactorAppliedInRule();
+                var factorsIDAppliedTORule = tempRule.GetFactorAppliedInRule();
 
-                if (FactorsIDAppliedTORule.Count == 0)
+                if (factorsIDAppliedTORule.Count == 0)
                 {
                     return BadRequestReply("No factor found in rule");
                 }
 
-                Log.Information("|{0}|{1}| FactorID's Applied To Rule DbRecord {@FactorsIDAppliedTORule}", StrategyName, MethodID, FactorsIDAppliedTORule);
+                Log.Information("|{0}|{1}| FactorID's Applied To Rule DbRecord {@factorsIDAppliedTORule}", StrategyName, MethodID, factorsIDAppliedTORule);
 
-                var FactorDataList = LoadFactorData(FactorsIDAppliedTORule);
+                var factorDataList = Command.UnitOfWork.FactorRepository.GetFactorsData(factorsIDAppliedTORule);
 
-                Log.Information("|{0}|{1}| FactorData DbRecord {@FactorDataList}", StrategyName, MethodID, FactorDataList);
+                if(factorDataList == null)
+                {
+                    return BadRequestReply("Factors data not found");
+                }
+                
+                Log.Information("|{0}|{1}| FactorData DbRecord {@factorDataList}", StrategyName, MethodID, factorDataList);
 
-                var doc = new BsonDocument();
+                var mongoDoc = new BsonDocument();
 
-                MongoDbRecordFetcher MDbRecordFetcher;
+                MongoDbRecordFetcher mongoDBRecordFetcher;
 
                 try
                 {
-                    MDbRecordFetcher = new MongoDbRecordFetcher("TARP", TempHsCode.CollectionName);
+                    mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", tempHsCode.CollectionName);
                 }
                 catch (SystemException ex)
                 {
@@ -97,8 +102,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 try
                 {
-                    //MongoDbRecordFetcher MDbRecordFetcher = new MongoDbRecordFetcher("TARP", TempHsCode.CollectionName);
-                    doc = MDbRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                    mongoDoc = mongoDBRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
                 }
                 catch (SystemException ex)
                 {
@@ -107,31 +111,31 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Error occured in fetching record from MongoDB");
                 }
 
-                Log.Information("|{0}|{1}| Mongo Record fetched {@doc}", StrategyName, MethodID, doc);
+                Log.Information("|{0}|{1}| Mongo Record fetched {@mongoDoc}", StrategyName, MethodID, mongoDoc);
 
-                if (doc == null)
+                if (mongoDoc == null)
                 {
-                    return BadRequestReply("No record found for Hscode : " + RequestDTO.HsCode);
+                    return BadRequestReply("No record found for HsCode : " + RequestDTO.HsCode);
                 }
 
-                var RecordChecker = CheckFactorInMongoRecord(FactorDataList, doc, RequestDTO.FactorCodeValuePair);
+                var recordChecker = CheckFactorInMongoRecord(factorDataList, mongoDoc, RequestDTO.FactorCodeValuePair);
 
-                var TempDocumentaryRequirementList = new List<DocumentaryRequirement>();
+                var tempDocumentaryRequirementList = new List<DocumentaryRequirement>();
 
-                if (RecordChecker == "Checked")
+                if (recordChecker == "Checked")
                 {
-                    TempDocumentaryRequirementList = GetRequirements(doc, RequestDTO.documentTypeCode);
+                    tempDocumentaryRequirementList = GetRequirements(mongoDoc, RequestDTO.documentTypeCode);
 
-                    Log.Information("|{0}|{1}| Documentary Requirements {@TempDocumentaryRequirementList}", StrategyName, MethodID, TempDocumentaryRequirementList);
+                    Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
                 }
                 else
                 {
-                    return BadRequestReply(RecordChecker);
+                    return BadRequestReply(recordChecker);
                 }
 
                 ResponseDTO = new GetDocumentRequirementResponse
                 {
-                    DocumentaryRequirementList = TempDocumentaryRequirementList
+                    DocumentaryRequirementList = tempDocumentaryRequirementList
                 };
 
                 Log.Information("|{0}|{1}| Response {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);
@@ -148,33 +152,22 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion
 
-        
-
-        private List<Factors> LoadFactorData(List<long> FactorIDAppliedInRule)
-        {
-            var FactorDataList = new List<Factors>();
-
-            FactorDataList = Command.UnitOfWork.FactorRepository.GetFactorsData(FactorIDAppliedInRule);
-
-            return FactorDataList;
-        }
-
-        public string CheckFactorInMongoRecord(List<Factors> FactorDataList, BsonDocument mongoDoc, Dictionary<string, FactorData> FactorCodeValuePair)
+        public string CheckFactorInMongoRecord(List<Factors> factorDataList, BsonDocument mongoDoc, Dictionary<string, FactorData> factorCodeValuePair)
         {
             var count = 0;
-            foreach (var factor in FactorDataList)
+            foreach (var factor in factorDataList)
             {
-                if (FactorCodeValuePair.ContainsKey(factor.FactorCode))
+                if (factorCodeValuePair.ContainsKey(factor.FactorCode))
                 {
                     var ItemList = mongoDoc[factor.FactorCode].ToString().Split('|').ToList();
 
-                    if (ItemList.Contains(FactorCodeValuePair[factor.FactorCode].FactorValue) || ItemList.Contains("ALL"))
+                    if (ItemList.Contains(factorCodeValuePair[factor.FactorCode].FactorValue) || ItemList.Contains("ALL"))
                     {
                         count += 1;
                     }
                     else
                     {
-                        return $"Factor: {factor.Label} Value : {FactorCodeValuePair[factor.FactorCode]} does not match in record";
+                        return $"Factor: {factor.Label} Value : {factorCodeValuePair[factor.FactorCode]} does not match in record";
                     }
                 }
                 else
@@ -183,7 +176,7 @@ namespace PSW.ITMS.Service.Strategies
                 }
             }
 
-            if (count == FactorDataList.Count)
+            if (count == factorDataList.Count)
             {
                 return "Checked";
             }
@@ -193,11 +186,11 @@ namespace PSW.ITMS.Service.Strategies
             }
         }
 
-        public List<DocumentaryRequirement> GetRequirements(BsonDocument mongoRecord, string RequiredDocumentTypeCode)
+        public List<DocumentaryRequirement> GetRequirements(BsonDocument mongoRecord, string requiredDocumentTypeCode)
         {
             var tarpRequirements = new List<DocumentaryRequirement>();
 
-            if (RequiredDocumentTypeCode == "D12")
+            if (requiredDocumentTypeCode == "D12")
             {
                 var ipDocRequirements = mongoRecord["IP DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
                 var ipDocRequirementsTrimmed = new List<string>();
@@ -252,7 +245,7 @@ namespace PSW.ITMS.Service.Strategies
 
             }
             //For RO 
-            else if (RequiredDocumentTypeCode == "D03")
+            else if (requiredDocumentTypeCode == "D03")
             {
                 var roDocRequirements = mongoRecord["RO  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
 
@@ -297,7 +290,7 @@ namespace PSW.ITMS.Service.Strategies
 
             }
             //For Phythosanitary Certificate
-            else if (RequiredDocumentTypeCode == "D15")
+            else if (requiredDocumentTypeCode == "D15")
             {
                 var roDocRequirements = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
 

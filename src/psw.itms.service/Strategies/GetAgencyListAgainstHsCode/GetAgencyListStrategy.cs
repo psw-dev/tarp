@@ -35,20 +35,20 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide valid Hscode");
                 }
 
-                var TempAgencyList = Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode, RequestDTO.DocumentCode);
+                var tempAgencyList = Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode, RequestDTO.DocumentCode);
 
-                Log.Information("|{0}|{1}| Agency list fetched for database {@TempAgencyList}", StrategyName, MethodID, TempAgencyList);
+                Log.Information("|{0}|{1}| Agency list fetched for database {@tempAgencyList}", StrategyName, MethodID, tempAgencyList);
 
-                if (TempAgencyList == null || TempAgencyList.Count == 0)
+                if (tempAgencyList == null || tempAgencyList.Count == 0)
                 {
                     return BadRequestReply("Agency details not found against provided Hscode");
                 }
 
-                var DistinctAgencyList = TempAgencyList.Distinct(new objCompare()).ToList();
+                var distinctAgencyList = tempAgencyList.Distinct(new objCompare()).ToList();
 
                 ResponseDTO = new GetListOfAgencyAgainstHscodeResponse
                 {
-                    AgencyList = DistinctAgencyList
+                    AgencyList = distinctAgencyList
                 };
 
                 Log.Information("|{0}|{1}| Response {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);

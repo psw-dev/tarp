@@ -37,7 +37,7 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide valid request parameters");
                 }
 
-                var MongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
+                var mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
                     new
                     {
                         AgencyId = RequestDTO.AgencyId,
@@ -46,29 +46,29 @@ namespace PSW.ITMS.Service.Strategies
                     }
                     ).FirstOrDefault().CollectionName;
 
-                if (string.IsNullOrEmpty(MongoDbCollection))
+                if (string.IsNullOrEmpty(mongoDbCollection))
                 {
                     return BadRequestReply("No record found for provided request parameters");
                 }
 
-                Log.Information("|{0}|{1}| MongoDb Collection Name : {@MongoDbCollection}", StrategyName, MethodID, MongoDbCollection);
+                Log.Information("|{0}|{1}| MongoDb Collection Name : {@mongoDbCollection}", StrategyName, MethodID, mongoDbCollection);
 
-                var ExtHsCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetExtHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode, RequestDTO.TradeTranTypeID);
+                var extHsCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetExtHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode, RequestDTO.TradeTranTypeID);
 
-                if (ExtHsCodeList == null)
+                if (extHsCodeList == null)
                 {
                     var errorMessage = String.Format("No HsCode found in Db for AgencyID : '{0}', RequiredDocumentTypeCode : '{1}', TradeTranTypeId : '{2}'", RequestDTO.AgencyId, RequestDTO.DocumentTypeCode, RequestDTO.TradeTranTypeID);
 
                     return BadRequestReply(errorMessage);
                 }
 
-                MongoDbRecordFetcher MDbRecordFetcher;
+                MongoDbRecordFetcher mongoDBRecordFetcher;
 
                 IMongoCollection<BsonDocument> documentInCollection;
 
                 try
                 {
-                    MDbRecordFetcher = new MongoDbRecordFetcher("TARP", MongoDbCollection);
+                    mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", mongoDbCollection);
                 }
                 catch (SystemException ex)
                 {
@@ -79,7 +79,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 try
                 {
-                    documentInCollection = MDbRecordFetcher.GetCollection();
+                    documentInCollection = mongoDBRecordFetcher.GetCollection();
                 }
                 catch (SystemException ex)
                 {
@@ -88,7 +88,7 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Error occured in fetching record from MongoDB");
                 }
 
-                var regulatedHsCodePurposeList = GetPurposeListAgainstRegulatedHsCode(ExtHsCodeList, documentInCollection);
+                var regulatedHsCodePurposeList = GetPurposeListAgainstRegulatedHsCode(extHsCodeList, documentInCollection);
 
                 ResponseDTO = new RegulatedHsCodePurposeResponseDTO
                 {
@@ -108,11 +108,11 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion 
 
-        private static List<RegulatedHsCodePurpose> GetPurposeListAgainstRegulatedHsCode(List<string> ExtHsCodeList, IMongoCollection<BsonDocument> documentInCollection)
+        private static List<RegulatedHsCodePurpose> GetPurposeListAgainstRegulatedHsCode(List<string> extHsCodeList, IMongoCollection<BsonDocument> documentInCollection)
         {
             var regulatedHsCodePurposes = new List<RegulatedHsCodePurpose>();
 
-            foreach (var hsCode in ExtHsCodeList)
+            foreach (var hsCode in extHsCodeList)
             {
                 var hsCodePurpose = new RegulatedHsCodePurpose();
                 hsCodePurpose.HsCode = hsCode;

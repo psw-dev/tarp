@@ -34,7 +34,7 @@ namespace PSW.ITMS.Service.Strategies
                 //Get Regulated Hscode list filtered on base of AgencyId 
                 if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode == null)
                 {
-                    regulatedHSCodeList = SearchWithAgencyID(RequestDTO.AgencyId);
+                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(RequestDTO.AgencyId);
 
                     if (regulatedHSCodeList == null || regulatedHSCodeList.Count == 0)
                     {
@@ -45,7 +45,7 @@ namespace PSW.ITMS.Service.Strategies
                 //Get Regulated Hscode list filtered on base of AgencyId and DocumentTypeCode
                 else if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode != null)
                 {
-                    regulatedHSCodeList = SearchWithAgencyIDAndDocumentTypeCode(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode);
+                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode);
 
                     if (regulatedHSCodeList == null || regulatedHSCodeList.Count == 0)
                     {
@@ -84,19 +84,5 @@ namespace PSW.ITMS.Service.Strategies
             }
         }
         #endregion
-
-        public List<ViewRegulatedHsCode> SearchWithAgencyID(int agencyId)
-        {
-            var RegulatedHsCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(agencyId);
-
-            return RegulatedHsCodeList;
-        }
-
-        public List<ViewRegulatedHsCode> SearchWithAgencyIDAndDocumentTypeCode(int agencyId, string documentTypeCode)
-        {
-            var RegulatedHsCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(agencyId, documentTypeCode);
-
-            return RegulatedHsCodeList;
-        }
     }
 }

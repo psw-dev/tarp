@@ -33,9 +33,9 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Hscode cannot be null");
                 }
 
-                var TempPctCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetPCTCodeList(RequestDTO.HsCode);
+                var tempPctCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetPCTCodeList(RequestDTO.HsCode);
 
-                if (TempPctCodeList == null || TempPctCodeList.Count == 0)
+                if (tempPctCodeList == null || tempPctCodeList.Count == 0)
                 {
                     ResponseDTO = new GetPCTCodeListResponse
                     {
@@ -51,7 +51,7 @@ namespace PSW.ITMS.Service.Strategies
                 ResponseDTO = new GetPCTCodeListResponse
                 {
                     Message = "Product codes exist for provided hscode.",
-                    PctCodeList = TempPctCodeList
+                    PctCodeList = tempPctCodeList
                 };
 
                 Log.Information("|{0}|{1}| Response DTO : {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);
