@@ -35,7 +35,7 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide proper Request parameters");
                 }
 
-                var mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", RequestDTO.Collection);
+                var mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", RequestDTO.Collection, Environment.GetEnvironmentVariable("MONGODBConnString"));
 
                 if (mongoDBRecordFetcher.UpdateRecord(RequestDTO.HsCode, RequestDTO.Purpose, RequestDTO.UpdateKey, RequestDTO.UpdateValue) == true)
                 {

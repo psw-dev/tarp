@@ -68,7 +68,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 try
                 {
-                    mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", mongoDbCollection);
+                    mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", mongoDbCollection, Environment.GetEnvironmentVariable("MONGODBConnString"));
                 }
                 catch (SystemException ex)
                 {

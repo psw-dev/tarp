@@ -10,12 +10,12 @@ namespace PSW.ITMS.Service.MongoDB
         public string CollectionName { get; set; }
         public MongoClient MClient { get; set; }
 
-        public MongoDbRecordFetcher(string dbName, string collectionName)
+        public MongoDbRecordFetcher(string dbName, string collectionName, string mongoDBConnectionString)
         {
             DbName = dbName;
             CollectionName = collectionName;
             //this.MClient = new MongoClient("mongodb://localhost");  //localhost
-            MClient = new MongoClient(Environment.GetEnvironmentVariable("MONGODBConnString"));
+            MClient = new MongoClient(mongoDBConnectionString);
         }
 
         public BsonDocument GetFilteredRecord(string hscode, string purpose)
