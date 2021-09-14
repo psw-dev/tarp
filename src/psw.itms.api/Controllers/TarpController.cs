@@ -7,6 +7,8 @@ using PSW.ITMS.Service.Strategies;
 using System;
 using System.Security.Cryptography;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace PSW.ITMS.Api.Contollers
 {
@@ -41,6 +43,7 @@ namespace PSW.ITMS.Api.Contollers
         // TODO: Authentication
         // Assuming Request is Authenticated.
         [HttpPost("secure")]
+        [Authorize("authorizedUserPolicy")]
         public ActionResult<APIResponse> SecureRequest(APIRequest apiRequest)
         {
             //TODO: Client Id Authentication here

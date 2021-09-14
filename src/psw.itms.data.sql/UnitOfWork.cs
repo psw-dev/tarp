@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Reflection;
+using PSW.RabbitMq;
 
 namespace PSW.ITMS.Data.Sql
 {
@@ -115,9 +116,9 @@ namespace PSW.ITMS.Data.Sql
 
         #endregion
 
-        //private IEventBus _eventBus;
+        private IEventBus _eventBus;
 
-        //public IEventBus eventBus => _eventBus;
+        public IEventBus eventBus => _eventBus;
         private IConfiguration _configuration;
 
         public UnitOfWork(IConfiguration configuration) //, IEventBus evBus)
@@ -127,11 +128,12 @@ namespace PSW.ITMS.Data.Sql
             _connection = new SqlConnection(_configuration.GetConnectionString("ConnectionString"));
 
         }
-        // public UnitOfWork(IConfiguration configuration)
-        // {
-        //     _configuration = configuration;
-        //     _connection = new SqlConnection(_configuration.GetConnectionString("ConnectionString"));
-        // }
+        public UnitOfWork(IConfiguration configuration, IEventBus evBus)
+        {
+            _eventBus = evBus;
+            _configuration = configuration;
+            _connection = new SqlConnection(_configuration.GetConnectionString("ConnectionString"));
+        }
         public UnitOfWork()
         {
             // TODO : Get Connection String From appSetting.json
