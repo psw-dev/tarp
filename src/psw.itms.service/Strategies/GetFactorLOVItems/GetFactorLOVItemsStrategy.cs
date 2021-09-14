@@ -38,7 +38,11 @@ namespace PSW.ITMS.Service.Strategies
 
                 if (tempFactorLOVItems == null || tempFactorLOVItems.Count == 0)
                 {
-                    return BadRequestReply("LOV data not available for provided factor list");
+                    ResponseDTO = new GetFactorLovItemsResponse
+                    {
+                        FactorLOVItemsList = new List<FactorLOVItemsData>()
+                    };
+                    return OKReply("LOV data not available for provided factor list");
                 }
 
                 ResponseDTO = new GetFactorLovItemsResponse
@@ -78,6 +82,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
 
                     tempFactorData.FactorLabel = factorData.Label;
+                    tempFactorData.FactorCode = factorData.FactorCode;
 
                     tempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorData.LOVID);
 

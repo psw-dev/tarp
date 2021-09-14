@@ -15,6 +15,9 @@ namespace PSW.ITMS.Service.DTO
         [JsonPropertyName("factorID")]
         public int FactorID { get; set; }
 
+        [JsonPropertyName("factorCode")]
+        public string FactorCode { get; set; }
+
         [JsonPropertyName("factorLabel")]
         public string FactorLabel { get; set; }
 

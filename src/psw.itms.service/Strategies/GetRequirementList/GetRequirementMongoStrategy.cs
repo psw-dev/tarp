@@ -219,7 +219,7 @@ namespace PSW.ITMS.Service.Strategies
                 }
 
                 //Financial Requirements
-                FinancialRequirement.PostingBillingAccountID = "123";
+                FinancialRequirement.PlainAmount = mongoRecord["IP FEES"].ToString();
                 FinancialRequirement.Amount = PSWEncryption.encrypt(mongoRecord["IP FEES"].ToString());
 
 
@@ -262,7 +262,7 @@ namespace PSW.ITMS.Service.Strategies
                 }
 
                 //Financial Requirements
-                FinancialRequirement.PostingBillingAccountID = "123"; //change afterward with proper billing account
+                FinancialRequirement.PlainAmount = mongoRecord["RO FEES"].ToString();
                 FinancialRequirement.Amount = PSWEncryption.encrypt(mongoRecord["RO FEES"].ToString());
             }
 
@@ -299,7 +299,7 @@ namespace PSW.ITMS.Service.Strategies
                 }
 
                 //Financial Requirements
-                FinancialRequirement.PostingBillingAccountID = "123"; //change afterward with proper billing account
+                FinancialRequirement.PlainAmount = mongoRecord["PHYTOSANITARY  FEES"].ToString();
                 FinancialRequirement.Amount = PSWEncryption.encrypt(mongoRecord["PHYTOSANITARY  FEES"].ToString());
             }
 

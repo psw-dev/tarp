@@ -37,11 +37,12 @@ namespace PSW.ITMS.Service.DTO
 
     public class FinancialRequirement
     {
-        [JsonPropertyName("postingBillingAccountID")]
-        public string PostingBillingAccountID { get; set; }
 
         [JsonPropertyName("amount")]
         public string Amount { get; set; }
+
+        [JsonPropertyName("plainAmount")]
+        public string PlainAmount { get; set; }
     }
 
     public class ValidityRequirement
