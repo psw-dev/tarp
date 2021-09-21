@@ -130,7 +130,7 @@ namespace PSW.ITMS.Api
 
             if (UseConsulDev.ToLower() == "true")
             {
-                //app.UseConsul(lifetime);
+                app.UseConsul(lifetime);
             }
 
             app.UseCors("CorsPolicy");
