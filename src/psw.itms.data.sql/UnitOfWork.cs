@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Reflection;
+using PSW.RabbitMq;
 
 namespace PSW.ITMS.Data.Sql
 {
@@ -25,7 +26,7 @@ namespace PSW.ITMS.Data.Sql
         private IDeclarationCategoryRepository _declarationCategoryRepository;
         private IDocumentRequirementRepository _documentRequirementRepository;
         private IFactorRepository _factorRepository;
-        private IFinancialRequirementRepository _financialRequirementRepository;
+        //private IFinancialRequirementRepository _financialRequirementRepository;
         private ILOVRepository _lOVRepository;
         private ILOVItemRepository _lOVItemRepository;
         private ILOVScopeRepository _lOVScopeRepository;
@@ -75,7 +76,7 @@ namespace PSW.ITMS.Data.Sql
         public IDeclarationCategoryRepository DeclarationCategoryRepository => _declarationCategoryRepository ?? (_declarationCategoryRepository = new DeclarationCategoryRepository(_connection));
         public IDocumentRequirementRepository DocumentRequirementRepository => _documentRequirementRepository ?? (_documentRequirementRepository = new DocumentRequirementRepository(_connection));
         public IFactorRepository FactorRepository => _factorRepository ?? (_factorRepository = new FactorRepository(_connection));
-        public IFinancialRequirementRepository FinancialRequirementRepository => _financialRequirementRepository ?? (_financialRequirementRepository = new FinancialRequirementRepository(_connection));
+        //public IFinancialRequirementRepository FinancialRequirementRepository => _financialRequirementRepository ?? (_financialRequirementRepository = new FinancialRequirementRepository(_connection));
         public ILOVRepository LOVRepository => _lOVRepository ?? (_lOVRepository = new LOVRepository(_connection));
         public ILOVItemRepository LOVItemRepository => _lOVItemRepository ?? (_lOVItemRepository = new LOVItemRepository(_connection));
         public ILOVScopeRepository LOVScopeRepository => _lOVScopeRepository ?? (_lOVScopeRepository = new LOVScopeRepository(_connection));
@@ -115,9 +116,9 @@ namespace PSW.ITMS.Data.Sql
 
         #endregion
 
-        //private IEventBus _eventBus;
+        private IEventBus _eventBus;
 
-        //public IEventBus eventBus => _eventBus;
+        public IEventBus eventBus => _eventBus;
         private IConfiguration _configuration;
 
         public UnitOfWork(IConfiguration configuration) //, IEventBus evBus)
@@ -127,11 +128,12 @@ namespace PSW.ITMS.Data.Sql
             _connection = new SqlConnection(_configuration.GetConnectionString("ConnectionString"));
 
         }
-        // public UnitOfWork(IConfiguration configuration)
-        // {
-        //     _configuration = configuration;
-        //     _connection = new SqlConnection(_configuration.GetConnectionString("ConnectionString"));
-        // }
+        public UnitOfWork(IConfiguration configuration, IEventBus evBus)
+        {
+            _eventBus = evBus;
+            _configuration = configuration;
+            _connection = new SqlConnection(_configuration.GetConnectionString("ConnectionString"));
+        }
         public UnitOfWork()
         {
             // TODO : Get Connection String From appSetting.json

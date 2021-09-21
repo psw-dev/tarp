@@ -24,6 +24,7 @@ namespace PSW.ITMS.Data.Entities
         private int _createdBy;
         private DateTime _updatedOn;
         private int _updatedBy;
+        private string _documentClassificationCode;
 
         #endregion
 
@@ -39,7 +40,8 @@ namespace PSW.ITMS.Data.Entities
         public int CreatedBy { get { return _createdBy; } set { _createdBy = value; } }
         public DateTime UpdatedOn { get { return _updatedOn; } set { _updatedOn = value; } }
         public int UpdatedBy { get { return _updatedBy; } set { _updatedBy = value; } }
-
+        public string DocumentClassificationCode { get { return _documentClassificationCode; } set {_documentClassificationCode = value; } }
+ 
         #endregion
 
         #region Methods
@@ -61,7 +63,8 @@ namespace PSW.ITMS.Data.Entities
                 {"CreatedOn", CreatedOn},
                 {"CreatedBy", CreatedBy},
                 {"UpdatedOn", UpdatedOn},
-                {"UpdatedBy", UpdatedBy}
+                {"UpdatedBy", UpdatedBy},
+                {"DocumentClassificationCode", DocumentClassificationCode}
             };
         }
 

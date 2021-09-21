@@ -8,6 +8,8 @@ namespace PSW.ITMS.Service.DTO
     {
         [JsonPropertyName("documentaryRequirementList")]
         public List<DocumentaryRequirement> DocumentaryRequirementList { get; set; }
+        public FinancialRequirement FinancialRequirement { get; set; }
+        public ValidityRequirement ValidityRequirement { get; set; }
     }
 
     public class DocumentaryRequirement
@@ -23,8 +25,6 @@ namespace PSW.ITMS.Service.DTO
         [JsonPropertyName("requirementType")]
         public string RequirementType { get; set; }
 
-        //Properties for Documentary Requirement
-
         [JsonPropertyName("documentTypeCode")]
         public string DocumentTypeCode { get; set; }
 
@@ -33,27 +33,20 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("attachedObjectFormatID")]
         public int AttachedObjectFormatID { get; set; }
+    }
 
-        //Properties for Financial Requirement
-
-        [JsonPropertyName("postingBillingAccountID")]
-        public string PostingBillingAccountID { get; set; }
+    public class FinancialRequirement
+    {
 
         [JsonPropertyName("amount")]
         public string Amount { get; set; }
 
-        //Properties for Nil Requirements
+        [JsonPropertyName("plainAmount")]
+        public string PlainAmount { get; set; }
+    }
 
-        [JsonPropertyName("displayText")]
-        public string DisplayText { get; set; }
-
-        //Properties for Testing Requirements
-
-        [JsonPropertyName("testID")]
-        public string TestID { get; set; }
-
-        //Properties for ValidityTerm Requirement
-
+    public class ValidityRequirement
+    {
         [JsonPropertyName("quantity")]
         public int Quantity { get; set; }
 

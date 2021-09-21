@@ -16,7 +16,7 @@ namespace PSW.ITMS.Data
         IDeclarationCategoryRepository DeclarationCategoryRepository { get; }
         IDocumentRequirementRepository DocumentRequirementRepository { get; }
         IFactorRepository FactorRepository { get; }
-        IFinancialRequirementRepository FinancialRequirementRepository { get; }
+        //IFinancialRequirementRepository FinancialRequirementRepository { get; }
         ILOVRepository LOVRepository { get; }
         ILOVItemRepository LOVItemRepository { get; }
         ILOVScopeRepository LOVScopeRepository { get; }

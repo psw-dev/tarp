@@ -78,11 +78,11 @@ namespace PSW.ITMS.Service.Strategies
 
                 var factorDataList = Command.UnitOfWork.FactorRepository.GetFactorsData(factorsIDAppliedTORule);
 
-                if(factorDataList == null)
+                if (factorDataList == null)
                 {
                     return BadRequestReply("Factors data not found");
                 }
-                
+
                 Log.Information("|{0}|{1}| FactorData DbRecord {@factorDataList}", StrategyName, MethodID, factorDataList);
 
                 var mongoDoc = new BsonDocument();
@@ -124,19 +124,14 @@ namespace PSW.ITMS.Service.Strategies
 
                 if (recordChecker == "Checked")
                 {
-                    tempDocumentaryRequirementList = GetRequirements(mongoDoc, RequestDTO.documentTypeCode);
-
+                    ResponseDTO = GetRequirements(mongoDoc, RequestDTO.documentTypeCode);
+                    
                     Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
                 }
                 else
                 {
                     return BadRequestReply(recordChecker);
                 }
-
-                ResponseDTO = new GetDocumentRequirementResponse
-                {
-                    DocumentaryRequirementList = tempDocumentaryRequirementList
-                };
 
                 Log.Information("|{0}|{1}| Response {@ResponseDTO}", StrategyName, MethodID, ResponseDTO);
 
@@ -186,11 +181,19 @@ namespace PSW.ITMS.Service.Strategies
             }
         }
 
-        public List<DocumentaryRequirement> GetRequirements(BsonDocument mongoRecord, string requiredDocumentTypeCode)
+        public GetDocumentRequirementResponse GetRequirements(BsonDocument mongoRecord, string requiredDocumentTypeCode)
         {
-            var tarpRequirements = new List<DocumentaryRequirement>();
+            GetDocumentRequirementResponse tarpRequirments = new GetDocumentRequirementResponse();
 
-            if (requiredDocumentTypeCode == "D12")
+            var tarpDocumentRequirements = new List<DocumentaryRequirement>();
+            var FinancialRequirement = new FinancialRequirement();
+            var ValidityRequirement = new ValidityRequirement();
+
+            string documentClassification = this.Command.UnitOfWork.DocumentTypeRepository.Where(new
+            { Code = requiredDocumentTypeCode }).FirstOrDefault().DocumentClassificationCode;
+
+            //for Import Permit = IMP
+            if (documentClassification == "IMP")
             {
                 var ipDocRequirements = mongoRecord["IP DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
                 var ipDocRequirementsTrimmed = new List<string>();
@@ -200,15 +203,11 @@ namespace PSW.ITMS.Service.Strategies
                     ipDocRequirementsTrimmed.Add(lpco.Trim());
                 }
 
-                // ipDocRequirementsTrimmed.Remove("Application on DPP form 14 [ Rule 19 (1) of PQR 2019]");
-                // ipDocRequirementsTrimmed.Remove("Fee Challan");
-
-                //DocumentaryRequirements
                 foreach (var doc in ipDocRequirementsTrimmed)
                 {
                     var tempReq = new DocumentaryRequirement();
 
-                    tempReq.Name = doc + " For " + " DPP Import Permit"; //replace DPP with collectionName 
+                    tempReq.Name = doc + " For Import Permit"; //replace DPP with collectionName 
                     tempReq.DocumentName = doc;
                     tempReq.IsMandatory = true;
                     tempReq.RequirementType = "Documentary";
@@ -216,36 +215,22 @@ namespace PSW.ITMS.Service.Strategies
                     tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                     tempReq.AttachedObjectFormatID = 1;
 
-                    tarpRequirements.Add(tempReq);
+                    tarpDocumentRequirements.Add(tempReq);
                 }
 
                 //Financial Requirements
-                var tempReqFinancial = new DocumentaryRequirement();
+                FinancialRequirement.PlainAmount = mongoRecord["IP FEES"].ToString();
+                FinancialRequirement.Amount = PSWEncryption.encrypt(mongoRecord["IP FEES"].ToString());
 
-                tempReqFinancial.Name = "Fee Challan For DPP Import Permit"; //replace DPP with collectionName 
-                tempReqFinancial.IsMandatory = true;
-                tempReqFinancial.RequirementType = "Financial";
-
-                tempReqFinancial.PostingBillingAccountID = "123"; //change afterward with proper billing account
-                tempReqFinancial.Amount = PSWEncryption.encrypt(mongoRecord["IP FEES"].ToString());
-
-                tarpRequirements.Add(tempReqFinancial);
 
                 //ValidityTerm Requirements
-                var tempReqValidityTerm = new DocumentaryRequirement();
-
-                tempReqValidityTerm.Name = "Validity Period For DPP Import Permit"; //replace DPP with collectionName 
-                tempReqValidityTerm.IsMandatory = true;
-                tempReqValidityTerm.RequirementType = "Validity Period";
-                tempReqValidityTerm.UomName = "Month";
+                ValidityRequirement.UomName = "Month";
                 var uomPeriod = mongoRecord["IP VALIDITY"].ToString();
-                tempReqValidityTerm.Quantity = Convert.ToInt32(uomPeriod.Substring(0, 2));
-
-                tarpRequirements.Add(tempReqValidityTerm);
+                ValidityRequirement.Quantity = Convert.ToInt32(uomPeriod.Substring(0, 2));
 
             }
-            //For RO 
-            else if (requiredDocumentTypeCode == "D03")
+            //for ReleaseOrder = RO
+            else if (documentClassification == "RO")
             {
                 var roDocRequirements = mongoRecord["RO  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
 
@@ -273,24 +258,16 @@ namespace PSW.ITMS.Service.Strategies
                     tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                     tempReq.AttachedObjectFormatID = 1;
 
-                    tarpRequirements.Add(tempReq);
+                    tarpDocumentRequirements.Add(tempReq);
                 }
 
                 //Financial Requirements
-                var tempReqFinancial = new DocumentaryRequirement();
-
-                tempReqFinancial.Name = "Fee Challan For DPP Release Order"; //replace DPP with collectionName 
-                tempReqFinancial.IsMandatory = true;
-                tempReqFinancial.RequirementType = "Financial";
-
-                tempReqFinancial.PostingBillingAccountID = "123"; //change afterward with proper billing account
-                tempReqFinancial.Amount = PSWEncryption.encrypt(mongoRecord["RO FEES"].ToString());
-
-                tarpRequirements.Add(tempReqFinancial);
-
+                FinancialRequirement.PlainAmount = mongoRecord["RO FEES"].ToString();
+                FinancialRequirement.Amount = PSWEncryption.encrypt(mongoRecord["RO FEES"].ToString());
             }
-            //For Phythosanitary Certificate
-            else if (requiredDocumentTypeCode == "D15")
+
+            //for PythoCertificate = EC
+            else if (documentClassification == "EC")
             {
                 var roDocRequirements = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
 
@@ -310,7 +287,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     var tempReq = new DocumentaryRequirement();
 
-                    tempReq.Name = doc + " For " + " Phythosanitary Certificate";
+                    tempReq.Name = doc + " For Phythosanitary Certificate";
                     tempReq.DocumentName = doc;
                     tempReq.IsMandatory = true;
                     tempReq.RequirementType = "Documentary";
@@ -318,24 +295,19 @@ namespace PSW.ITMS.Service.Strategies
                     tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                     tempReq.AttachedObjectFormatID = 1;
 
-                    tarpRequirements.Add(tempReq);
+                    tarpDocumentRequirements.Add(tempReq);
                 }
 
                 //Financial Requirements
-                var tempReqFinancial = new DocumentaryRequirement();
-
-                tempReqFinancial.Name = "Fee Challan For Phythosanitary Certificate";
-                tempReqFinancial.IsMandatory = true;
-                tempReqFinancial.RequirementType = "Financial";
-
-                tempReqFinancial.PostingBillingAccountID = "123"; //change afterward with proper billing account
-                tempReqFinancial.Amount = PSWEncryption.encrypt(mongoRecord["PHYTOSANITARY  FEES"].ToString());
-
-                tarpRequirements.Add(tempReqFinancial);
-
+                FinancialRequirement.PlainAmount = mongoRecord["PHYTOSANITARY  FEES"].ToString();
+                FinancialRequirement.Amount = PSWEncryption.encrypt(mongoRecord["PHYTOSANITARY  FEES"].ToString());
             }
 
-            return tarpRequirements;
+            tarpRequirments.DocumentaryRequirementList = tarpDocumentRequirements;
+            tarpRequirments.FinancialRequirement = FinancialRequirement;
+            tarpRequirments.ValidityRequirement = ValidityRequirement;
+
+            return tarpRequirments;
         }
     }
 }

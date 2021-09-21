@@ -10,7 +10,7 @@ namespace PSW.ITMS.Data.Entities
     /// <summary>
     /// This class represents the FinancialRequirement table in the database 
     /// </summary>
-	public class FinancialRequirement : Entity
+	public class DBFinancialRequirement : Entity
     {
         #region Fields
 
@@ -63,7 +63,7 @@ namespace PSW.ITMS.Data.Entities
 
         #region Constructors
 
-        public FinancialRequirement()
+        public DBFinancialRequirement()
         {
             TableName = "FinancialRequirement";
             PrimaryKeyName = "ID";
