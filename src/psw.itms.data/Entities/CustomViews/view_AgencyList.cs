@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 
+using System.Collections.Generic;
 
 namespace PSW.ITMS.Data.Entities
 {
@@ -10,5 +11,8 @@ namespace PSW.ITMS.Data.Entities
 
         [JsonPropertyName("agencyName")]
         public string Name { get; set; }
+
+        [JsonPropertyName("documentCodeList")]
+        public List<string> DocumentCodeList { get; set; }
     }
 }

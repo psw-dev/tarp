@@ -30,18 +30,23 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-                if (string.IsNullOrEmpty(RequestDTO.HsCode) || string.IsNullOrEmpty(RequestDTO.DocumentCode))
+                if (string.IsNullOrEmpty(RequestDTO.HsCode))
                 {
                     return BadRequestReply("Please provide valid Hscode");
                 }
 
-                var tempAgencyList = Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode, RequestDTO.DocumentCode);
+                var tempAgencyList = Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode);
 
                 Log.Information("|{0}|{1}| Agency list fetched for database {@tempAgencyList}", StrategyName, MethodID, tempAgencyList);
 
                 if (tempAgencyList == null || tempAgencyList.Count == 0)
                 {
                     return BadRequestReply("Agency details not found against provided Hscode");
+                }
+
+                foreach(var agency in tempAgencyList)
+                {
+                    agency.DocumentCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetDocumentCodeList(agency.Id, RequestDTO.HsCode);
                 }
 
                 var distinctAgencyList = tempAgencyList.Distinct(new objCompare()).ToList();
