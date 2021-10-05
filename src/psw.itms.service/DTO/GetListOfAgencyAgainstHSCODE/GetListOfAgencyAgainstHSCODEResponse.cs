@@ -6,8 +6,7 @@ namespace PSW.ITMS.Service.DTO
 {
     public class GetListOfAgencyAgainstHscodeResponse
     {
-        [JsonPropertyName("agencyList")]
+        [JsonPropertyName("agencyDataList")]
         public List<AgencyList> AgencyList { get; set; }
     }
-
 }
