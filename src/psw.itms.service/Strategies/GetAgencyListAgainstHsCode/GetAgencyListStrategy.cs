@@ -35,7 +35,7 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide valid Hscode");
                 }
 
-                var tempAgencyList = Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode);
+                var tempAgencyList = Command.UnitOfWork.RegulatedHSCodeRepository.GetAgencyListAgainstHscode(RequestDTO.HsCode, RequestDTO.tradeTranTypeId);
 
                 Log.Information("|{0}|{1}| Agency list fetched for database {@tempAgencyList}", StrategyName, MethodID, tempAgencyList);
 
@@ -46,7 +46,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 foreach(var agency in tempAgencyList)
                 {
-                    agency.DocumentCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetDocumentCodeList(agency.Id, RequestDTO.HsCode);
+                    agency.DocumentCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetDocumentCodeList(agency.Id, RequestDTO.HsCode, RequestDTO.tradeTranTypeId);
                 }
 
                 var distinctAgencyList = tempAgencyList.Distinct(new objCompare()).ToList();
