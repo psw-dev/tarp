@@ -14,5 +14,8 @@ namespace PSW.ITMS.Data.Entities
 
         [JsonPropertyName("documentCodeList")]
         public List<string> DocumentCodeList { get; set; }
+
+        [JsonPropertyName("itemDescription")]
+        public string ItemDescription { get; set; }
     }
 }
