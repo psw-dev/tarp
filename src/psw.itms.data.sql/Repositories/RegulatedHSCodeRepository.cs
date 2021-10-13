@@ -59,11 +59,6 @@ namespace PSW.ITMS.Data.Sql.Repositories
             return _connection.Query<string>(string.Format("SELECT HSCODEEXT FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND TRADETRANTYPEID = '{1}' AND REQUIREDDOCUMENTTYPECODE = '{2}'", agencyId, tradeTransitTypeId, requiredDocumentTypeCode)).ToList();
         }
 
-        public List<string> GetDocumentCodeList(int agencyId, string hsCode, int tradeTransitTypeId)
-        {
-            return _connection.Query<string>(string.Format("SELECT DISTINCT REQUIREDDOCUMENTTYPECODE AS DocumentCodeList FROM REGULATEDHSCODE WHERE AGENCYID =  '{0}' AND HSCODEEXT = '{1}' AND TRADETRANTYPEID = '{2}'",agencyId,hsCode,tradeTransitTypeId)).ToList();
-        }
-
         #endregion
     }
 }

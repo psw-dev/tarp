@@ -6,8 +6,11 @@ namespace PSW.ITMS.Service.DTO
     {
         [JsonPropertyName("hsCode")]
         public string HsCode { get; set; }
-        
+
         [JsonPropertyName("tradeTranTypeId")]
         public int tradeTranTypeId { get; set; }
+
+        [JsonPropertyName("documentCode")]
+        public string DocumentCode { get; set; }
     }
 }

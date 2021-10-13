@@ -46,7 +46,14 @@ namespace PSW.ITMS.Service.Strategies
 
                 foreach(var agency in tempAgencyList)
                 {
-                    agency.DocumentCodeList = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetDocumentCodeList(agency.Id, RequestDTO.HsCode, RequestDTO.tradeTranTypeId);
+                    agency.RequiredDocumentCode = this.Command.UnitOfWork.DocumentToInitiateRepository?.Where(new 
+                    {
+                        AgencyId = agency.Id, 
+                        HsCodeExt = RequestDTO.HsCode, 
+                        TradeTranTypeId = RequestDTO.tradeTranTypeId, 
+                        DocumentCode = RequestDTO.DocumentCode
+                    }
+                    ).FirstOrDefault().RequiredDocumentCode;
                 }
 
                 var distinctAgencyList = tempAgencyList.Distinct(new objCompare()).ToList();

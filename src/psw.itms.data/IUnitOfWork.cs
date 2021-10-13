@@ -31,6 +31,7 @@ namespace PSW.ITMS.Data
         ITermUoMRepository TermUoMRepository { get; }
         ITestingRequirementRepository TestingRequirementRepository { get; }
         IValidityTermRequirementRepository ValidityTermRequirementRepository { get; }
+        IDocumentToInitiateRepository DocumentToInitiateRepository { get; }
 
         #endregion
 
