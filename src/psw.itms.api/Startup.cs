@@ -16,7 +16,8 @@ using PSW.ITMS.Service.AutoMapper;
 using PSW.Lib.Consul;
 using PSW.RabbitMq;
 using PSW.ITMS.RabbitMq;
-
+using PSW.Common.Crypto;
+using System.Security.Cryptography;
 using Microsoft.IdentityModel.Logging;
 
 
@@ -52,10 +53,11 @@ namespace PSW.ITMS.Api
                     }); ;
 
 
-            services.AddSingleton<IEventBus, RabbitMqBus>(s => {
-                    var lifetime = s.GetRequiredService<IHostApplicationLifetime>();
-                    return new RabbitMqBus(lifetime, Configuration);
-                });
+            services.AddSingleton<IEventBus, RabbitMqBus>(s =>
+            {
+                var lifetime = s.GetRequiredService<IHostApplicationLifetime>();
+                return new RabbitMqBus(lifetime, Configuration);
+            });
 
             //--- This Section is for Securing API (via IdentityServer) ---------------------------------------------
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -91,6 +93,20 @@ namespace PSW.ITMS.Api
                 });
             });
 
+            string salt = Environment.GetEnvironmentVariable("ENCRYPTION_SALT");
+            string password = Environment.GetEnvironmentVariable("ENCRYPTION_PASSWORD");
+
+            if (string.IsNullOrWhiteSpace(salt) || string.IsNullOrWhiteSpace(password))
+            {
+                throw new Exception("Please provide salt and password for Crypto Algorithm in Environment Variable");
+            }
+
+            services.AddSingleton<IAppSettingsProcessor>(_ => new AppSettingsDecrypter<AesManaged>(_.GetService<IConfiguration>(),
+            password,
+               salt));
+
+            var cryptoAlgorithm = new CryptoFactory().Create<AesManaged>(password, salt);
+            services.AddSingleton<ICryptoAlgorithm>(cryptoAlgorithm);
             services.AddCors(options =>
                 {
                     options.AddPolicy("CorsPolicy",
