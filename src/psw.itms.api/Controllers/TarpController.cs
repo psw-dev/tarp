@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using PSW.Common.Crypto;
 
 namespace PSW.ITMS.Api.Contollers
 {
@@ -28,12 +29,13 @@ namespace PSW.ITMS.Api.Contollers
 
         #region Constructors
 
-        public TarpController(IItmsService service, IUnitOfWork uow)
+        public TarpController(IItmsService service, IUnitOfWork uow, ICryptoAlgorithm cryptoAlgorithm)
         {
             // Dependency Injection of services
             this.service = service;
             this.service.UnitOfWork = uow;
             this.service.StrategyFactory = new StrategyFactory(uow);
+            this.service.CryptoAlgorithm = cryptoAlgorithm;
         }
 
         #endregion

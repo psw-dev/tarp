@@ -12,7 +12,10 @@ namespace PSW.ITMS.Data.Entities
         [JsonPropertyName("agencyName")]
         public string Name { get; set; }
 
-        [JsonPropertyName("documentCodeList")]
-        public List<string> DocumentCodeList { get; set; }
+        [JsonPropertyName("requiredDocumentCode")]
+        public string RequiredDocumentCode { get; set; }
+
+        [JsonPropertyName("itemDescription")]
+        public string ItemDescription { get; set; }
     }
 }
