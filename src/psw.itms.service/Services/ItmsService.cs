@@ -7,6 +7,7 @@ using PSW.ITMS.Data;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.Exceptions;
 using PSW.ITMS.Service.Strategies;
+using PSW.Common.Crypto;
 
 namespace PSW.ITMS.Service
 {
@@ -16,6 +17,7 @@ namespace PSW.ITMS.Service
         public readonly IMapper _mapper;
         public IUnitOfWork UnitOfWork { get; set; }
         public StrategyFactory StrategyFactory { get; set; }
+        public ICryptoAlgorithm CryptoAlgorithm { get; set; }
         #endregion
 
 
@@ -41,6 +43,8 @@ namespace PSW.ITMS.Service
                 request._mapper = _mapper;
                 //check if UnitOfWork is set otherwise set the service's UoW as default
                 request.UnitOfWork = request.UnitOfWork ?? UnitOfWork;
+                // Check if CryptoAlgorith is set otherwise set the service's Crypto Algorithm as default
+                request.CryptoAlgorithm = request.CryptoAlgorithm ?? this.CryptoAlgorithm;
                 //create strategy based on request. it can be dynamic
                 var strategy = StrategyFactory.CreateStrategy(request);
                 //validate request for strategy
