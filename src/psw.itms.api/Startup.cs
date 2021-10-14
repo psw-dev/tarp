@@ -102,11 +102,18 @@ namespace PSW.ITMS.Api
             }
 
             services.AddSingleton<IAppSettingsProcessor>(_ => new AppSettingsDecrypter<AesManaged>(_.GetService<IConfiguration>(),
-            password,
+               password,
                salt));
 
-            var cryptoAlgorithm = new CryptoFactory().Create<AesManaged>(password, salt);
-            services.AddSingleton<ICryptoAlgorithm>(cryptoAlgorithm);
+            services.AddScoped<ICryptoAlgorithm>(x =>
+             {
+                 return new CryptoFactory().Create<AesManaged>(password, salt);
+             });
+             
+            services.AddSingleton<IAppSettingsProcessor>(_ => new AppSettingsDecrypter<AesManaged>(_.GetService<IConfiguration>(),
+                                                                         "pass",
+                                                                         "random"));
+
             services.AddCors(options =>
                 {
                     options.AddPolicy("CorsPolicy",
