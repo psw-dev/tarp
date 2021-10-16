@@ -41,6 +41,7 @@ namespace PSW.ITMS.Data.Sql
         private ITermUoMRepository _termUoMRepository;
         private ITestingRequirementRepository _testingRequirementRepository;
         private IValidityTermRequirementRepository _validityTermRequirementRepository;
+        private IDocumentToInitiateRepository _documentToInitiateRepository;
         #endregion
 
         #region Private Properties TARP Views
@@ -91,7 +92,7 @@ namespace PSW.ITMS.Data.Sql
         public ITermUoMRepository TermUoMRepository => _termUoMRepository ?? (_termUoMRepository = new TermUoMRepository(_connection));
         public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
         public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
-
+        public IDocumentToInitiateRepository DocumentToInitiateRepository => _documentToInitiateRepository ?? (_documentToInitiateRepository = new DocumentToInitiateRepository(_connection));
         #endregion
 
         #region Public Properties SHRD
