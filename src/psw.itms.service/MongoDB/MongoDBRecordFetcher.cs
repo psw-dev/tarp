@@ -1,6 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
+using System.Linq;
 
 namespace PSW.ITMS.Service.MongoDB
 {
@@ -31,7 +31,7 @@ namespace PSW.ITMS.Service.MongoDB
 
             Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
 
-            var FetchedRecord = collection.Find(combinedFilter, new FindOptions{Collation = collation}).FirstOrDefault();
+            var FetchedRecord = collection.Find(combinedFilter, new FindOptions { Collation = collation }).FirstOrDefault();
 
             if (FetchedRecord == null)
             {
@@ -66,6 +66,43 @@ namespace PSW.ITMS.Service.MongoDB
             var collection = database.GetCollection<BsonDocument>(CollectionName);
 
             return collection;
+        }
+
+        public bool CheckIfLPCORequired(BsonDocument mongoRecord, string requiredDocumentParentCode)
+        {
+            switch (requiredDocumentParentCode)
+            {
+                case "IMP":
+                    if (mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                case "RO":
+                    if (mongoRecord["RO REQUIRED"].ToString().ToLower() == "yes")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                case "EC":
+                    if (mongoRecord["PHYTOSANITARY CERTIFICATION REQUIRED (Y /N)"].ToString().ToLower() == "yes")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+            }
+            return false;
         }
     }
 }
