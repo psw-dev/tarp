@@ -26,7 +26,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public List<AgencyList> GetAgencyListAgainstHscode(string hscode, int tradeTranTypeID)
         {
-            return _connection.Query<AgencyList>(string.Format("SELECT A.ID, A.NAME, RHS.ITEMDESCRIPTION FROM REGULATEDHSCODE RHS INNER JOIN SHRD.DBO.AGENCY A ON RHS.AGENCYID = A.ID WHERE HSCODEEXT = '{0}' AND TRADETRANTYPEID = '{1}' WHERE GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", hscode, tradeTranTypeID)).ToList();
+            return _connection.Query<AgencyList>(string.Format("SELECT A.ID, A.NAME, RHS.ITEMDESCRIPTION FROM REGULATEDHSCODE RHS INNER JOIN SHRD.DBO.AGENCY A ON RHS.AGENCYID = A.ID WHERE HSCODEEXT = '{0}' AND TRADETRANTYPEID = '{1}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", hscode, tradeTranTypeID)).ToList();
         }
 
         public List<ViewRegulatedHsCode> GetRegulatedHsCodeList()
