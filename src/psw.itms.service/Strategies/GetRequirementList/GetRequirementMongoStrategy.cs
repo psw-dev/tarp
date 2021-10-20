@@ -238,7 +238,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 //Financial Requirements
                 FinancialRequirement.PlainAmount = mongoRecord["IP FEES"].ToString();
-                FinancialRequirement.Amount = PSWEncryption.encrypt(mongoRecord["IP FEES"].ToString());
+                FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP FEES"].ToString());
 
 
                 //ValidityTerm Requirements
@@ -281,7 +281,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 //Financial Requirements
                 FinancialRequirement.PlainAmount = mongoRecord["RO FEES"].ToString();
-                FinancialRequirement.Amount = PSWEncryption.encrypt(mongoRecord["RO FEES"].ToString());
+                FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RO FEES"].ToString());
             }
 
             //for PythoCertificate = EC
@@ -318,7 +318,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 //Financial Requirements
                 FinancialRequirement.PlainAmount = mongoRecord["PHYTOSANITARY  FEES"].ToString();
-                FinancialRequirement.Amount = PSWEncryption.encrypt(mongoRecord["PHYTOSANITARY  FEES"].ToString());
+                FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["PHYTOSANITARY  FEES"].ToString());
             }
 
             tarpRequirments.DocumentaryRequirementList = tarpDocumentRequirements;

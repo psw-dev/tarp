@@ -26,7 +26,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public List<AgencyList> GetAgencyListAgainstHscode(string hscode, int tradeTranTypeID)
         {
-            return _connection.Query<AgencyList>(string.Format("SELECT A.ID, A.NAME FROM REGULATEDHSCODE RHS INNER JOIN SHRD.DBO.AGENCY A ON RHS.AGENCYID = A.ID WHERE HSCODEEXT = '{0}' AND TRADETRANTYPEID = '{1}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", hscode, tradeTranTypeID)).ToList();
+            return _connection.Query<AgencyList>(string.Format("SELECT A.ID, A.NAME, RHS.ITEMDESCRIPTION FROM REGULATEDHSCODE RHS INNER JOIN SHRD.DBO.AGENCY A ON RHS.AGENCYID = A.ID WHERE HSCODEEXT = '{0}' AND TRADETRANTYPEID = '{1}' WHERE GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", hscode, tradeTranTypeID)).ToList();
         }
 
         public List<ViewRegulatedHsCode> GetRegulatedHsCodeList()
@@ -57,11 +57,6 @@ namespace PSW.ITMS.Data.Sql.Repositories
         public List<string> GetExtHsCodeList(int agencyId, string requiredDocumentTypeCode, int tradeTransitTypeId)
         {
             return _connection.Query<string>(string.Format("SELECT HSCODEEXT FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND TRADETRANTYPEID = '{1}' AND REQUIREDDOCUMENTTYPECODE = '{2}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId, tradeTransitTypeId, requiredDocumentTypeCode)).ToList();
-        }
-
-        public List<string> GetDocumentCodeList(int agencyId, string hsCode, int tradeTransitTypeId)
-        {
-            return _connection.Query<string>(string.Format("SELECT DISTINCT REQUIREDDOCUMENTTYPECODE AS DocumentCodeList FROM REGULATEDHSCODE WHERE AGENCYID =  '{0}' AND HSCODEEXT = '{1}' AND TRADETRANTYPEID = '{2}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT",agencyId,hsCode,tradeTransitTypeId)).ToList();
         }
 
         #endregion
