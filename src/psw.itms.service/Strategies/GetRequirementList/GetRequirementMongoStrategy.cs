@@ -111,12 +111,31 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Error occured in fetching record from MongoDB");
                 }
 
-                Log.Information("|{0}|{1}| Mongo Record fetched {@mongoDoc}", StrategyName, MethodID, mongoDoc);
-
                 if (mongoDoc == null)
                 {
-                    return BadRequestReply("No record found for HsCode : " + RequestDTO.HsCode);
+                    return BadRequestReply("No record found for HsCode : " + RequestDTO.HsCode + " Purpose : " + RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
                 }
+
+                Log.Information("|{0}|{1}| Mongo Record fetched {@mongoDoc}", StrategyName, MethodID, mongoDoc);
+
+
+                var docType = this.Command.UnitOfWork.DocumentTypeRepository.Where(new
+                { Code = RequestDTO.documentTypeCode }).FirstOrDefault();
+
+                Log.Information("|{0}|{1}| Required LPCO Parent Code {@documentClassification}", StrategyName, MethodID, docType.DocumentClassificationCode);
+
+                ResponseDTO = new GetDocumentRequirementResponse();
+
+                if(!mongoDBRecordFetcher.CheckIfLPCORequired(mongoDoc, docType.DocumentClassificationCode))
+                {
+                    Log.Information("|{0}|{1}| LPCO required {2}", StrategyName, MethodID, "false");
+
+                    ResponseDTO.isLPCORequired = false;
+
+                    return OKReply(docType.Name + " not required for HsCode : " + RequestDTO.HsCode + " and Purpose : " + RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                }
+
+                Log.Information("|{0}|{1}| LPCO required {2}", StrategyName, MethodID, "true");
 
                 var recordChecker = CheckFactorInMongoRecord(factorDataList, mongoDoc, RequestDTO.FactorCodeValuePair);
 
@@ -124,8 +143,8 @@ namespace PSW.ITMS.Service.Strategies
 
                 if (recordChecker == "Checked")
                 {
-                    ResponseDTO = GetRequirements(mongoDoc, RequestDTO.documentTypeCode);
-                    
+                    ResponseDTO = GetRequirements(mongoDoc, docType.DocumentClassificationCode);
+
                     Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
                 }
                 else
@@ -154,9 +173,9 @@ namespace PSW.ITMS.Service.Strategies
             {
                 if (factorCodeValuePair.ContainsKey(factor.FactorCode))
                 {
-                    var ItemList = mongoDoc[factor.FactorCode].ToString().Split('|').ToList();
+                    var ItemList = mongoDoc[factor.FactorCode].ToString().ToLower().Split('|').ToList();
 
-                    if (ItemList.Contains(factorCodeValuePair[factor.FactorCode].FactorValue) || ItemList.Contains("ALL"))
+                    if (ItemList.Contains(factorCodeValuePair[factor.FactorCode].FactorValue.ToLower()) || ItemList.Contains("ALL"))
                     {
                         count += 1;
                     }
@@ -181,7 +200,7 @@ namespace PSW.ITMS.Service.Strategies
             }
         }
 
-        public GetDocumentRequirementResponse GetRequirements(BsonDocument mongoRecord, string requiredDocumentTypeCode)
+        public GetDocumentRequirementResponse GetRequirements(BsonDocument mongoRecord, string documentClassification)
         {
             GetDocumentRequirementResponse tarpRequirments = new GetDocumentRequirementResponse();
 
@@ -189,8 +208,7 @@ namespace PSW.ITMS.Service.Strategies
             var FinancialRequirement = new FinancialRequirement();
             var ValidityRequirement = new ValidityRequirement();
 
-            string documentClassification = this.Command.UnitOfWork.DocumentTypeRepository.Where(new
-            { Code = requiredDocumentTypeCode }).FirstOrDefault().DocumentClassificationCode;
+            tarpRequirments.isLPCORequired = true;
 
             //for Import Permit = IMP
             if (documentClassification == "IMP")
