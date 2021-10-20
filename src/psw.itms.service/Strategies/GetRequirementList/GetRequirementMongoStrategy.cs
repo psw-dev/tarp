@@ -132,7 +132,7 @@ namespace PSW.ITMS.Service.Strategies
 
                     ResponseDTO.isLPCORequired = false;
 
-                    return OKReply(docType.Name + " not required for HsCode : " + RequestDTO.HsCode + " Purpose : " + RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                    return OKReply(docType.Name + " not required for HsCode : " + RequestDTO.HsCode + " and Purpose : " + RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
                 }
 
                 Log.Information("|{0}|{1}| LPCO required {2}", StrategyName, MethodID, "true");
