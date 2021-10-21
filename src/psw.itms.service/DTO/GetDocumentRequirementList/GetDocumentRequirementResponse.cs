@@ -6,6 +6,9 @@ namespace PSW.ITMS.Service.DTO
 {
     public class GetDocumentRequirementResponse
     {
+        [JsonPropertyName("isLPCORequired")]
+        public bool isLPCORequired { get; set; }
+        
         [JsonPropertyName("documentaryRequirementList")]
         public List<DocumentaryRequirement> DocumentaryRequirementList { get; set; }
         public FinancialRequirement FinancialRequirement { get; set; }
