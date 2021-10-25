@@ -113,7 +113,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 if (mongoDoc == null)
                 {
-                    return BadRequestReply("No record found for HsCode : " + RequestDTO.HsCode + " Purpose : " + RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                    return BadRequestReply(String.Format("No record found for HsCode : {0}  Purpose : {1}",RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
                 }
 
                 Log.Information("|{0}|{1}| Mongo Record fetched {@mongoDoc}", StrategyName, MethodID, mongoDoc);
@@ -132,7 +132,7 @@ namespace PSW.ITMS.Service.Strategies
 
                     ResponseDTO.isLPCORequired = false;
 
-                    return OKReply(docType.Name + " not required for HsCode : " + RequestDTO.HsCode + " and Purpose : " + RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                    return OKReply(string.Format("{0} not required for HsCode : {1} and Purpose : {2}",docType.Name, RequestDTO.HsCode,RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
                 }
 
                 Log.Information("|{0}|{1}| LPCO required {2}", StrategyName, MethodID, "true");

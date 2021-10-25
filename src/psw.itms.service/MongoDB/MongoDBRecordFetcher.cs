@@ -73,36 +73,31 @@ namespace PSW.ITMS.Service.MongoDB
             switch (requiredDocumentParentCode)
             {
                 case "IMP":
-                    if (mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes")
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes" ? true : false;          
 
                 case "RO":
-                    if (mongoRecord["RO REQUIRED"].ToString().ToLower() == "yes")
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return mongoRecord["RO REQUIRED"].ToString().ToLower() == "yes" ? true : false;
 
                 case "EC":
-                    if (mongoRecord["PHYTOSANITARY CERTIFICATION REQUIRED (Y /N)"].ToString().ToLower() == "yes")
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return mongoRecord["PHYTOSANITARY CERTIFICATION REQUIRED (Y /N)"].ToString().ToLower() == "yes" ? true : false;
             }
             return false;
+        }
+
+        public string GetFormNumber(BsonDocument mongoRecord, string requiredDocumentParentCode)
+        {
+            switch (requiredDocumentParentCode)
+            {
+                case "IMP":
+                    return mongoRecord["IP CERTIFICATE FORM NUMBER"].ToString();
+
+                case "RO":
+                    return mongoRecord["RO CERTIFICATE FORM NUMBER"].ToString();
+                    
+                case "EC":
+                    return mongoRecord["PHYTOSANTARY  CERTIFICATE FORM NUMBER"].ToString();
+            }
+            return "";
         }
     }
 }
