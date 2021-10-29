@@ -68,20 +68,26 @@ namespace PSW.ITMS.Service.MongoDB
             return collection;
         }
 
-        public bool CheckIfLPCORequired(BsonDocument mongoRecord, string requiredDocumentParentCode)
+        public bool CheckIfLPCORequired(BsonDocument mongoRecord, string requiredDocumentParentCode, out bool IsParenCodeValid)
         {
             switch (requiredDocumentParentCode)
             {
                 case "IMP":
-                    return mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes" ? true : false;          
+                    IsParenCodeValid = true;
+                    return mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";          
 
                 case "RO":
-                    return mongoRecord["RO REQUIRED"].ToString().ToLower() == "yes" ? true : false;
+                    IsParenCodeValid = true;
+                    return mongoRecord["RO REQUIRED"].ToString().ToLower() == "yes";
 
                 case "EC":
-                    return mongoRecord["PHYTOSANITARY CERTIFICATION REQUIRED (Y /N)"].ToString().ToLower() == "yes" ? true : false;
+                    IsParenCodeValid = true;
+                    return mongoRecord["PHYTOSANITARY CERTIFICATION REQUIRED (Y /N)"].ToString().ToLower() == "yes";
+                
+                default:
+                    IsParenCodeValid = false;
+                    return false;
             }
-            return false;
         }
 
         public string GetFormNumber(BsonDocument mongoRecord, string requiredDocumentParentCode)
