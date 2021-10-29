@@ -22,7 +22,11 @@ namespace PSW.ITMS.Service
 
 
         #region constuctors & destroctors
-        public ItmsService(IMapper mapper) => _mapper = mapper;
+        public ItmsService(IMapper mapper, ICryptoAlgorithm cryptoAlgorithm)
+        {
+            _mapper = mapper;
+            this.CryptoAlgorithm = cryptoAlgorithm;
+        }
 
         public ItmsService()
         {
