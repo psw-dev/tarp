@@ -113,7 +113,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 if (mongoDoc == null)
                 {
-                    return BadRequestReply(String.Format("No record found for HsCode : {0}  Purpose : {1}",RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
+                    return BadRequestReply(String.Format("No record found for HsCode : {0}  Purpose : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
                 }
 
                 Log.Information("|{0}|{1}| Mongo Record fetched {@mongoDoc}", StrategyName, MethodID, mongoDoc);
@@ -126,7 +126,15 @@ namespace PSW.ITMS.Service.Strategies
 
                 ResponseDTO = new GetDocumentRequirementResponse();
 
-                if(!mongoDBRecordFetcher.CheckIfLPCORequired(mongoDoc, docType.DocumentClassificationCode))
+                bool DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequired(mongoDoc, docType.DocumentClassificationCode, out bool IsParenCodeValid);
+
+                if (!IsParenCodeValid)
+                {
+                    Log.Information("|{0}|{1}| Parent Code is Not Valid", StrategyName, MethodID);
+
+                    return BadRequestReply("Document does not belong to a supported document Classification");
+                }
+                else if(!DocumentIsRequired)
                 {
                     Log.Information("|{0}|{1}| LPCO required {2}", StrategyName, MethodID, "false");
 
