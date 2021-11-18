@@ -8,7 +8,10 @@ namespace PSW.ITMS.Service.DTO
     {
         [JsonPropertyName("isLPCORequired")]
         public bool isLPCORequired { get; set; }
-        
+
+        [JsonPropertyName("formNumber")]
+        public string FormNumber { get; set; }
+
         [JsonPropertyName("documentaryRequirementList")]
         public List<DocumentaryRequirement> DocumentaryRequirementList { get; set; }
         public FinancialRequirement FinancialRequirement { get; set; }

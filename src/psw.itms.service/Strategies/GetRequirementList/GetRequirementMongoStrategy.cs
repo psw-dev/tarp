@@ -152,6 +152,8 @@ namespace PSW.ITMS.Service.Strategies
                 if (recordChecker == "Checked")
                 {
                     ResponseDTO = GetRequirements(mongoDoc, docType.DocumentClassificationCode);
+                    
+                    ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumber(mongoDoc, docType.DocumentClassificationCode);
 
                     Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
                 }
