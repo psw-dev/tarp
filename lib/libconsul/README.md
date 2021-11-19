@@ -1,3 +1,0 @@
-# libconsul
-
-consul discovery library

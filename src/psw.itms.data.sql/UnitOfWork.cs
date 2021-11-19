@@ -1,73 +1,67 @@
 /*This code is a generated one , Change the source code of the generator if you want some change in this code
 You can find the source code of the code generator from here -> https://git.psw.gov.pk/unais.vayani/DalGenerator*/
 
-using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Dapper;
-
+using Microsoft.Extensions.Configuration;
 using PSW.ITMS.Common;
 using PSW.ITMS.Data.Repositories;
 using PSW.ITMS.Data.Sql.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Reflection;
+using PSW.RabbitMq;
 
 namespace PSW.ITMS.Data.Sql
 {
 
     public class UnitOfWork : IUnitOfWork
     {
-        #region Private Properties SHRD
+        #region Private Properties TARP
         private IAddDeclarationRequirementRepository _addDeclarationRequirementRepository;
-		private IDeclarationCategoryRepository _declarationCategoryRepository;
-		private IDocumentRequirementRepository _documentRequirementRepository;
-		private IFinancialRequirementRepository _financialRequirementRepository;
-		private IITMSRequirementRepository _iTMSRequirementRepository;
-		private ILogicOperatorRepository _logicOperatorRepository;
-		private INilRequirementRepository _nilRequirementRepository;
-		private IRefusalIntimationRepository _refusalIntimationRepository;
-		private IRequestTypeRepository _requestTypeRepository;
-		private IRequirementRepository _requirementRepository;
-		private IRequirementCategoryRepository _requirementCategoryRepository;
-		private IRequirementSetRepository _requirementSetRepository;
-		private ITermUoMRepository _termUoMRepository;
-		private ITestingRequirementRepository _testingRequirementRepository;
-		private IValidityTermRequirementRepository _validityTermRequirementRepository;
+        private IBinaryOperatorRepository _binaryOperatorRepository;
+        private IDataTypeRepository _dataTypeRepository;
+        private IDecisionMatrixRepository _decisionMatrixRepository;
+        private IDeclarationCategoryRepository _declarationCategoryRepository;
+        private IDocumentRequirementRepository _documentRequirementRepository;
+        private IFactorRepository _factorRepository;
+        //private IFinancialRequirementRepository _financialRequirementRepository;
+        private ILOVRepository _lOVRepository;
+        private ILOVItemRepository _lOVItemRepository;
+        private ILOVScopeRepository _lOVScopeRepository;
+        private INilRequirementRepository _nilRequirementRepository;
+        private IRefusalIntimationRepository _refusalIntimationRepository;
+        private IRegulatedHSCodeRepository _regulatedHSCodeRepository;
+        private IRequirementRepository _requirementRepository;
+        private IRequirementCategoryRepository _requirementCategoryRepository;
+        private IRequirementSetRepository _requirementSetRepository;
+        private IRequirementStageRepository _requirementStageRepository;
+        private IRuleRepository _ruleRepository;
+        private ITermUoMRepository _termUoMRepository;
+        private ITestingRequirementRepository _testingRequirementRepository;
+        private IValidityTermRequirementRepository _validityTermRequirementRepository;
+        private IDocumentToInitiateRepository _documentToInitiateRepository;
         #endregion
-        
+
+        #region Private Properties TARP Views
+        private IUV_DocumentaryRequirementRepository _uv_DocumentaryRequirementRepository;
+        #endregion
+
         #region Private Properties SHRD
         private IAgencyRepository _agencyRepository;
         private IAppConfigRepository _appConfigRepository;
         private IAttachedObjectFormatRepository _attachedObjectFormatRepository;
         private IAttachmentStatusRepository _attachmentStatusRepository;
-        private IBankRepository _bankRepository;
-        private IBranchRepository _branchRepository;
-        private IChannelRepository _channelRepository;
         private ICityRepository _cityRepository;
-        private ICollectorateRepository _collectorateRepository;
-        private IConsignmentCategoryRepository _consignmentCategoryRepository;
-        private IConsignmentModeRepository _consignmentModeRepository;
         private ICountryRepository _countryRepository;
-        private ICountryWithDialingCodeRepository _countryWithDialingCodeRepository;
-
         private ICountrySubEntityRepository _countrySubEntityRepository;
         private ICurrencyRepository _currencyRepository;
-        private IDeclarationTypeRepository _declarationTypeRepository;
-        private IDeliveryTermRepository _deliveryTermRepository;
         private IDialingCodeRepository _dialingCodeRepository;
         private IDocumentTypeRepository _documentTypeRepository;
         private IGenderRepository _genderRepository;
-        private IHazardClassRepository _hazardClassRepository;
-        private IItemImportTypeRepository _itemImportTypeRepository;
         private IMinistryRepository _ministryRepository;
-        private IPayChannelRepository _payChannelRepository;
-        private IPayModeRepository _payModeRepository;
-        private IPayTermRepository _payTermRepository;
-        private IPCTCodeRepository _pCTCodeRepository;
         private IPortRepository _portRepository;
-        private IPortTypeRepository _portTypeRepository;
-        private IShedRepository _shedRepository;
         private ITradePurposeRepository _tradePurposeRepository;
         private ITradeTranTypeRepository _tradeTranTypeRepository;
         private IUoMRepository _uoMRepository;
@@ -77,20 +71,28 @@ namespace PSW.ITMS.Data.Sql
 
         #region Public Properties ITMS
         public IAddDeclarationRequirementRepository AddDeclarationRequirementRepository => _addDeclarationRequirementRepository ?? (_addDeclarationRequirementRepository = new AddDeclarationRequirementRepository(_connection));
-		public IDeclarationCategoryRepository DeclarationCategoryRepository => _declarationCategoryRepository ?? (_declarationCategoryRepository = new DeclarationCategoryRepository(_connection));
-		public IDocumentRequirementRepository DocumentRequirementRepository => _documentRequirementRepository ?? (_documentRequirementRepository = new DocumentRequirementRepository(_connection));
-		public IFinancialRequirementRepository FinancialRequirementRepository => _financialRequirementRepository ?? (_financialRequirementRepository = new FinancialRequirementRepository(_connection));
-		public IITMSRequirementRepository ITMSRequirementRepository => _iTMSRequirementRepository ?? (_iTMSRequirementRepository = new ITMSRequirementRepository(_connection));
-		public ILogicOperatorRepository LogicOperatorRepository => _logicOperatorRepository ?? (_logicOperatorRepository = new LogicOperatorRepository(_connection));
-		public INilRequirementRepository NilRequirementRepository => _nilRequirementRepository ?? (_nilRequirementRepository = new NilRequirementRepository(_connection));
-		public IRefusalIntimationRepository RefusalIntimationRepository => _refusalIntimationRepository ?? (_refusalIntimationRepository = new RefusalIntimationRepository(_connection));
-		public IRequestTypeRepository RequestTypeRepository => _requestTypeRepository ?? (_requestTypeRepository = new RequestTypeRepository(_connection));
-		public IRequirementRepository RequirementRepository => _requirementRepository ?? (_requirementRepository = new RequirementRepository(_connection));
-		public IRequirementCategoryRepository RequirementCategoryRepository => _requirementCategoryRepository ?? (_requirementCategoryRepository = new RequirementCategoryRepository(_connection));
-		public IRequirementSetRepository RequirementSetRepository => _requirementSetRepository ?? (_requirementSetRepository = new RequirementSetRepository(_connection));
-		public ITermUoMRepository TermUoMRepository => _termUoMRepository ?? (_termUoMRepository = new TermUoMRepository(_connection));
-		public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
-		public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
+        public IBinaryOperatorRepository BinaryOperatorRepository => _binaryOperatorRepository ?? (_binaryOperatorRepository = new BinaryOperatorRepository(_connection));
+        public IDataTypeRepository DataTypeRepository => _dataTypeRepository ?? (_dataTypeRepository = new DataTypeRepository(_connection));
+        public IDecisionMatrixRepository DecisionMatrixRepository => _decisionMatrixRepository ?? (_decisionMatrixRepository = new DecisionMatrixRepository(_connection));
+        public IDeclarationCategoryRepository DeclarationCategoryRepository => _declarationCategoryRepository ?? (_declarationCategoryRepository = new DeclarationCategoryRepository(_connection));
+        public IDocumentRequirementRepository DocumentRequirementRepository => _documentRequirementRepository ?? (_documentRequirementRepository = new DocumentRequirementRepository(_connection));
+        public IFactorRepository FactorRepository => _factorRepository ?? (_factorRepository = new FactorRepository(_connection));
+        //public IFinancialRequirementRepository FinancialRequirementRepository => _financialRequirementRepository ?? (_financialRequirementRepository = new FinancialRequirementRepository(_connection));
+        public ILOVRepository LOVRepository => _lOVRepository ?? (_lOVRepository = new LOVRepository(_connection));
+        public ILOVItemRepository LOVItemRepository => _lOVItemRepository ?? (_lOVItemRepository = new LOVItemRepository(_connection));
+        public ILOVScopeRepository LOVScopeRepository => _lOVScopeRepository ?? (_lOVScopeRepository = new LOVScopeRepository(_connection));
+        public INilRequirementRepository NilRequirementRepository => _nilRequirementRepository ?? (_nilRequirementRepository = new NilRequirementRepository(_connection));
+        public IRefusalIntimationRepository RefusalIntimationRepository => _refusalIntimationRepository ?? (_refusalIntimationRepository = new RefusalIntimationRepository(_connection));
+        public IRegulatedHSCodeRepository RegulatedHSCodeRepository => _regulatedHSCodeRepository ?? (_regulatedHSCodeRepository = new RegulatedHSCodeRepository(_connection));
+        public IRequirementRepository RequirementRepository => _requirementRepository ?? (_requirementRepository = new RequirementRepository(_connection));
+        public IRequirementCategoryRepository RequirementCategoryRepository => _requirementCategoryRepository ?? (_requirementCategoryRepository = new RequirementCategoryRepository(_connection));
+        public IRequirementSetRepository RequirementSetRepository => _requirementSetRepository ?? (_requirementSetRepository = new RequirementSetRepository(_connection));
+        public IRequirementStageRepository RequirementStageRepository => _requirementStageRepository ?? (_requirementStageRepository = new RequirementStageRepository(_connection));
+        public IRuleRepository RuleRepository => _ruleRepository ?? (_ruleRepository = new RuleRepository(_connection));
+        public ITermUoMRepository TermUoMRepository => _termUoMRepository ?? (_termUoMRepository = new TermUoMRepository(_connection));
+        public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
+        public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
+        public IDocumentToInitiateRepository DocumentToInitiateRepository => _documentToInitiateRepository ?? (_documentToInitiateRepository = new DocumentToInitiateRepository(_connection));
         #endregion
 
         #region Public Properties SHRD
@@ -99,32 +101,15 @@ namespace PSW.ITMS.Data.Sql
         public IAppConfigRepository AppConfigRepository => _appConfigRepository ?? (_appConfigRepository = new AppConfigRepository(_connection));
         public IAttachedObjectFormatRepository AttachedObjectFormatRepository => _attachedObjectFormatRepository ?? (_attachedObjectFormatRepository = new AttachedObjectFormatRepository(_connection));
         public IAttachmentStatusRepository AttachmentStatusRepository => _attachmentStatusRepository ?? (_attachmentStatusRepository = new AttachmentStatusRepository(_connection));
-        public IBankRepository BankRepository => _bankRepository ?? (_bankRepository = new BankRepository(_connection));
-        public IBranchRepository BranchRepository => _branchRepository ?? (_branchRepository = new BranchRepository(_connection));
-        public IChannelRepository ChannelRepository => _channelRepository ?? (_channelRepository = new ChannelRepository(_connection));
         public ICityRepository CityRepository => _cityRepository ?? (_cityRepository = new CityRepository(_connection));
-        public ICollectorateRepository CollectorateRepository => _collectorateRepository ?? (_collectorateRepository = new CollectorateRepository(_connection));
-        public IConsignmentCategoryRepository ConsignmentCategoryRepository => _consignmentCategoryRepository ?? (_consignmentCategoryRepository = new ConsignmentCategoryRepository(_connection));
-        public IConsignmentModeRepository ConsignmentModeRepository => _consignmentModeRepository ?? (_consignmentModeRepository = new ConsignmentModeRepository(_connection));
         public ICountryRepository CountryRepository => _countryRepository ?? (_countryRepository = new CountryRepository(_connection));
-        public ICountryWithDialingCodeRepository CountryWithDialingCodeRepository => _countryWithDialingCodeRepository ?? (_countryWithDialingCodeRepository = new CountryWithDialingCodeRepository(_connection));
         public ICountrySubEntityRepository CountrySubEntityRepository => _countrySubEntityRepository ?? (_countrySubEntityRepository = new CountrySubEntityRepository(_connection));
         public ICurrencyRepository CurrencyRepository => _currencyRepository ?? (_currencyRepository = new CurrencyRepository(_connection));
-        public IDeclarationTypeRepository DeclarationTypeRepository => _declarationTypeRepository ?? (_declarationTypeRepository = new DeclarationTypeRepository(_connection));
-        public IDeliveryTermRepository DeliveryTermRepository => _deliveryTermRepository ?? (_deliveryTermRepository = new DeliveryTermRepository(_connection));
         public IDialingCodeRepository DialingCodeRepository => _dialingCodeRepository ?? (_dialingCodeRepository = new DialingCodeRepository(_connection));
         public IDocumentTypeRepository DocumentTypeRepository => _documentTypeRepository ?? (_documentTypeRepository = new DocumentTypeRepository(_connection));
         public IGenderRepository GenderRepository => _genderRepository ?? (_genderRepository = new GenderRepository(_connection));
-        public IHazardClassRepository HazardClassRepository => _hazardClassRepository ?? (_hazardClassRepository = new HazardClassRepository(_connection));
-        public IItemImportTypeRepository ItemImportTypeRepository => _itemImportTypeRepository ?? (_itemImportTypeRepository = new ItemImportTypeRepository(_connection));
         public IMinistryRepository MinistryRepository => _ministryRepository ?? (_ministryRepository = new MinistryRepository(_connection));
-        public IPayChannelRepository PayChannelRepository => _payChannelRepository ?? (_payChannelRepository = new PayChannelRepository(_connection));
-        public IPayModeRepository PayModeRepository => _payModeRepository ?? (_payModeRepository = new PayModeRepository(_connection));
-        public IPayTermRepository PayTermRepository => _payTermRepository ?? (_payTermRepository = new PayTermRepository(_connection));
-        public IPCTCodeRepository PCTCodeRepository => _pCTCodeRepository ?? (_pCTCodeRepository = new PCTCodeRepository(_connection));
         public IPortRepository PortRepository => _portRepository ?? (_portRepository = new PortRepository(_connection));
-        public IPortTypeRepository PortTypeRepository => _portTypeRepository ?? (_portTypeRepository = new PortTypeRepository(_connection));
-        public IShedRepository ShedRepository => _shedRepository ?? (_shedRepository = new ShedRepository(_connection));
         public ITradePurposeRepository TradePurposeRepository => _tradePurposeRepository ?? (_tradePurposeRepository = new TradePurposeRepository(_connection));
         public ITradeTranTypeRepository TradeTranTypeRepository => _tradeTranTypeRepository ?? (_tradeTranTypeRepository = new TradeTranTypeRepository(_connection));
         public IUoMRepository UoMRepository => _uoMRepository ?? (_uoMRepository = new UoMRepository(_connection));
@@ -132,9 +117,9 @@ namespace PSW.ITMS.Data.Sql
 
         #endregion
 
-        //private IEventBus _eventBus;
+        private IEventBus _eventBus;
 
-        //public IEventBus eventBus => _eventBus;
+        public IEventBus eventBus => _eventBus;
         private IConfiguration _configuration;
 
         public UnitOfWork(IConfiguration configuration) //, IEventBus evBus)
@@ -144,15 +129,16 @@ namespace PSW.ITMS.Data.Sql
             _connection = new SqlConnection(_configuration.GetConnectionString("ConnectionString"));
 
         }
-        // public UnitOfWork(IConfiguration configuration)
-        // {
-        //     _configuration = configuration;
-        //     _connection = new SqlConnection(_configuration.GetConnectionString("ConnectionString"));
-        // }
+        public UnitOfWork(IConfiguration configuration, IEventBus evBus)
+        {
+            _eventBus = evBus;
+            _configuration = configuration;
+            _connection = new SqlConnection(_configuration.GetConnectionString("ConnectionString"));
+        }
         public UnitOfWork()
         {
             // TODO : Get Connection String From appSetting.json
-            string connectionString = "Server=127.0.0.1;Initial Catalog=ITMS;User ID=sa;Password=@Password1;";
+            string connectionString = "Server=127.0.0.1;Initial Catalog=TARIP;User ID=sa;Password=@Password1;";
             _connection = new SqlConnection(connectionString);
             // _connection.Open();
         }
@@ -245,16 +231,17 @@ namespace PSW.ITMS.Data.Sql
         }
 
 
+
         private void SetTransactions(IDbTransaction transaction)
         {
-            var repositories = this.GetType().GetProperties();
+            PropertyInfo[] repositories = GetType().GetProperties();
 
             foreach (PropertyInfo r in repositories)
             {
                 if (Utility.IsAssignableToGenericType(r.PropertyType, typeof(IRepository<>)))
                 {
 
-                    var repo = r.GetValue(this) as IRepositoryTransaction;
+                    IRepositoryTransaction repo = r.GetValue(this) as IRepositoryTransaction;
                     repo.SetTransaction(transaction);
 
                 }

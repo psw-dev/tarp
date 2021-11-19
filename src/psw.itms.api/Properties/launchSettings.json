@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "tarp",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,10 +20,15 @@
     "psw.itms.api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "launchUrl": "tarp",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_URLS": "http://localhost:5002",
+        "ASPNETCORE_IDENTITY_SERVER_ISSUER": "http://localhost:4000",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MONGODBConnString": "mongodb://172.18.0.1:27017",
+        "SEQ_URL": "http://localhost:5341",
+        "ENCRYPTION_SALT": "random",
+        "ENCRYPTION_PASSWORD": "pass"
       }
     }
   }

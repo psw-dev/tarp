@@ -6,6 +6,8 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="System.Text.Json" Version="5.0.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.10.4" />
+    <PackageReference Include="MongoDB.Bson" version="2.12.4" />
   </ItemGroup>
 
  <!-- Project References -->
@@ -14,6 +16,8 @@
     <ProjectReference Include="..\psw.itms.data\psw.itms.data.csproj" />
     <ProjectReference Include="..\psw.itms.data.sql\psw.itms.data.sql.csproj" />
     <ProjectReference Include="..\..\lib\librabbitmq\src\psw.rabbitmq\psw.rabbitmq.csproj" />
+    <ProjectReference Include="..\..\lib\libcommon\src\psw.security\psw.security.csproj" />
+    <ProjectReference Include="..\..\lib\liblogs\src\psw.lib.logs\psw.lib.logs.csproj" />
   </ItemGroup>
 
 

@@ -1,4 +1,5 @@
 using PSW.ITMS.Service.Command;
+using PSW.Lib.Logs;
 using System.Text.Json;
 
 namespace PSW.ITMS.Service.Strategies
@@ -20,13 +21,22 @@ namespace PSW.ITMS.Service.Strategies
         /// </summary>
         public T2 ResponseDTO { get; set; }
 
+        /// <summary>
+        /// Strategy name
+        /// </summary>
+        public string StrategyName { get; set; }
+        public string MethodID { get; set; }
+
         public ApiStrategy(CommandRequest request) : base(request)
         {
-            this.Command = request;
-            this.IsValidated = false;
+            Command = request;
+            IsValidated = false;
+
+            StrategyName = GetType().Name;
+            MethodID = request.methodId;
 
             // Get Json Data From Command
-            var jsonString = this.Command.data.GetRawText();
+            var jsonString = Command.data.GetRawText();
             // Deserialize Json to DTO
             RequestDTO = JsonSerializer.Deserialize<T1>(jsonString);
         }
@@ -41,6 +51,8 @@ namespace PSW.ITMS.Service.Strategies
 
         public CommandReply BadRequestReply(string message, System.Exception exception, string shortDescription, string validationMessage)
         {
+            Log.Error("|{0}|{1}| Exception Occurred {2}", StrategyName, MethodID, " message: " + message + " exception: " + exception);
+
             Reply.code = "400"; // Bad Request | Error
             Reply.message = message;
             Reply.shortDescription = shortDescription;
@@ -52,6 +64,8 @@ namespace PSW.ITMS.Service.Strategies
 
         public CommandReply BadRequestReply(string message)
         {
+            Log.Error("|{0}|{1}| Exception Occurred {2}", StrategyName, MethodID, "message : " + message);
+
             Reply.code = "400"; // Bad Request | Error
             Reply.message = message;
             Reply.exception = null;

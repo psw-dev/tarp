@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using AutoMapper;
-using PSW.ITMS.Data.Entities;
-using PSW.ITMS.Service.DTO;
 
 namespace PSW.ITMS.Service.AutoMapper
 {
@@ -9,14 +6,15 @@ namespace PSW.ITMS.Service.AutoMapper
     {
         public override string ProfileName
         {
-            get { return "EntityToDTOMappings"; }
+            get
+            {
+                return "EntityToDTOMappings";
+            }
         }
+
         public EntityToDTOMappingProfile()
         {
 
-           
-            
-        
         }
     }
 }

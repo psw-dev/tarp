@@ -1,1 +1,3 @@
-Integrated Tariff Management System microservice
+#tarp
+
+Trade and Regulatory Policies Microservice

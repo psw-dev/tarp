@@ -3,7 +3,6 @@ You can find the source code of the code generator from here -> https://git.psw.
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace PSW.ITMS.Data.Entities
@@ -12,53 +11,62 @@ namespace PSW.ITMS.Data.Entities
     /// This class represents the ValidityTermRequirement table in the database 
     /// </summary>
 	public class ValidityTermRequirement : Entity
-	{
-		#region Fields
-		
-		private long _iD;
-		private long _requirementID;
-		private System.SByte _termUoMID;
-		private short _quantity;
-		private DateTime _createdOn;
-		private int _createdBy;
+    {
+        #region Fields
 
-		#endregion
+        private long _iD;
+        private long _requirementID;
+        private System.SByte _termUoMID;
+        private short _quantity;
+        private DateTime _createdOn;
+        private int _createdBy;
+        private System.Byte[] _lastChange;
 
-		#region Properties
-		
-		public long ID { get { return _iD; } set { _iD = value; PrimaryKey = value; }}
-		public long RequirementID { get { return _requirementID; } set { _requirementID = value;  }}
-		public System.SByte TermUoMID { get { return _termUoMID; } set { _termUoMID = value;  }}
-		public short Quantity { get { return _quantity; } set { _quantity = value;  }}
-		public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value;  }}
-		public int CreatedBy { get { return _createdBy; } set { _createdBy = value;  }}
+        #endregion
 
-		#endregion
+        #region Properties
 
-		#region Methods
+        public long ID { get { return _iD; } set { _iD = value; PrimaryKey = value; } }
+        public long RequirementID { get { return _requirementID; } set { _requirementID = value; } }
+        public System.SByte TermUoMID { get { return _termUoMID; } set { _termUoMID = value; } }
+        public short Quantity { get { return _quantity; } set { _quantity = value; } }
+        public DateTime CreatedOn { get { return _createdOn; } set { _createdOn = value; } }
+        public int CreatedBy { get { return _createdBy; } set { _createdBy = value; } }
+        public System.Byte[] LastChange { get { return _lastChange; } set { _lastChange = value; } }
 
-		#endregion
+        #endregion
 
-		#region public Methods
+        #region Methods
 
-		public override Dictionary<string, object> GetColumns()
+        #endregion
+
+        #region public Methods
+
+        public override Dictionary<string, object> GetColumns()
         {
-            return new Dictionary<string, object> 
-			{
-				{"ID", ID},
-				{"RequirementID", RequirementID},
-				{"TermUoMID", TermUoMID},
-				{"Quantity", Quantity},
-				{"CreatedOn", CreatedOn},
-				{"CreatedBy", CreatedBy}
-			};
+            return new Dictionary<string, object>
+            {
+                {"ID", ID},
+                {"RequirementID", RequirementID},
+                {"TermUoMID", TermUoMID},
+                {"Quantity", Quantity},
+                {"CreatedOn", CreatedOn},
+                {"CreatedBy", CreatedBy},
+                {"LastChange", LastChange}
+            };
         }
 
-		#endregion
+        #endregion
 
-		#region Constructors
-		
-		#endregion
-	}
-} 
+        #region Constructors
+
+        public ValidityTermRequirement()
+        {
+            TableName = "ValidityTermRequirement";
+            PrimaryKeyName = "ID";
+        }
+
+        #endregion
+    }
+}
 
