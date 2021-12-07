@@ -49,6 +49,12 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("plainAmount")]
         public string PlainAmount { get; set; }
+
+        [JsonPropertyName("ammendmentFee")]
+        public string AmmendmentFee { get; set; }
+
+        [JsonPropertyName("plainAmmendmentFee")]
+        public string PlainAmmendmentFee { get; set; }
     }
 
     public class ValidityRequirement

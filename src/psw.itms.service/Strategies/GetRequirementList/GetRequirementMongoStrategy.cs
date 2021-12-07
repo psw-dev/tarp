@@ -134,13 +134,13 @@ namespace PSW.ITMS.Service.Strategies
 
                     return BadRequestReply("Document does not belong to a supported document Classification");
                 }
-                else if(!DocumentIsRequired)
+                else if (!DocumentIsRequired)
                 {
                     Log.Information("|{0}|{1}| LPCO required {2}", StrategyName, MethodID, "false");
 
                     ResponseDTO.isLPCORequired = false;
 
-                    return OKReply(string.Format("{0} not required for HsCode : {1} and Purpose : {2}",docType.Name, RequestDTO.HsCode,RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
+                    return OKReply(string.Format("{0} not required for HsCode : {1} and Purpose : {2}", docType.Name, RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
                 }
 
                 Log.Information("|{0}|{1}| LPCO required {2}", StrategyName, MethodID, "true");
@@ -152,7 +152,7 @@ namespace PSW.ITMS.Service.Strategies
                 if (recordChecker == "Checked")
                 {
                     ResponseDTO = GetRequirements(mongoDoc, docType.DocumentClassificationCode);
-                    
+
                     ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumber(mongoDoc, docType.DocumentClassificationCode);
 
                     Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
@@ -226,6 +226,32 @@ namespace PSW.ITMS.Service.Strategies
                 var ipDocRequirements = mongoRecord["IP DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
                 var ipDocRequirementsTrimmed = new List<string>();
 
+                var ipDocOptional = mongoRecord["IP  DOCUMENTARY REQUIREMENTS(Optional)"].ToString().Split('|').ToList();
+                var ipDocOptionalTrimmed = new List<string>();
+
+                if (ipDocOptional != null && !ipDocOptional.Contains("NaN"))
+                {
+                    foreach (var lpco in ipDocOptional)
+                    {
+                        ipDocOptionalTrimmed.Add(lpco.Trim());
+                    }
+
+                    foreach (var doc in ipDocOptionalTrimmed)
+                    {
+                        var tempReq = new DocumentaryRequirement();
+
+                        tempReq.Name = doc + " For Import Permit"; //replace DPP with collectionName 
+                        tempReq.DocumentName = doc;
+                        tempReq.IsMandatory = false;
+                        tempReq.RequirementType = "Documentary";
+
+                        tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                        tempReq.AttachedObjectFormatID = 1;
+
+                        tarpDocumentRequirements.Add(tempReq);
+                    }
+                }
+
                 foreach (var lpco in ipDocRequirements)
                 {
                     ipDocRequirementsTrimmed.Add(lpco.Trim());
@@ -264,6 +290,32 @@ namespace PSW.ITMS.Service.Strategies
 
                 var roDocRequirementsTrimmed = new List<string>();
 
+                var roDocOptional = mongoRecord["RO  DOCUMENTARY REQUIREMENTS(Optional)"].ToString().Split('|').ToList();
+                var roDocOptionalTrimmed = new List<string>();
+
+                if (roDocOptional != null && !roDocOptional.Contains("NaN"))
+                {
+                    foreach (var lpco in roDocOptional)
+                    {
+                        roDocOptionalTrimmed.Add(lpco.Trim());
+                    }
+
+                    foreach (var doc in roDocOptionalTrimmed)
+                    {
+                        var tempReq = new DocumentaryRequirement();
+
+                        tempReq.Name = doc + " For " + " DPP Release Order"; //replace DPP with collectionName 
+                        tempReq.DocumentName = doc;
+                        tempReq.IsMandatory = false;
+                        tempReq.RequirementType = "Documentary";
+
+                        tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                        tempReq.AttachedObjectFormatID = 1;
+
+                        tarpDocumentRequirements.Add(tempReq);
+                    }
+                }
+
                 foreach (var lpco in roDocRequirements)
                 {
                     var removespaces = lpco.Trim();
@@ -297,21 +349,47 @@ namespace PSW.ITMS.Service.Strategies
             //for PythoCertificate = EC
             else if (documentClassification == "EC")
             {
-                var roDocRequirements = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                var ecDocRequirements = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
 
-                var roDocRequirementsTrimmed = new List<string>();
+                var ecDocRequirementsTrimmed = new List<string>();
 
-                foreach (var lpco in roDocRequirements)
+                var ecDocOptional = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS(optional)"].ToString().Split('|').ToList();
+                var ecDocOptionalTrimmed = new List<string>();
+
+                if (ecDocOptional != null && !ecDocOptional.Contains("NaN"))
+                {
+                    foreach (var lpco in ecDocOptional)
+                    {
+                        ecDocOptionalTrimmed.Add(lpco.Trim());
+                    }
+
+                    foreach (var doc in ecDocOptionalTrimmed)
+                    {
+                        var tempReq = new DocumentaryRequirement();
+
+                        tempReq.Name = doc + " For Phythosanitary Certificate";
+                        tempReq.DocumentName = doc;
+                        tempReq.IsMandatory = false;
+                        tempReq.RequirementType = "Documentary";
+
+                        tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                        tempReq.AttachedObjectFormatID = 1;
+
+                        tarpDocumentRequirements.Add(tempReq);
+                    }
+                }
+
+                foreach (var lpco in ecDocRequirements)
                 {
                     var removeSpaces = lpco.Trim();
-                    roDocRequirementsTrimmed.Add(removeSpaces.TrimEnd('\n'));
+                    ecDocRequirementsTrimmed.Add(removeSpaces.TrimEnd('\n'));
                 }
 
                 // roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
                 // roDocRequirementsTrimmed.Remove("Fee Challan");
 
                 //DocumentaryRequirements
-                foreach (var doc in roDocRequirementsTrimmed)
+                foreach (var doc in ecDocRequirementsTrimmed)
                 {
                     var tempReq = new DocumentaryRequirement();
 
@@ -329,6 +407,8 @@ namespace PSW.ITMS.Service.Strategies
                 //Financial Requirements
                 FinancialRequirement.PlainAmount = mongoRecord["PHYTOSANITARY  FEES"].ToString();
                 FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["PHYTOSANITARY  FEES"].ToString());
+                FinancialRequirement.PlainAmmendmentFee = mongoRecord["PHYTOSANITARY AMENDMENT FEES"].ToString();
+                FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["PHYTOSANITARY AMENDMENT FEES"].ToString());
             }
 
             tarpRequirments.DocumentaryRequirementList = tarpDocumentRequirements;
