@@ -8,7 +8,10 @@ namespace PSW.ITMS.Service.DTO
     {
         [JsonPropertyName("isLPCORequired")]
         public bool isLPCORequired { get; set; }
-        
+
+        [JsonPropertyName("formNumber")]
+        public string FormNumber { get; set; }
+
         [JsonPropertyName("documentaryRequirementList")]
         public List<DocumentaryRequirement> DocumentaryRequirementList { get; set; }
         public FinancialRequirement FinancialRequirement { get; set; }
@@ -46,6 +49,12 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("plainAmount")]
         public string PlainAmount { get; set; }
+
+        [JsonPropertyName("ammendmentFee")]
+        public string AmmendmentFee { get; set; }
+
+        [JsonPropertyName("plainAmmendmentFee")]
+        public string PlainAmmendmentFee { get; set; }
     }
 
     public class ValidityRequirement
