@@ -25,6 +25,7 @@
     <OutputPath>..\..\build\psw.itms.api\</OutputPath>
     <!-- Remove this if you multi-target and need the created net*, netcoreapp* subdirs -->
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <UserSecretsId>118f20c0-550c-4f48-9a42-e0341c6d29c1</UserSecretsId>
 
   </PropertyGroup>
 
