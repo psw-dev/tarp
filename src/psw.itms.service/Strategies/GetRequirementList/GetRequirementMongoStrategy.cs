@@ -304,7 +304,7 @@ namespace PSW.ITMS.Service.Strategies
                     {
                         var tempReq = new DocumentaryRequirement();
 
-                        tempReq.Name = doc + " For " + " DPP Release Order"; //replace DPP with collectionName 
+                        tempReq.Name = doc + " For " + "Release Order"; //replace DPP with collectionName 
                         tempReq.DocumentName = doc;
                         tempReq.IsMandatory = false;
                         tempReq.RequirementType = "Documentary";
@@ -330,7 +330,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     var tempReq = new DocumentaryRequirement();
 
-                    tempReq.Name = doc + " For " + " DPP Release Order"; //replace DPP with collectionName 
+                    tempReq.Name = doc + " For " + "Release Order"; //replace DPP with collectionName 
                     tempReq.DocumentName = doc;
                     tempReq.IsMandatory = true;
                     tempReq.RequirementType = "Documentary";
@@ -339,6 +339,21 @@ namespace PSW.ITMS.Service.Strategies
                     tempReq.AttachedObjectFormatID = 1;
 
                     tarpDocumentRequirements.Add(tempReq);
+                }
+                if (mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes")
+                {
+                    var tempReq = new DocumentaryRequirement();
+                    var ipDocRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new { AgencyID = RequestDTO.AgencyId, documentClassificationCode = "IMP", AttachedObjectFormatID = 2, AltCode = "C" }).FirstOrDefault();
+
+                    tempReq.Name = ipDocRequired.Name + " For " + "Release Order"; //replace DPP with collectionName 
+                    tempReq.DocumentName = ipDocRequired.Name;
+                    tempReq.IsMandatory = true;
+                    tempReq.RequirementType = "Documentary";
+                    tempReq.DocumentTypeCode = ipDocRequired.Code;
+                    tempReq.AttachedObjectFormatID = ipDocRequired.AttachedObjectFormatID;
+
+                    tarpDocumentRequirements.Add(tempReq);
+
                 }
 
                 //Financial Requirements
