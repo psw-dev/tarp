@@ -40,15 +40,17 @@ namespace PSW.ITMS.Service.Strategies
 
                 Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
 
-                var tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
-                    new
-                    {
-                        HSCodeExt = RequestDTO.HsCode,
-                        AgencyID = RequestDTO.AgencyId,
-                        RequiredDocumentTypeCode = RequestDTO.documentTypeCode,
-                        TradeTranTypeID = RequestDTO.TradeTranTypeID
-                    }
-                    ).FirstOrDefault();
+                // var tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
+                //     new
+                //     {
+                //         HSCodeExt = RequestDTO.HsCode,
+                //         AgencyID = RequestDTO.AgencyId,
+                //         RequiredDocumentTypeCode = RequestDTO.documentTypeCode,
+                //         TradeTranTypeID = RequestDTO.TradeTranTypeID
+                //     }
+                //     ).FirstOrDefault();
+
+                RegulatedHSCode tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(RequestDTO.HsCode, RequestDTO.AgencyId, RequestDTO.TradeTranTypeID, RequestDTO.documentTypeCode);
 
                 Log.Information("|{0}|{1}| RegulatedHSCode DbRecord {@tempHsCode}", StrategyName, MethodID, tempHsCode);
 
