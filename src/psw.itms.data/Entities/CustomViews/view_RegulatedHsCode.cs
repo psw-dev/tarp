@@ -30,4 +30,15 @@ namespace PSW.ITMS.Data.Entities
         [JsonPropertyName("technicalName")]
         public string TechnicalName { get; set; }
     }
+
+    public class ProductDetail
+    {
+        [JsonPropertyName("productCode")]
+        public string ProductCode { get; set; }
+
+        [JsonPropertyName("itemDescription")]
+        public string ItemDescription { get; set; }
+
+    }
+
 }

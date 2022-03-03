@@ -39,7 +39,6 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     ResponseDTO = new GetPCTCodeListResponse
                     {
-                        PctCodeList = new List<string>(),
                         Message = "Product codes does not exist for the provided hscode."
                     };
 
