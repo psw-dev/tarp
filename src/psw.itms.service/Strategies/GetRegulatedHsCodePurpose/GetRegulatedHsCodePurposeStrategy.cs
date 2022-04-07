@@ -117,7 +117,7 @@ namespace PSW.ITMS.Service.Strategies
                 var hsCodePurpose = new RegulatedHsCodePurpose();
                 hsCodePurpose.HsCode = hsCode;
 
-                var filter = Builders<BsonDocument>.Filter.Eq("STATISTICAL SUFFIX", hsCode);
+                var filter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hsCode);
                 var projection = Builders<BsonDocument>.Projection.Include("PURPOSE").Exclude("_id");
 
                 hsCodePurpose.PurposeList = documentInCollection.Find<BsonDocument>(filter).Project(projection).ToList().Select(x => x.GetValue("PURPOSE").ToString()).ToList();
