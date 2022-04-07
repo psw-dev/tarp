@@ -24,7 +24,7 @@ namespace PSW.ITMS.Service.MongoDB
 
             var collection = database.GetCollection<BsonDocument>(CollectionName);
 
-            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("STATISTICAL SUFFIX", hscode);
+            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hscode);
             var purposeFilter = Builders<BsonDocument>.Filter.Eq("PURPOSE", purpose);
 
             var combinedFilter = Builders<BsonDocument>.Filter.And(hsCodeFilter, purposeFilter);

@@ -55,6 +55,12 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("plainAmmendmentFee")]
         public string PlainAmmendmentFee { get; set; }
+
+        [JsonPropertyName("extensionFee")]
+        public string ExtensionFee { get; set; }
+
+        [JsonPropertyName("plainExtensionFee")]
+        public string PlainExtensionFee { get; set; }
     }
 
     public class ValidityRequirement
@@ -64,5 +70,14 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("uomName")]
         public string UomName { get; set; }
+        
+        [JsonPropertyName("extensionAllowed")]
+        public bool ExtensionAllowed { get; set; }
+
+        [JsonPropertyName("extensionPeriod")]
+        public int ExtensionPeriod { get; set; }
+
+        [JsonPropertyName("extensionPeriodUnitName")]
+        public string ExtensionPeriodUnitName { get; set; }
     }
 }
