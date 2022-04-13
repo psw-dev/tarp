@@ -132,7 +132,7 @@ namespace PSW.ITMS.Service.Strategies
 
                     tempFactorData.FactorLabel = factorData.Label;
                     tempFactorData.FactorCode = factorData.FactorCode;
-                    tempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorInfo.LOVTableName, factorInfo.LOVColumnName).Where(x => lov.Contains(x.ItemValue)).ToList();
+                    tempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorInfo.LOVTableName, factorInfo.LOVColumnName).Where(x => lov.ConvertAll(y => y.ToLower()).Contains(x.ItemValue.ToLower())).ToList();
 
                     if (tempFactorData.FactorLOVItems != null || tempFactorData.FactorLOVItems.Count == 0)
                     {

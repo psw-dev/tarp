@@ -31,7 +31,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
 
         public List<FactorLOVItems> GetLOVItems(string lovTableName, string lovColumnName)
         {
-            return _connection.Query<FactorLOVItems>(string.Format("SELECT ID as ItemKey, {0} as ItemValue FROM [SHRD].[dbo].[{1}] WHERE IsActive = 1", lovColumnName, lovTableName)).ToList();
+            return _connection.Query<FactorLOVItems>(string.Format("SELECT ID as ItemKey, {0} as ItemValue FROM [SHRD].[dbo].[{1}]", lovColumnName, lovTableName)).ToList();
         }
 
         #endregion
