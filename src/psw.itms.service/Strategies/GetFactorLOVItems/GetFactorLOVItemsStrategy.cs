@@ -1,5 +1,8 @@
+using MongoDB.Bson;
+using MongoDB.Driver;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
+using PSW.ITMS.Service.MongoDB;
 using PSW.Lib.Logs;
 using System;
 using System.Collections.Generic;
@@ -29,12 +32,57 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-                if (RequestDTO.FactorList == null || RequestDTO.FactorList.Count == 0)
+                // USE MODEL VALIDATOR INSTEAD OF BELOW CHECK
+                if (RequestDTO.AgencyId == 0 ||
+                    string.IsNullOrEmpty(RequestDTO.DocumentTypeCode) ||
+                    RequestDTO.TradeTranTypeID == 0 ||
+                    RequestDTO.FactorList == null ||
+                    RequestDTO.FactorList.Count == 0 ||
+                    string.IsNullOrEmpty(RequestDTO.HSCodeExt))
                 {
                     return BadRequestReply("Please provide valid request parameters");
                 }
 
-                var tempFactorLOVItems = GetLOVItemsForProvidedFactors(RequestDTO.FactorList);
+                var mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
+                    new
+                    {
+                        AgencyId = RequestDTO.AgencyId,
+                        RequiredDocumentTypeCode = RequestDTO.DocumentTypeCode,
+                        TradeTranTypeId = RequestDTO.TradeTranTypeID
+                    }
+                    ).FirstOrDefault().CollectionName;
+
+                if (string.IsNullOrEmpty(mongoDbCollection))
+                {
+                    return BadRequestReply("No record found for provided request parameters");
+                }
+
+                Log.Information("|{0}|{1}| MongoDb Collection Name : {@mongoDbCollection}", StrategyName, MethodID, mongoDbCollection);
+
+                MongoDbRecordFetcher mongoDBRecordFetcher;
+                IMongoCollection<BsonDocument> documentInCollection;
+
+                try
+                {
+                    mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", mongoDbCollection, Environment.GetEnvironmentVariable("MONGODBConnString"));
+                }
+                catch (SystemException ex)
+                {
+                    Log.Error("|{0}|{1}| Error occured in connecting to MongoDB {@ex}", StrategyName, MethodID, ex.ToString());
+                    return BadRequestReply("Error occured in connecting to MongoDB");
+                }
+
+                try
+                {
+                    documentInCollection = mongoDBRecordFetcher.GetCollection();
+                }
+                catch (SystemException ex)
+                {
+                    Log.Error("|{0}|{1}| Error occured in fetching record from MongoDB {@ex}", StrategyName, MethodID, ex.ToString());
+                    return BadRequestReply("Error occured in fetching record from MongoDB");
+                }
+
+                var tempFactorLOVItems = GetLOVItemsForProvidedFactors(documentInCollection);
 
                 if (tempFactorLOVItems == null || tempFactorLOVItems.Count == 0)
                 {
@@ -61,18 +109,16 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion 
 
-        public List<FactorLOVItemsData> GetLOVItemsForProvidedFactors(List<int> factorlabelList)
+        public List<FactorLOVItemsData> GetLOVItemsForProvidedFactors(IMongoCollection<BsonDocument> documentInCollection)
         {
             var tempFactorDatalist = new List<FactorLOVItemsData>();
 
-            foreach (var factorID in factorlabelList)
+            foreach (var factorInfo in RequestDTO.FactorList)
             {
                 var tempFactorData = new FactorLOVItemsData();
+                tempFactorData.FactorID = factorInfo.FactorId;
 
-                tempFactorData.FactorID = factorID;
-
-
-                var factorData = Command.UnitOfWork.FactorRepository?.Where(new { ID = factorID, ISLOV = 1 }).FirstOrDefault();
+                var factorData = Command.UnitOfWork.FactorRepository?.Where(new { ID = factorInfo.FactorId, ISLOV = 1 }).FirstOrDefault();
 
                 if (factorData == null)
                 {
@@ -80,11 +126,13 @@ namespace PSW.ITMS.Service.Strategies
                 }
                 else
                 {
+                    var filter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", RequestDTO.HSCodeExt);
+                    var projection = Builders<BsonDocument>.Projection.Include(factorData.FactorCode).Exclude("_id");
+                    var lov = documentInCollection.Find<BsonDocument>(filter).Project(projection).ToList().Select(x => x.GetValue(factorData.FactorCode).ToString()).ToList();
 
                     tempFactorData.FactorLabel = factorData.Label;
                     tempFactorData.FactorCode = factorData.FactorCode;
-
-                    tempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorData.LOVID);
+                    tempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorInfo.LOVTableName, factorInfo.LOVColumnName).Where(x => lov.Contains(x.ItemValue)).ToList();
 
                     if (tempFactorData.FactorLOVItems != null || tempFactorData.FactorLOVItems.Count == 0)
                     {

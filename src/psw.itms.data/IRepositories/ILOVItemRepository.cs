@@ -9,5 +9,6 @@ namespace PSW.ITMS.Data.Repositories
     public interface ILOVItemRepository : IRepository<LOVItem>
     {
         List<FactorLOVItems> GetLOVItems(int? LOVID);
+        List<FactorLOVItems> GetLOVItems(string lovTableName, string lovColumnName);
     }
 }
