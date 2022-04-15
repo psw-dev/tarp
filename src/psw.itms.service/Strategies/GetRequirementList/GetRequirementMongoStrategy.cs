@@ -285,8 +285,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 //ValidityTerm Requirements
                 ValidityRequirement.UomName = "Month";
-                var uomPeriod = mongoRecord["IP VALIDITY"].ToString();
-                ValidityRequirement.Quantity = Convert.ToInt32(uomPeriod.Substring(0, 2));
+                ValidityRequirement.Quantity = Convert.ToInt32(mongoRecord["IP VALIDITY"]);
                 ValidityRequirement.ExtensionAllowed = mongoRecord["IP Extention Allowed"].ToString().ToLower() == "yes" ? true : false;
                 ValidityRequirement.ExtensionPeriod = Convert.ToInt32(mongoRecord["IP Extention Period (Months)"]);
                 ValidityRequirement.ExtensionPeriodUnitName = "Months";     // Hard coded till we have a separate column in sheet for this
