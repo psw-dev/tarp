@@ -101,7 +101,7 @@ namespace PSW.ITMS.Service.MongoDB
                     return mongoRecord["RO CERTIFICATE FORM NUMBER"].ToString();
                     
                 case "EC":
-                    return mongoRecord["PHYTOSANTARY  CERTIFICATE FORM NUMBER"].ToString();
+                    return mongoRecord["PHYTOSANTARY CERTIFICATE FORM NUMBER"].ToString();
             }
             return "";
         }
