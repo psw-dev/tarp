@@ -366,11 +366,11 @@ namespace PSW.ITMS.Service.Strategies
             //for PythoCertificate = EC
             else if (documentClassification == "EC")
             {
-                var ecDocRequirements = mongoRecord["Documentary requirements (Mandatory Phytosanitary certificate)"].ToString().Split('|').ToList();
+                var ecDocRequirements = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
 
                 var ecDocRequirementsTrimmed = new List<string>();
 
-                var ecDocOptional = mongoRecord["Documentary requirements (Optional Phytosanitary certificate)"].ToString().Split('|').ToList();
+                var ecDocOptional = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS(optional)"].ToString().Split('|').ToList();
                 var ecDocOptionalTrimmed = new List<string>();
 
                 if (ecDocOptional != null && !ecDocOptional.Contains("NaN"))
