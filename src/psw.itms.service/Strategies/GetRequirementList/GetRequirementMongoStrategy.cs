@@ -422,10 +422,10 @@ namespace PSW.ITMS.Service.Strategies
                 }
 
                 //Financial Requirements
-                FinancialRequirement.PlainAmount = mongoRecord["Phytosanitary certification Fee"].ToString();
-                FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary certification Fee"].ToString());
-                FinancialRequirement.PlainAmmendmentFee = mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString();
-                FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString());
+                FinancialRequirement.PlainAmount = mongoRecord["PHYTOSANITARY  FEES"].ToString();
+                FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["PHYTOSANITARY  FEES"].ToString());
+                FinancialRequirement.PlainAmmendmentFee = mongoRecord["PHYTOSANITARY AMENDMENT FEES"].ToString();
+                FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["PHYTOSANITARY AMENDMENT FEES"].ToString());
             }
 
             tarpRequirments.DocumentaryRequirementList = tarpDocumentRequirements;
