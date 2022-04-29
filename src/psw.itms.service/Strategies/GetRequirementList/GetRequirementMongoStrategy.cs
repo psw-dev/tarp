@@ -372,11 +372,11 @@ namespace PSW.ITMS.Service.Strategies
             //for PythoCertificate = EC
             else if (documentClassification == "EC")
             {
-                var ecDocRequirements = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                var ecDocRequirements = mongoRecord["Documentary requirements (Mandatory Phytosanitary certificate)"].ToString().Split('|').ToList();
 
                 var ecDocRequirementsTrimmed = new List<string>();
 
-                var ecDocOptional = mongoRecord["PHYTOSANITARY  DOCUMENTARY REQUIREMENTS(optional)"].ToString().Split('|').ToList();
+                var ecDocOptional = mongoRecord["Documentary requirements (Optional Phytosanitary certificate)"].ToString().Split('|').ToList();
                 var ecDocOptionalTrimmed = new List<string>();
 
                 if (ecDocOptional != null && !ecDocOptional.Contains("NaN"))
@@ -428,10 +428,10 @@ namespace PSW.ITMS.Service.Strategies
                 }
 
                 //Financial Requirements
-                FinancialRequirement.PlainAmount = mongoRecord["PHYTOSANITARY  FEES"].ToString();
-                FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["PHYTOSANITARY  FEES"].ToString());
-                FinancialRequirement.PlainAmmendmentFee = mongoRecord["PHYTOSANITARY AMENDMENT FEES"].ToString();
-                FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["PHYTOSANITARY AMENDMENT FEES"].ToString());
+                FinancialRequirement.PlainAmount = mongoRecord["Phytosanitary certification Fee"].ToString();
+                FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary certification Fee"].ToString());
+                FinancialRequirement.PlainAmmendmentFee = mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString();
+                FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString());
             }
 
             tarpRequirments.DocumentaryRequirementList = tarpDocumentRequirements;
