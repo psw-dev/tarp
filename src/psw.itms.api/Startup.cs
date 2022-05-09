@@ -45,7 +45,8 @@ namespace PSW.ITMS.Api
                 typeof(EntityToDTOMappingProfile)
             );
 
-
+            services.AddHostedService<RPCQueueService>();
+            services.AddHostedService<WorkerQueueService>();
             services.AddControllers()
                     .AddJsonOptions(options =>
                     {
@@ -164,9 +165,9 @@ namespace PSW.ITMS.Api
                 //endpoints.MapHealthChecks("/health");
             });
 
-            var component = app.ApplicationServices.GetRequiredService<IEventBus>();
-            var ITMSRabbitMqListener = new ITMSRabbitMqListener(itmsService, unitOfWork, Configuration);
-            component.Subscribe(MessageQueues.TARPQueue, ITMSRabbitMqListener, Configuration, eventBus);
+            // var component = app.ApplicationServices.GetRequiredService<IEventBus>();
+            // var ITMSRabbitMqListener = new ITMSRabbitMqListener(itmsService, unitOfWork, Configuration);
+            // component.Subscribe(MessageQueues.TARPQueue, ITMSRabbitMqListener, Configuration, eventBus);
 
         }
     }
