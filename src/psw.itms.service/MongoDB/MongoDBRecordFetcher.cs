@@ -41,6 +41,29 @@ namespace PSW.ITMS.Service.MongoDB
             return FetchedRecord;
         }
 
+        public BsonDocument GetFilteredRecordAQD(string hscode, string purpose)
+        {
+            var database = MClient.GetDatabase(DbName);
+
+            var collection = database.GetCollection<BsonDocument>(CollectionName);
+
+            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hscode);
+            var purposeFilter = Builders<BsonDocument>.Filter.Eq("CATEGORY", purpose);
+
+            var combinedFilter = Builders<BsonDocument>.Filter.And(hsCodeFilter, purposeFilter);
+
+            Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
+
+            var FetchedRecord = collection.Find(combinedFilter, new FindOptions { Collation = collation }).FirstOrDefault();
+
+            if (FetchedRecord == null)
+            {
+                return null;
+            }
+
+            return FetchedRecord;
+        }
+
         public bool UpdateRecord(string hscode, string purpose, string propertyToBeUpdated, string updatedValue)
         {
             var recordFetch = GetFilteredRecord(hscode, purpose);
@@ -90,6 +113,28 @@ namespace PSW.ITMS.Service.MongoDB
             }
         }
 
+        public bool CheckIfLPCORequiredAQD(BsonDocument mongoRecord, string requiredDocumentParentCode, out bool IsParenCodeValid)
+        {
+            switch (requiredDocumentParentCode)
+            {
+                case "IMP":
+                    IsParenCodeValid = true;
+                    return mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";
+
+                case "RO":
+                    IsParenCodeValid = true;
+                    return mongoRecord["RO REQUIRED"].ToString().ToLower() == "yes";
+
+                case "EC":
+                    IsParenCodeValid = true;
+                    return mongoRecord["Health Certificate"].ToString().ToLower() == "yes";
+
+                default:
+                    IsParenCodeValid = false;
+                    return false;
+            }
+        }
+
         public string GetFormNumber(BsonDocument mongoRecord, string requiredDocumentParentCode)
         {
             switch (requiredDocumentParentCode)
@@ -102,6 +147,22 @@ namespace PSW.ITMS.Service.MongoDB
                     
                 case "EC":
                     return mongoRecord["PHYTOSANTARY CERTIFICATE FORM NUMBER"].ToString();
+            }
+            return "";
+        }
+
+        public string GetFormNumberAQD(BsonDocument mongoRecord, string requiredDocumentParentCode)
+        {
+            switch (requiredDocumentParentCode)
+            {
+                case "IMP":
+                    return mongoRecord["IP CERTIFICATE FORM NUMBER"].ToString();
+
+                case "RO":
+                    return mongoRecord["RO CERTIFICATE FORM NUMBER"].ToString();
+                    
+                case "EC":
+                    return mongoRecord["Form"].ToString();
             }
             return "";
         }
