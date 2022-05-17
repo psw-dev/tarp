@@ -32,7 +32,8 @@ namespace PSW.ITMS.Data
         ITestingRequirementRepository TestingRequirementRepository { get; }
         IValidityTermRequirementRepository ValidityTermRequirementRepository { get; }
         IDocumentToInitiateRepository DocumentToInitiateRepository { get; }
-
+        ILPCOFeeConfigurationRepository LPCOFeeConfigurationRepository { get; }
+        IOGAItemCategoryRepository OGAItemCategoryRepository { get; }
         #endregion
 
         #region TARP View Repositories

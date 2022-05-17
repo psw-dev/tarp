@@ -42,6 +42,9 @@ namespace PSW.ITMS.Data.Sql
         private ITestingRequirementRepository _testingRequirementRepository;
         private IValidityTermRequirementRepository _validityTermRequirementRepository;
         private IDocumentToInitiateRepository _documentToInitiateRepository;
+        private ILPCOFeeConfigurationRepository _lPCOFeeConfigurationRepository;
+        private IOGAItemCategoryRepository _oGAItemCategoryRepository;
+
         #endregion
 
         #region Private Properties TARP Views
@@ -93,6 +96,10 @@ namespace PSW.ITMS.Data.Sql
         public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
         public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
         public IDocumentToInitiateRepository DocumentToInitiateRepository => _documentToInitiateRepository ?? (_documentToInitiateRepository = new DocumentToInitiateRepository(_connection));
+        public ILPCOFeeConfigurationRepository LPCOFeeConfigurationRepository => _lPCOFeeConfigurationRepository ?? (_lPCOFeeConfigurationRepository = new LPCOFeeConfigurationRepository(_connection));
+        public IOGAItemCategoryRepository OGAItemCategoryRepository => _oGAItemCategoryRepository ?? (_oGAItemCategoryRepository = new OGAItemCategoryRepository(_connection));
+
+
         #endregion
 
         #region Public Properties SHRD
