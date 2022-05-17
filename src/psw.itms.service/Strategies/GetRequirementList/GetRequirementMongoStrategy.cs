@@ -104,7 +104,14 @@ namespace PSW.ITMS.Service.Strategies
 
                 try
                 {
-                    mongoDoc = mongoDBRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                    if (RequestDTO.AgencyId == "2")
+                    {
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                    }
+                    else if (RequestDTO.AgencyId == "3")
+                    {
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordAQD(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["CATEGORY"].FactorValue);
+                    }
                 }
                 catch (SystemException ex)
                 {
@@ -128,7 +135,17 @@ namespace PSW.ITMS.Service.Strategies
 
                 ResponseDTO = new GetDocumentRequirementResponse();
 
-                bool DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequired(mongoDoc, docType.DocumentClassificationCode, out bool IsParenCodeValid);
+                bool DocumentIsRequired = false;
+                bool IsParenCodeValid = false;
+
+                if (RequestDTO.AgencyId == "2")
+                {
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequired(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                }
+                else if (RequestDTO.AgencyId == "3")
+                {
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredAQD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                }
 
                 if (!IsParenCodeValid)
                 {
@@ -155,7 +172,14 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     ResponseDTO = GetRequirements(mongoDoc, docType.DocumentClassificationCode);
 
-                    ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumber(mongoDoc, docType.DocumentClassificationCode);
+                    if (RequestDTO.AgencyId == "2")
+                    {
+                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumber(mongoDoc, docType.DocumentClassificationCode);
+                    }
+                    else if (RequestDTO.AgencyId == "3")
+                    {
+                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberAQD(mongoDoc, docType.DocumentClassificationCode);
+                    }
 
                     Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
                 }
@@ -372,12 +396,29 @@ namespace PSW.ITMS.Service.Strategies
             //for PythoCertificate = EC
             else if (documentClassification == "EC")
             {
-                var ecDocRequirements = mongoRecord["Documentary requirements (Mandatory Phytosanitary certificate)"].ToString().Split('|').ToList();
-
+                var ecDocRequirements = new List<string>();
                 var ecDocRequirementsTrimmed = new List<string>();
-
-                var ecDocOptional = mongoRecord["Documentary requirements (Optional Phytosanitary certificate)"].ToString().Split('|').ToList();
+                var ecDocOptional = new List<string>();
                 var ecDocOptionalTrimmed = new List<string>();
+
+                if (RequestDTO.AgencyId == "2")
+                {
+                    ecDocRequirements = mongoRecord["Documentary requirements (Mandatory Phytosanitary certificate)"].ToString().Split('|').ToList();
+                }
+                else if (RequestDTO.AgencyId == "3")
+                {
+                    ecDocRequirements = mongoRecord["Health Certificate Processing Requirements"].ToString().Split('|').ToList();
+
+                }
+
+                if (RequestDTO.AgencyId == "2")
+                {
+                    ecDocOptional = mongoRecord["Documentary requirements (Optional Phytosanitary certificate)"].ToString().Split('|').ToList();
+                }
+                else if (RequestDTO.AgencyId == "3")
+                {
+                    ecDocOptional = mongoRecord["Optional Health Certificate"].ToString().Split('|').ToList();
+                }
 
                 if (ecDocOptional != null && !ecDocOptional.Contains("NaN"))
                 {
@@ -397,41 +438,58 @@ namespace PSW.ITMS.Service.Strategies
 
                         tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                         tempReq.AttachedObjectFormatID = 1;
-
-                        tarpDocumentRequirements.Add(tempReq);
+                        if (!string.IsNullOrEmpty(tempReq.DocumentTypeCode))
+                        {
+                            tarpDocumentRequirements.Add(tempReq);
+                        }
                     }
                 }
 
-                foreach (var lpco in ecDocRequirements)
+                if (ecDocRequirements != null && !ecDocRequirements.Contains("NaN"))
                 {
-                    var removeSpaces = lpco.Trim();
-                    ecDocRequirementsTrimmed.Add(removeSpaces.TrimEnd('\n'));
+                    foreach (var lpco in ecDocRequirements)
+                    {
+                        var removeSpaces = lpco.Trim();
+                        ecDocRequirementsTrimmed.Add(removeSpaces.TrimEnd('\n'));
+                    }
+
+                    // roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
+                    // roDocRequirementsTrimmed.Remove("Fee Challan");
+
+                    //DocumentaryRequirements
+                    foreach (var doc in ecDocRequirementsTrimmed)
+                    {
+                        var tempReq = new DocumentaryRequirement();
+
+                        tempReq.Name = doc + " For Phythosanitary Certificate";
+                        tempReq.DocumentName = doc;
+                        tempReq.IsMandatory = true;
+                        tempReq.RequirementType = "Documentary";
+
+                        tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                        tempReq.AttachedObjectFormatID = 1;
+                        if (!string.IsNullOrEmpty(tempReq.DocumentTypeCode))
+                        {
+                            tarpDocumentRequirements.Add(tempReq);
+                        }
+                    }
+
                 }
-
-                // roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
-                // roDocRequirementsTrimmed.Remove("Fee Challan");
-
-                //DocumentaryRequirements
-                foreach (var doc in ecDocRequirementsTrimmed)
-                {
-                    var tempReq = new DocumentaryRequirement();
-
-                    tempReq.Name = doc + " For Phythosanitary Certificate";
-                    tempReq.DocumentName = doc;
-                    tempReq.IsMandatory = true;
-                    tempReq.RequirementType = "Documentary";
-
-                    tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
-                    tempReq.AttachedObjectFormatID = 1;
-
-                    tarpDocumentRequirements.Add(tempReq);
-                }
-
                 //Financial Requirements
-                FinancialRequirement.PlainAmount = mongoRecord["Phytosanitary certification Fee"].ToString();
-                FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary certification Fee"].ToString());
-                FinancialRequirement.PlainAmmendmentFee = mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString();
-                FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString());
+                if (RequestDTO.AgencyId == "2")
+                {
+                    FinancialRequirement.PlainAmount = mongoRecord["Phytosanitary certification Fee"].ToString();
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary certification Fee"].ToString());
+                    FinancialRequirement.PlainAmmendmentFee = mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString();
+                    FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString());
+                }
+                else if (RequestDTO.AgencyId == "3")
+                {
+                    FinancialRequirement.PlainAmount = "500";
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt("500");
+                    FinancialRequirement.PlainAmmendmentFee = "500";
+                    FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt("500");
+                }
             }
 
             tarpRequirments.DocumentaryRequirementList = tarpDocumentRequirements;

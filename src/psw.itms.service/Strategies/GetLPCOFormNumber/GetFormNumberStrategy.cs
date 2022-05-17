@@ -85,10 +85,17 @@ namespace PSW.ITMS.Service.Strategies
                 { Code = RequestDTO.documentTypeCode }).FirstOrDefault();
 
                 Log.Information("|{0}|{1}| Required LPCO Parent Code {@documentClassification}", StrategyName, MethodID, docType.DocumentClassificationCode);
+                string formNumber = string.Empty;
+                if (RequestDTO.AgencyId == 2)
+                {
+                    formNumber = mongoDBRecordFetcher.GetFormNumber(mongoDoc, docType.DocumentClassificationCode);
+                }
+                if (RequestDTO.AgencyId == 3)
+                {
+                    formNumber = mongoDBRecordFetcher.GetFormNumberAQD(mongoDoc, docType.DocumentClassificationCode);
+                }
 
-                string formNumber = mongoDBRecordFetcher.GetFormNumber(mongoDoc, docType.DocumentClassificationCode);
-
-                if(string.IsNullOrEmpty(formNumber))
+                if (string.IsNullOrEmpty(formNumber))
                 {
                     return BadRequestReply("Form number not found in record");
                 }
