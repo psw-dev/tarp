@@ -228,7 +228,7 @@ namespace PSW.ITMS.Service.Strategies
                 var ipDocRequirements = mongoRecord["IP DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
                 var ipDocRequirementsTrimmed = new List<string>();
 
-                var ipDocOptional = mongoRecord["IP  DOCUMENTARY REQUIREMENTS(Optional)"].ToString().Split('|').ToList();
+                var ipDocOptional = mongoRecord["IP DOCUMENTARY REQUIREMENTS(Optional)"].ToString().Split('|').ToList();
                 var ipDocOptionalTrimmed = new List<string>();
 
                 if (ipDocOptional != null && !ipDocOptional.Contains("NaN"))
@@ -277,12 +277,18 @@ namespace PSW.ITMS.Service.Strategies
                 //Financial Requirements
                 FinancialRequirement.PlainAmount = mongoRecord["IP FEES"].ToString();
                 FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP FEES"].ToString());
+                FinancialRequirement.PlainAmmendmentFee = mongoRecord["IP Amendment Fees"].ToString();
+                FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP Amendment Fees"].ToString());
+                FinancialRequirement.PlainExtensionFee = mongoRecord["IP Extention Fees"].ToString();
+                FinancialRequirement.ExtensionFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP Extention Fees"].ToString());
 
 
                 //ValidityTerm Requirements
                 ValidityRequirement.UomName = "Month";
-                var uomPeriod = mongoRecord["IP VALIDITY"].ToString();
-                ValidityRequirement.Quantity = Convert.ToInt32(uomPeriod.Substring(0, 2));
+                ValidityRequirement.Quantity = Convert.ToInt32(mongoRecord["IP VALIDITY"]);
+                ValidityRequirement.ExtensionAllowed = mongoRecord["IP Extention Allowed"].ToString().ToLower() == "yes" ? true : false;
+                ValidityRequirement.ExtensionPeriod = Convert.ToInt32(mongoRecord["IP Extention Period (Months)"]);
+                ValidityRequirement.ExtensionPeriodUnitName = "Months";     // Hard coded till we have a separate column in sheet for this
 
             }
             //for ReleaseOrder = RO
