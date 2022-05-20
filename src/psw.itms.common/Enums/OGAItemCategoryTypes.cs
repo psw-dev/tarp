@@ -1,10 +1,10 @@
 namespace PSW.ITMS.Common.Enums
 {
-    public enum OGAItemCategoryTypes
-    {
-        LiveAnimalOtherThanPetAndBird = 1,
-        LiveBird = 2,
-        AnimalProductOtherThanSemen = 3,
-        Insecta = 4
+    public static class OGAItemCategoryTypes
+    { 
+        public const string LiveAnimalOtherThanPetAndBird = "LIVE ANIMAL OTHER THAN PET AND BIRD";
+        public const string LiveBird = "LIVE BIRD";
+        public const string AnimalProductOtherThanSemen = "ANIMAL PRODUCT OTHER THAN SEMEN";
+        public const string Insecta = "INSECTA";
     }
 }

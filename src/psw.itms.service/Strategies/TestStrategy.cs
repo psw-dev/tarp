@@ -1,15 +1,11 @@
-using MongoDB.Bson;
-using psw.security.Encryption;
-using PSW.ITMS.Data.Entities;
-using PSW.ITMS.Service.Command;
+ using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
-using PSW.ITMS.Service;
 using PSW.Lib.Logs;
 using System;
 
 namespace PSW.ITMS.Service.Strategies
 {
-    public class TestStrategy : ApiStrategy<CalculateECFeeRequest, CalculateECFeeResponse>
+    public class TestStrategy : ApiStrategy<AQDECFeeCalculateRequestDTO, Unspecified>
     {
         CommandRequest request;
 
@@ -17,9 +13,9 @@ namespace PSW.ITMS.Service.Strategies
         public TestStrategy(CommandRequest request) : base(request)
         {
             Reply = new CommandReply();
-            this.request = request;
-
+             this.request = request;
         }
+
         #endregion 
 
         #region Distructors 
@@ -35,8 +31,8 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-                var ECFeeCalculation = new PSW.ITMS.Service.OGAItemCategory.ECFeeCalculation(request);
-                ResponseDTO = ECFeeCalculation.GetECFee(RequestDTO);
+                var AQDECFeeCalculation = new PSW.ITMS.service.AQDECFeeCalculation(Command.UnitOfWork,RequestDTO);
+                var response = AQDECFeeCalculation.CalculateECFee();
                 return OKReply();
             }
             catch (Exception ex)

@@ -1,5 +1,6 @@
 using PSW.ITMS.Service.Command;
 using PSW.Lib.Logs;
+using System.Net;
 using System.Text.Json;
 
 namespace PSW.ITMS.Service.Strategies
@@ -86,6 +87,17 @@ namespace PSW.ITMS.Service.Strategies
             Reply.message = message;
             Reply.exception = exception.ToString();
             Reply.data = JsonDocument.Parse(JsonSerializer.SerializeToUtf8Bytes(new { })).RootElement;
+            return Reply;
+        }
+
+        public CommandReply InternalServerErrorReply(string message)
+        {
+            Reply.code = ((int)HttpStatusCode.InternalServerError).ToString();  //"500";
+            Reply.message = message;
+            Reply.data = JsonDocument.Parse(JsonSerializer.Serialize(ResponseDTO)).RootElement;
+
+            Log.Debug("|{0}|{1}| Command reply: {@Reply}", StrategyName, MethodID, Reply);
+            Log.Error("|{0}|{1}| API response: {2}", StrategyName, MethodID, Reply.message);
             return Reply;
         }
     }
