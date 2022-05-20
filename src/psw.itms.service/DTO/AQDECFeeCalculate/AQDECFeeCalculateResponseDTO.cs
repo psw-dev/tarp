@@ -4,9 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace PSW.ITMS.Service.DTO
 {
-    public class CalculateECFeeResponse
+    public class AQDECFeeCalculateResponseDTO
     {
-       [JsonPropertyName("amount")]
+        [JsonPropertyName("amount")]
         public string Amount { get; set; }
 
     }
