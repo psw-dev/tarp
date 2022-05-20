@@ -32,6 +32,7 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
+                Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
                 // USE MODEL VALIDATOR INSTEAD OF BELOW CHECK
                 if (RequestDTO.AgencyId == 0 ||
                     string.IsNullOrEmpty(RequestDTO.DocumentTypeCode) ||
@@ -130,9 +131,11 @@ namespace PSW.ITMS.Service.Strategies
                     var projection = Builders<BsonDocument>.Projection.Include(factorData.FactorCode).Exclude("_id");
                     var lov = documentInCollection.Find<BsonDocument>(filter).Project(projection).ToList().Select(x => x.GetValue(factorData.FactorCode).ToString()).ToList();
 
+                    var factorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorInfo.LOVTableName, factorInfo.LOVColumnName);
+
                     tempFactorData.FactorLabel = factorData.Label;
                     tempFactorData.FactorCode = factorData.FactorCode;
-                    tempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorInfo.LOVTableName, factorInfo.LOVColumnName).Where(x => lov.ConvertAll(y => y.ToLower()).Contains(x.ItemValue.ToLower())).ToList();
+                    tempFactorData.FactorLOVItems = factorLOVItems.Where(x => lov.ConvertAll(y => y.ToLower()).Contains(x.ItemValue.ToLower())).ToList();
 
                     if (tempFactorData.FactorLOVItems != null || tempFactorData.FactorLOVItems.Count == 0)
                     {

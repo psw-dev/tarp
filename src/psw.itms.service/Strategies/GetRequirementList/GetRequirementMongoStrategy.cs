@@ -1,6 +1,8 @@
 using MongoDB.Bson;
 using psw.security.Encryption;
+using PSW.ITMS.Common.Model;
 using PSW.ITMS.Data.Entities;
+using PSW.ITMS.service;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.MongoDB;
@@ -8,6 +10,7 @@ using PSW.Lib.Logs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -107,10 +110,18 @@ namespace PSW.ITMS.Service.Strategies
                     if (RequestDTO.AgencyId == "2")
                     {
                         mongoDoc = mongoDBRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                        if (mongoDoc == null)
+                        {
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}  Purpose : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
+                        }
                     }
                     else if (RequestDTO.AgencyId == "3")
                     {
                         mongoDoc = mongoDBRecordFetcher.GetFilteredRecordAQD(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["CATEGORY"].FactorValue);
+                        if (mongoDoc == null)
+                        {
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}  Category : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["CATEGORY"].FactorValue));
+                        }
                     }
                 }
                 catch (SystemException ex)
@@ -120,10 +131,7 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Error occured in fetching record from MongoDB");
                 }
 
-                if (mongoDoc == null)
-                {
-                    return BadRequestReply(String.Format("No record found for HsCode : {0}  Purpose : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
-                }
+
 
                 Log.Information("|{0}|{1}| Mongo Record fetched {@mongoDoc}", StrategyName, MethodID, mongoDoc);
 
@@ -170,8 +178,17 @@ namespace PSW.ITMS.Service.Strategies
 
                 if (recordChecker == "Checked")
                 {
-                    ResponseDTO = GetRequirements(mongoDoc, docType.DocumentClassificationCode);
+                    var response = GetRequirements(mongoDoc, docType.DocumentClassificationCode);
 
+                    if (!response.IsError)
+                    {
+                        ResponseDTO = response.Model;
+                    }
+                    else
+                    {
+                        Log.Error("|{0}|{1}| Error ", StrategyName, MethodID, response.Error.InternalError.Message);
+                        return InternalServerErrorReply(response.Error.InternalError.Message);
+                    }
                     if (RequestDTO.AgencyId == "2")
                     {
                         ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumber(mongoDoc, docType.DocumentClassificationCode);
@@ -204,6 +221,7 @@ namespace PSW.ITMS.Service.Strategies
 
         public string CheckFactorInMongoRecord(List<Factors> factorDataList, BsonDocument mongoDoc, Dictionary<string, FactorData> factorCodeValuePair)
         {
+            Log.Information("[{0}.{1}] Started", GetType().Name, MethodBase.GetCurrentMethod().Name);
             var count = 0;
             foreach (var factor in factorDataList)
             {
@@ -225,7 +243,7 @@ namespace PSW.ITMS.Service.Strategies
                     return $"Factors provided does not contain FactorData that is required in Rule {factor.FactorCode} not provided";
                 }
             }
-
+            Log.Information("[{0}.{1}] Ended", GetType().Name, MethodBase.GetCurrentMethod().Name);
             if (count == factorDataList.Count)
             {
                 return "Checked";
@@ -236,9 +254,11 @@ namespace PSW.ITMS.Service.Strategies
             }
         }
 
-        public GetDocumentRequirementResponse GetRequirements(BsonDocument mongoRecord, string documentClassification)
+        public SingleResponseModel<GetDocumentRequirementResponse> GetRequirements(BsonDocument mongoRecord, string documentClassification)
         {
+            Log.Information("[{0}.{1}] Started", GetType().Name, MethodBase.GetCurrentMethod().Name);
             GetDocumentRequirementResponse tarpRequirments = new GetDocumentRequirementResponse();
+            var response = new SingleResponseModel<GetDocumentRequirementResponse>();
 
             var tarpDocumentRequirements = new List<DocumentaryRequirement>();
             var FinancialRequirement = new FinancialRequirement();
@@ -475,20 +495,46 @@ namespace PSW.ITMS.Service.Strategies
                     }
 
                 }
-                //Financial Requirements
-                if (RequestDTO.AgencyId == "2")
+
+                if (RequestDTO.IsFinancialRequirement)
                 {
-                    FinancialRequirement.PlainAmount = mongoRecord["Phytosanitary certification Fee"].ToString();
-                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary certification Fee"].ToString());
-                    FinancialRequirement.PlainAmmendmentFee = mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString();
-                    FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString());
-                }
-                else if (RequestDTO.AgencyId == "3")
-                {
-                    FinancialRequirement.PlainAmount = "500";
-                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt("500");
-                    FinancialRequirement.PlainAmmendmentFee = "500";
-                    FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt("500");
+                    //Financial Requirements
+                    if (RequestDTO.AgencyId == "2")
+                    {
+                        FinancialRequirement.PlainAmount = mongoRecord["Phytosanitary certification Fee"].ToString();
+                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary certification Fee"].ToString());
+                        FinancialRequirement.PlainAmmendmentFee = mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString();
+                        FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["Phytosanitary  certification Amendmend/Re-issue Fee "].ToString());
+                    }
+                    else if (RequestDTO.AgencyId == "3")
+                    {
+                        AQDECFeeCalculateRequestDTO calculateECFeeRequest = new AQDECFeeCalculateRequestDTO();
+                        calculateECFeeRequest.AgencyId = Convert.ToInt32(RequestDTO.AgencyId);
+                        calculateECFeeRequest.HsCodeExt = RequestDTO.HsCode;
+                        calculateECFeeRequest.Quantity = Convert.ToInt32(RequestDTO.Quantity);
+                        calculateECFeeRequest.TradeTranTypeID = RequestDTO.TradeTranTypeID;
+                        FactorData factorData = RequestDTO.FactorCodeValuePair["UNIT"];
+                        if (factorData != null && !string.IsNullOrEmpty(factorData.FactorValueID))
+                        {
+                            calculateECFeeRequest.AgencyUOMId = Convert.ToInt32(factorData.FactorValueID);
+                        }
+
+                        AQDECFeeCalculation feeCalculation = new AQDECFeeCalculation(Command.UnitOfWork, calculateECFeeRequest);
+                        var responseModel = feeCalculation.CalculateECFee();
+                        if(!responseModel.IsError)
+                        {
+
+                            FinancialRequirement.PlainAmount = responseModel.Model.Amount;
+                            FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmount);
+                            FinancialRequirement.PlainAmmendmentFee = "500";
+                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt("500");
+                        }
+                        else
+                        {
+                            Log.Information("Response {@message}", responseModel.Error.InternalError.Message);
+                            // return InternalServerErrorReply(responseModel.Error.InternalError.Message);
+                        }                      
+                    }
                 }
             }
 
@@ -496,7 +542,10 @@ namespace PSW.ITMS.Service.Strategies
             tarpRequirments.FinancialRequirement = FinancialRequirement;
             tarpRequirments.ValidityRequirement = ValidityRequirement;
 
-            return tarpRequirments;
+            response.Model = tarpRequirments;
+            Log.Information("Tarp Requirments Response: {@response}", response);
+            Log.Information("[{0}.{1}] Ended", GetType().Name, MethodBase.GetCurrentMethod().Name);
+            return response;
         }
     }
 }

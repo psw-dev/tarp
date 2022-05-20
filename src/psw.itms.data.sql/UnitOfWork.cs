@@ -69,6 +69,8 @@ namespace PSW.ITMS.Data.Sql
         private ITradeTranTypeRepository _tradeTranTypeRepository;
         private IUoMRepository _uoMRepository;
         private IZoneRepository _zoneRepository;
+        private IUV_UnitAQDRepository uV_UnitAQDRepository;
+
 
         #endregion 
 
@@ -121,6 +123,8 @@ namespace PSW.ITMS.Data.Sql
         public ITradeTranTypeRepository TradeTranTypeRepository => _tradeTranTypeRepository ?? (_tradeTranTypeRepository = new TradeTranTypeRepository(_connection));
         public IUoMRepository UoMRepository => _uoMRepository ?? (_uoMRepository = new UoMRepository(_connection));
         public IZoneRepository ZoneRepository => _zoneRepository ?? (_zoneRepository = new ZoneRepository(_connection));
+        public IUV_UnitAQDRepository UV_UnitAQDRepository => uV_UnitAQDRepository ?? (uV_UnitAQDRepository = new UV_UnitAQDRepository(_connection));
+
 
         #endregion
 

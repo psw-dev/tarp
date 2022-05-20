@@ -34,6 +34,7 @@ namespace PSW.ITMS.Data
         IDocumentToInitiateRepository DocumentToInitiateRepository { get; }
         ILPCOFeeConfigurationRepository LPCOFeeConfigurationRepository { get; }
         IOGAItemCategoryRepository OGAItemCategoryRepository { get; }
+
         #endregion
 
         #region TARP View Repositories
@@ -58,6 +59,9 @@ namespace PSW.ITMS.Data
         ITradeTranTypeRepository TradeTranTypeRepository { get; }
         IUoMRepository UoMRepository { get; }
         IZoneRepository ZoneRepository { get; }
+        IUV_UnitAQDRepository UV_UnitAQDRepository { get; }
+
+
         #endregion
 
         #region Methods
