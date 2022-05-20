@@ -12,6 +12,9 @@ namespace PSW.ITMS.Service.DTO
         [JsonPropertyName("agencyId")]
         public int AgencyId { get; set; }
 
+        [JsonPropertyName("tradeTranTypeId")]
+        public int TradeTranTypeID { get; set; }
+
         [JsonPropertyName("oGAItemCategoryID")]
         public int OGAItemCategoryID { get; set; }
 
@@ -21,8 +24,6 @@ namespace PSW.ITMS.Service.DTO
         [JsonPropertyName("quantity")]
         public int? Quantity { get; set; }
 
-        [JsonPropertyName("tradeTranTypeId")]
-        public int TradeTranTypeID { get; set; }
 
 
     }

@@ -20,6 +20,16 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("tradeTranTypeId")]
         public int TradeTranTypeID { get; set; }
+
+        [JsonPropertyName("Quantity")]
+        public decimal Quantity { get; set; }
+
+        [JsonPropertyName("AgencyQuantity")]
+        public decimal AgencyQuantity { get; set; }
+
+        [JsonPropertyName("isFinancialRequirement")]
+        public bool IsFinancialRequirement { get; set; }
+
     }
 
     public class FactorData
@@ -32,5 +42,8 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("factorValue")]
         public string FactorValue { get; set; }
+
+        [JsonPropertyName("factorValueID")]
+        public string FactorValueID { get; set; }
     }
 }
