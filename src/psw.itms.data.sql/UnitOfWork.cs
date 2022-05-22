@@ -42,6 +42,9 @@ namespace PSW.ITMS.Data.Sql
         private ITestingRequirementRepository _testingRequirementRepository;
         private IValidityTermRequirementRepository _validityTermRequirementRepository;
         private IDocumentToInitiateRepository _documentToInitiateRepository;
+        private ILPCOFeeConfigurationRepository _lPCOFeeConfigurationRepository;
+        private IOGAItemCategoryRepository _oGAItemCategoryRepository;
+
         #endregion
 
         #region Private Properties TARP Views
@@ -66,6 +69,8 @@ namespace PSW.ITMS.Data.Sql
         private ITradeTranTypeRepository _tradeTranTypeRepository;
         private IUoMRepository _uoMRepository;
         private IZoneRepository _zoneRepository;
+        private IUV_UnitAQDRepository uV_UnitAQDRepository;
+
 
         #endregion 
 
@@ -93,6 +98,10 @@ namespace PSW.ITMS.Data.Sql
         public ITestingRequirementRepository TestingRequirementRepository => _testingRequirementRepository ?? (_testingRequirementRepository = new TestingRequirementRepository(_connection));
         public IValidityTermRequirementRepository ValidityTermRequirementRepository => _validityTermRequirementRepository ?? (_validityTermRequirementRepository = new ValidityTermRequirementRepository(_connection));
         public IDocumentToInitiateRepository DocumentToInitiateRepository => _documentToInitiateRepository ?? (_documentToInitiateRepository = new DocumentToInitiateRepository(_connection));
+        public ILPCOFeeConfigurationRepository LPCOFeeConfigurationRepository => _lPCOFeeConfigurationRepository ?? (_lPCOFeeConfigurationRepository = new LPCOFeeConfigurationRepository(_connection));
+        public IOGAItemCategoryRepository OGAItemCategoryRepository => _oGAItemCategoryRepository ?? (_oGAItemCategoryRepository = new OGAItemCategoryRepository(_connection));
+
+
         #endregion
 
         #region Public Properties SHRD
@@ -114,6 +123,8 @@ namespace PSW.ITMS.Data.Sql
         public ITradeTranTypeRepository TradeTranTypeRepository => _tradeTranTypeRepository ?? (_tradeTranTypeRepository = new TradeTranTypeRepository(_connection));
         public IUoMRepository UoMRepository => _uoMRepository ?? (_uoMRepository = new UoMRepository(_connection));
         public IZoneRepository ZoneRepository => _zoneRepository ?? (_zoneRepository = new ZoneRepository(_connection));
+        public IUV_UnitAQDRepository UV_UnitAQDRepository => uV_UnitAQDRepository ?? (uV_UnitAQDRepository = new UV_UnitAQDRepository(_connection));
+
 
         #endregion
 
