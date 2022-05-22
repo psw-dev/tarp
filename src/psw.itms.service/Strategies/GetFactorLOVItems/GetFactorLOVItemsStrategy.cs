@@ -131,6 +131,12 @@ namespace PSW.ITMS.Service.Strategies
                     var projection = Builders<BsonDocument>.Projection.Include(factorData.FactorCode).Exclude("_id");
                     var lov = documentInCollection.Find<BsonDocument>(filter).Project(projection).ToList().Select(x => x.GetValue(factorData.FactorCode).ToString()).ToList();
 
+                    if (factorData.FactorCode == "UNIT")
+                    {
+                        lov = lov.FirstOrDefault().Split('|').ToList();
+
+                    }
+
                     var factorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorInfo.LOVTableName, factorInfo.LOVColumnName);
 
                     tempFactorData.FactorLabel = factorData.Label;
