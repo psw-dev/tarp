@@ -62,7 +62,18 @@ namespace PSW.ITMS.Data.Sql.Repositories
         {
             return _connection.Query<RegulatedHSCode>(string.Format("select * from RegulatedHSCode where HSCodeExt = '{0}' AND AgencyId = '{1}' AND TradeTranTypeID = '{2}' AND RequiredDocumentTypeCode = '{3}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT",hsCodeExt, agencyId, tradeTranTypeId, requiredDocumentTypeCode)).FirstOrDefault();
         }
+        public List<RegulatedHSCode> GetActiveHsCodeList(List<string> hsCodeExtList, string agencyId, int tradeTranTypeId, string requiredDocumentTypeCode)
+        {
+            string hsCodeExtString = "";
 
+            foreach (string hsCodeExt in hsCodeExtList)
+            {
+                hsCodeExtString = hsCodeExtString + "'"+hsCodeExt +"'"+ ",";
+            }
+
+            hsCodeExtString = hsCodeExtString.Substring(0, hsCodeExtString.Length - 1);
+            return _connection.Query<RegulatedHSCode>(string.Format("select * from RegulatedHSCode where HSCodeExt IN ({0}) AND AgencyId = '{1}' AND TradeTranTypeID = '{2}' AND RequiredDocumentTypeCode = '{3}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT",hsCodeExtString, agencyId, tradeTranTypeId, requiredDocumentTypeCode)).ToList();
+        }
         #endregion
     }
 }

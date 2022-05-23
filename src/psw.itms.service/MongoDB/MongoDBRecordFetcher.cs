@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PSW.ITMS.Service.MongoDB
@@ -97,7 +98,7 @@ namespace PSW.ITMS.Service.MongoDB
             {
                 case "IMP":
                     IsParenCodeValid = true;
-                    return mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";          
+                    return mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";
 
                 case "RO":
                     IsParenCodeValid = true;
@@ -106,7 +107,12 @@ namespace PSW.ITMS.Service.MongoDB
                 case "EC":
                     IsParenCodeValid = true;
                     return mongoRecord["PHYTOSANITARY CERTIFICATION REQUIRED (Y /N)"].ToString().ToLower() == "yes";
-                
+
+                case "SE":
+                    IsParenCodeValid = true;
+                    return mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";
+                // return mongoRecord["SEED ENLISTMENT REQUIRED (Y /N)"].ToString().ToLower() == "yes";
+
                 default:
                     IsParenCodeValid = false;
                     return false;
@@ -144,7 +150,7 @@ namespace PSW.ITMS.Service.MongoDB
 
                 case "RO":
                     return mongoRecord["RO CERTIFICATE FORM NUMBER"].ToString();
-                    
+
                 case "EC":
                     return mongoRecord["PHYTOSANTARY CERTIFICATE FORM NUMBER"].ToString();
             }
@@ -165,6 +171,25 @@ namespace PSW.ITMS.Service.MongoDB
                     return mongoRecord["Form"].ToString();
             }
             return "";
+        }
+        public List<BsonDocument> GetFilteredRecord(List<string> hscode)
+        {
+            var database = MClient.GetDatabase(DbName);
+
+            var collection = database.GetCollection<BsonDocument>(CollectionName);
+
+            var hsCodeFilter = Builders<BsonDocument>.Filter.In("12 DIGIT PRODUCT CODE", hscode);
+
+            Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
+
+            var FetchedRecord = collection.Find(hsCodeFilter, new FindOptions { Collation = collation }).ToList();
+
+            if (FetchedRecord == null)
+            {
+                return null;
+            }
+
+            return FetchedRecord;
         }
     }
 }
