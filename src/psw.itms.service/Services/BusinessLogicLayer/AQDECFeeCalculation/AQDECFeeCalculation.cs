@@ -58,7 +58,7 @@ namespace PSW.ITMS.service
 
                     if (feeObj is null) //When quantity exceed max(201) limit
                     {
-                        Quantity = Quantity / 100;
+                        Quantity = (Quantity-1) / 100;          // (Quantity - 1) beacause of range 201-300 lie in same block Ex: On 300 Fee should be 275 => (300 -1)/100 = 2 => 2-1 => 1*25+250 = 275
                         Quantity = Quantity - 1;
                         Amount = ((Quantity * (int)Constants.LPCOConfiguration.IncreasedRate) + 250);
                     }
