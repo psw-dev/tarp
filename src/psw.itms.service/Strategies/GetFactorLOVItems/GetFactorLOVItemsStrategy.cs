@@ -122,11 +122,12 @@ namespace PSW.ITMS.Service.Strategies
             {
                 var tempFactorData = new FactorLOVItemsData();
                 tempFactorData.FactorID = factorInfo.FactorId;
-
+                Log.Information("[{0}.{1}] FactorInfo : {@factorInfo}", GetType().Name, MethodBase.GetCurrentMethod().Name, factorInfo);
                 var factorData = Command.UnitOfWork.FactorRepository?.Where(new { ID = factorInfo.FactorId, ISLOV = 1 }).FirstOrDefault();
 
                 if (factorData == null)
                 {
+                    Log.Information("[{0}.{1}] Factor not exists", GetType().Name, MethodBase.GetCurrentMethod().Name);
                     continue;
                 }
                 else

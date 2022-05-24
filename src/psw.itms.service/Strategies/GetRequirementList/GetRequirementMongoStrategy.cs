@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using psw.security.Encryption;
+using PSW.ITMS.Common.Enums;
 using PSW.ITMS.Common.Model;
 using PSW.ITMS.Data.Entities;
 using PSW.ITMS.service;
@@ -526,8 +527,8 @@ namespace PSW.ITMS.Service.Strategies
 
                             FinancialRequirement.PlainAmount = responseModel.Model.Amount;
                             FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmount);
-                            FinancialRequirement.PlainAmmendmentFee = "500";
-                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt("500");
+                            FinancialRequirement.PlainAmmendmentFee = "0";
+                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt("0");
                         }
                         else
                         {
