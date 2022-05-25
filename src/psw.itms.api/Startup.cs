@@ -162,7 +162,7 @@ namespace PSW.ITMS.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                //endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks("/health");
             });
 
             // var component = app.ApplicationServices.GetRequiredService<IEventBus>();
