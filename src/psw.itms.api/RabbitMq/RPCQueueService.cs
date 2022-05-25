@@ -15,6 +15,7 @@ using PSW.ITMS.Service;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Data.Sql;
 using PSW.ITMS.Service.Strategies;
+using PSW.Lib.Logs;
 
 public class RPCQueueService : RPCServer, IHostedService, IDisposable
 {
@@ -86,19 +87,34 @@ public class RPCQueueService : RPCServer, IHostedService, IDisposable
         _service = new ItmsService(_mapper, _cryptoAlgorithm);
         _service.UnitOfWork = new UnitOfWork(_configuration);
         _service.StrategyFactory = new StrategyFactory(_service.UnitOfWork);
-
-        var commandReply = _service.invokeMethod(cmdRequest);
-
-        var svcReply = new ServiceReply()
+       
+        ServiceReply svcReply = null;
+        try
         {
-            data = commandReply.data.GetRawText(),
-            code = commandReply.code,
-            exception = commandReply.exception,
-            shortDescription = commandReply.shortDescription,
-            fullDescription = commandReply.fullDescription,
-            message = commandReply.message
-        };
+            var commandReply = _service.invokeMethod(cmdRequest);
 
+            svcReply = new ServiceReply()
+            {
+                data = commandReply.data.GetRawText(),
+                code = commandReply.code,
+                exception = commandReply.exception,
+                shortDescription = commandReply.shortDescription,
+                fullDescription = commandReply.fullDescription,
+                message = commandReply.message
+            };
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Fail to Process message  {ServiceRequest} | Exception {Exception}", svcRequest, exception.ToString());
+            svcReply = new ServiceReply()
+            {
+                data = string.Empty,
+                code = "500",
+                exception = exception.ToString(),
+                fullDescription = string.Empty,
+                message = "Error occured"
+            };
+        }
         return svcReply;
     }
 
