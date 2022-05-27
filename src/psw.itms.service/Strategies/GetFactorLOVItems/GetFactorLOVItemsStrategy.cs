@@ -7,6 +7,7 @@ using PSW.Lib.Logs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -32,6 +33,7 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
+                Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
                 // USE MODEL VALIDATOR INSTEAD OF BELOW CHECK
                 if (RequestDTO.AgencyId == 0 ||
                     string.IsNullOrEmpty(RequestDTO.DocumentTypeCode) ||
@@ -54,6 +56,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 if (string.IsNullOrEmpty(mongoDbCollection))
                 {
+                    Log.Error("[{0}.{1}] No record found for provided request parameters", GetType().Name, MethodBase.GetCurrentMethod().Name, ResponseDTO);
                     return BadRequestReply("No record found for provided request parameters");
                 }
 
@@ -98,6 +101,7 @@ namespace PSW.ITMS.Service.Strategies
                     FactorLOVItemsList = tempFactorLOVItems
                 };
 
+                Log.Information("[{0}.{1}] Respose: {@ResponseDTO}", GetType().Name, MethodBase.GetCurrentMethod().Name, ResponseDTO);
                 // Send Command Reply 
                 return OKReply();
             }
@@ -111,17 +115,19 @@ namespace PSW.ITMS.Service.Strategies
 
         public List<FactorLOVItemsData> GetLOVItemsForProvidedFactors(IMongoCollection<BsonDocument> documentInCollection)
         {
+            Log.Information("[{0}.{1}] Started", GetType().Name, MethodBase.GetCurrentMethod().Name);
             var tempFactorDatalist = new List<FactorLOVItemsData>();
 
             foreach (var factorInfo in RequestDTO.FactorList)
             {
                 var tempFactorData = new FactorLOVItemsData();
                 tempFactorData.FactorID = factorInfo.FactorId;
-
+                Log.Information("[{0}.{1}] FactorInfo : {@factorInfo}", GetType().Name, MethodBase.GetCurrentMethod().Name, factorInfo);
                 var factorData = Command.UnitOfWork.FactorRepository?.Where(new { ID = factorInfo.FactorId, ISLOV = 1 }).FirstOrDefault();
 
                 if (factorData == null)
                 {
+                    Log.Information("[{0}.{1}] Factor not exists", GetType().Name, MethodBase.GetCurrentMethod().Name);
                     continue;
                 }
                 else
@@ -130,9 +136,17 @@ namespace PSW.ITMS.Service.Strategies
                     var projection = Builders<BsonDocument>.Projection.Include(factorData.FactorCode).Exclude("_id");
                     var lov = documentInCollection.Find<BsonDocument>(filter).Project(projection).ToList().Select(x => x.GetValue(factorData.FactorCode).ToString()).ToList();
 
+                    if (factorData.FactorCode == "UNIT")
+                    {
+                        lov = lov.FirstOrDefault().Split('|').ToList();
+
+                    }
+                    Log.Information("[{0}.{1}] LOV : {@lov}", GetType().Name, MethodBase.GetCurrentMethod().Name, lov);
+                    var factorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorInfo.LOVTableName, factorInfo.LOVColumnName);
+
                     tempFactorData.FactorLabel = factorData.Label;
                     tempFactorData.FactorCode = factorData.FactorCode;
-                    tempFactorData.FactorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorInfo.LOVTableName, factorInfo.LOVColumnName).Where(x => lov.ConvertAll(y => y.ToLower()).Contains(x.ItemValue.ToLower())).ToList();
+                    tempFactorData.FactorLOVItems = factorLOVItems.Where(x => lov.ConvertAll(y => y.ToLower()).Contains(x.ItemValue.ToLower())).ToList();
 
                     if (tempFactorData.FactorLOVItems != null || tempFactorData.FactorLOVItems.Count == 0)
                     {
@@ -140,7 +154,8 @@ namespace PSW.ITMS.Service.Strategies
                     }
                 }
             }
-
+            Log.Information("[{0}.{1}] TempFactorDatalist: {@tempFactorDatalist}", GetType().Name, MethodBase.GetCurrentMethod().Name, tempFactorDatalist);
+            Log.Information("[{0}.{1}] Ended", GetType().Name, MethodBase.GetCurrentMethod().Name);
             return tempFactorDatalist;
         }
     }

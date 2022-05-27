@@ -46,7 +46,8 @@ namespace PSW.ITMS.Service.Strategies
                 case "1728": return new UpdateMongoRecordStrategy(request);
                 case "1729": return new GetRegulatedHsCodePurposeStrategy(request);
                 case "1730": return new GetFormNumberStrategy(request);
-                
+                case "1731": return new TestStrategy(request);
+
                 case "removelater": return null;
 
                 default: break;
