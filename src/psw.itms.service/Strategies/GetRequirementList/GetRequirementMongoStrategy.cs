@@ -383,8 +383,8 @@ namespace PSW.ITMS.Service.Strategies
                     docClassificCode = "SE";
 
                     //Financial Requirements
-                    FinancialRequirement.PlainAmount = "599";
-                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt("599");
+                    FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RELEASE ORDER FEES"].ToString());
                 }
                 else
                 {
