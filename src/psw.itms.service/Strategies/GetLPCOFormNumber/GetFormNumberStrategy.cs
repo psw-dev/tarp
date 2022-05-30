@@ -99,9 +99,13 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     formNumber = mongoDBRecordFetcher.GetFormNumber(mongoDoc, docType.DocumentClassificationCode);
                 }
-                if (RequestDTO.AgencyId == 3)
+                else if (RequestDTO.AgencyId == 3)
                 {
                     formNumber = mongoDBRecordFetcher.GetFormNumberAQD(mongoDoc, docType.DocumentClassificationCode);
+                }
+                else if (RequestDTO.AgencyId == 4)
+                {
+                    formNumber = mongoDBRecordFetcher.GetFormNumberFSCRD(mongoDoc, docType.DocumentClassificationCode);
                 }
 
                 if (string.IsNullOrEmpty(formNumber))

@@ -124,6 +124,14 @@ namespace PSW.ITMS.Service.Strategies
                             return BadRequestReply(String.Format("No record found for HsCode : {0}  Category : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["CATEGORY"].FactorValue));
                         }
                     }
+                    else if (RequestDTO.AgencyId == "4")
+                    {
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordFSCRD(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                        if (mongoDoc == null)
+                        {
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}  Category : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
+                        }
+                    }
                 }
                 catch (SystemException ex)
                 {
@@ -154,6 +162,10 @@ namespace PSW.ITMS.Service.Strategies
                 else if (RequestDTO.AgencyId == "3")
                 {
                     DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredAQD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                }
+                else if (RequestDTO.AgencyId == "4")
+                {
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredFSCRD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
                 }
 
                 if (!IsParenCodeValid)
@@ -197,6 +209,10 @@ namespace PSW.ITMS.Service.Strategies
                     else if (RequestDTO.AgencyId == "3")
                     {
                         ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberAQD(mongoDoc, docType.DocumentClassificationCode);
+                    }
+                    else if (RequestDTO.AgencyId == "4")
+                    {
+                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberFSCRD(mongoDoc, docType.DocumentClassificationCode);
                     }
 
                     Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
@@ -268,13 +284,43 @@ namespace PSW.ITMS.Service.Strategies
             tarpRequirments.isLPCORequired = true;
 
             //for Import Permit = IMP
-            if (documentClassification == "IMP")
+            if (documentClassification == "IMP" || documentClassification == "SE")
             {
-                var ipDocRequirements = mongoRecord["IP DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                var ipDocRequirements = new List<string>();
                 var ipDocRequirementsTrimmed = new List<string>();
-
-                var ipDocOptional = mongoRecord["IP DOCUMENTARY REQUIREMENTS(Optional)"].ToString().Split('|').ToList();
+                var ipDocOptional = new List<string>();
                 var ipDocOptionalTrimmed = new List<string>();
+
+                if (RequestDTO.AgencyId == "4")
+                {
+                    ipDocRequirements = mongoRecord["ENLISTMENT OF SEED VARIETY MANDATORY DOCUMENTARY REQURIMENTS"].ToString().Split('|').ToList();
+                    ipDocOptional = mongoRecord["ENLISTMENT OF SEED VARIETY OPTIONAL DOCUMENTARY REQURIMENTS"].ToString().Split('|').ToList();
+
+                    //Financial Requirements
+                    FinancialRequirement.PlainAmount = mongoRecord["ENLISTMENT OF SEED VARIETY  FEES"].ToString();
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["ENLISTMENT OF SEED VARIETY  FEES"].ToString());
+                }
+                else
+                {
+                    ipDocRequirements = mongoRecord["IP DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                    ipDocOptional = mongoRecord["IP DOCUMENTARY REQUIREMENTS(Optional)"].ToString().Split('|').ToList();
+
+                    //Financial Requirements
+                    FinancialRequirement.PlainAmount = mongoRecord["IP FEES"].ToString();
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP FEES"].ToString());
+                    FinancialRequirement.PlainAmmendmentFee = mongoRecord["IP Amendment Fees"].ToString();
+                    FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP Amendment Fees"].ToString());
+                    FinancialRequirement.PlainExtensionFee = mongoRecord["IP Extention Fees"].ToString();
+                    FinancialRequirement.ExtensionFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP Extention Fees"].ToString());
+
+
+                    //ValidityTerm Requirements
+                    ValidityRequirement.UomName = "Month";
+                    ValidityRequirement.Quantity = Convert.ToInt32(mongoRecord["IP VALIDITY"]);
+                    ValidityRequirement.ExtensionAllowed = mongoRecord["IP Extention Allowed"].ToString().ToLower() == "yes" ? true : false;
+                    ValidityRequirement.ExtensionPeriod = Convert.ToInt32(mongoRecord["IP Extention Period (Months)"]);
+                    ValidityRequirement.ExtensionPeriodUnitName = "Months";     // Hard coded till we have a separate column in sheet for this
+                }
 
                 if (ipDocOptional != null && !ipDocOptional.Contains("NaN"))
                 {
@@ -318,33 +364,39 @@ namespace PSW.ITMS.Service.Strategies
 
                     tarpDocumentRequirements.Add(tempReq);
                 }
-
-                //Financial Requirements
-                FinancialRequirement.PlainAmount = mongoRecord["IP FEES"].ToString();
-                FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP FEES"].ToString());
-                FinancialRequirement.PlainAmmendmentFee = mongoRecord["IP Amendment Fees"].ToString();
-                FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP Amendment Fees"].ToString());
-                FinancialRequirement.PlainExtensionFee = mongoRecord["IP Extention Fees"].ToString();
-                FinancialRequirement.ExtensionFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP Extention Fees"].ToString());
-
-
-                //ValidityTerm Requirements
-                ValidityRequirement.UomName = "Month";
-                ValidityRequirement.Quantity = Convert.ToInt32(mongoRecord["IP VALIDITY"]);
-                ValidityRequirement.ExtensionAllowed = mongoRecord["IP Extention Allowed"].ToString().ToLower() == "yes" ? true : false;
-                ValidityRequirement.ExtensionPeriod = Convert.ToInt32(mongoRecord["IP Extention Period (Months)"]);
-                ValidityRequirement.ExtensionPeriodUnitName = "Months";     // Hard coded till we have a separate column in sheet for this
-
             }
             //for ReleaseOrder = RO
             else if (documentClassification == "RO")
             {
-                var roDocRequirements = mongoRecord["RO  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
-
+                var roDocRequirements = new List<string>();
                 var roDocRequirementsTrimmed = new List<string>();
-
-                var roDocOptional = mongoRecord["RO  DOCUMENTARY REQUIREMENTS(Optional)"].ToString().Split('|').ToList();
+                var roDocOptional = new List<string>();
                 var roDocOptionalTrimmed = new List<string>();
+                var ipReq = false;
+                var docClassificCode = string.Empty;
+
+                if (RequestDTO.AgencyId == "4")
+                {
+                    roDocRequirements = mongoRecord["RELEASE ORDER DOCUMENTARY REQUIRMENTS"].ToString().Split('|').ToList();
+                    roDocOptional = mongoRecord["RELEASE ORDER DOCUMENTARY REQUIRMENTS (Optional)"].ToString().Split('|').ToList();
+                    ipReq = mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
+                    docClassificCode = "SE";
+
+                    //Financial Requirements
+                    FinancialRequirement.PlainAmount = "599";
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt("599");
+                }
+                else
+                {
+                    roDocRequirements = mongoRecord["RO  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                    roDocOptional = mongoRecord["RO  DOCUMENTARY REQUIREMENTS(Optional)"].ToString().Split('|').ToList();
+                    ipReq = mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";
+                    docClassificCode = "IMP";
+
+                    //Financial Requirements
+                    FinancialRequirement.PlainAmount = mongoRecord["RO FEES"].ToString();
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RO FEES"].ToString());
+                }
 
                 if (roDocOptional != null && !roDocOptional.Contains("NaN"))
                 {
@@ -393,10 +445,11 @@ namespace PSW.ITMS.Service.Strategies
 
                     tarpDocumentRequirements.Add(tempReq);
                 }
-                if (mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes")
+
+                if (ipReq)
                 {
                     var tempReq = new DocumentaryRequirement();
-                    var ipDocRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new { AgencyID = RequestDTO.AgencyId, documentClassificationCode = "IMP", AttachedObjectFormatID = 2, AltCode = "C" }).FirstOrDefault();
+                    var ipDocRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new { AgencyID = RequestDTO.AgencyId, documentClassificationCode = docClassificCode, AttachedObjectFormatID = 2, AltCode = "C" }).FirstOrDefault();
 
                     tempReq.Name = ipDocRequired.Name + " For " + "Release Order"; //replace DPP with collectionName 
                     tempReq.DocumentName = ipDocRequired.Name;
@@ -408,13 +461,10 @@ namespace PSW.ITMS.Service.Strategies
                     tarpDocumentRequirements.Add(tempReq);
 
                 }
-
-                //Financial Requirements
-                FinancialRequirement.PlainAmount = mongoRecord["RO FEES"].ToString();
-                FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RO FEES"].ToString());
             }
 
             //for PythoCertificate = EC
+            // NO EC in Agency 4 - FSCRD
             else if (documentClassification == "EC")
             {
                 var ecDocRequirements = new List<string>();
@@ -429,7 +479,6 @@ namespace PSW.ITMS.Service.Strategies
                 else if (RequestDTO.AgencyId == "3")
                 {
                     ecDocRequirements = mongoRecord["Health Certificate Processing Requirements"].ToString().Split('|').ToList();
-
                 }
 
                 if (RequestDTO.AgencyId == "2")
