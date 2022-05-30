@@ -124,6 +124,14 @@ namespace PSW.ITMS.Service.Strategies
                             return BadRequestReply(String.Format("No record found for HsCode : {0}  Category : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["CATEGORY"].FactorValue));
                         }
                     }
+                    else if (RequestDTO.AgencyId == "4")
+                    {
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordFSCRD(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
+                        if (mongoDoc == null)
+                        {
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}  Category : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
+                        }
+                    }
                 }
                 catch (SystemException ex)
                 {
@@ -154,6 +162,10 @@ namespace PSW.ITMS.Service.Strategies
                 else if (RequestDTO.AgencyId == "3")
                 {
                     DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredAQD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                }
+                else if (RequestDTO.AgencyId == "4")
+                {
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredFSCRD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
                 }
 
                 if (!IsParenCodeValid)
@@ -197,6 +209,10 @@ namespace PSW.ITMS.Service.Strategies
                     else if (RequestDTO.AgencyId == "3")
                     {
                         ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberAQD(mongoDoc, docType.DocumentClassificationCode);
+                    }
+                    else if (RequestDTO.AgencyId == "4")
+                    {
+                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberFSCRD(mongoDoc, docType.DocumentClassificationCode);
                     }
 
                     Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
@@ -415,6 +431,7 @@ namespace PSW.ITMS.Service.Strategies
             }
 
             //for PythoCertificate = EC
+            // NO EC in Agency 4 - FSCRD
             else if (documentClassification == "EC")
             {
                 var ecDocRequirements = new List<string>();
@@ -429,7 +446,6 @@ namespace PSW.ITMS.Service.Strategies
                 else if (RequestDTO.AgencyId == "3")
                 {
                     ecDocRequirements = mongoRecord["Health Certificate Processing Requirements"].ToString().Split('|').ToList();
-
                 }
 
                 if (RequestDTO.AgencyId == "2")
@@ -535,6 +551,13 @@ namespace PSW.ITMS.Service.Strategies
                             Log.Information("Response {@message}", responseModel.Error.InternalError.Message);
                             // return InternalServerErrorReply(responseModel.Error.InternalError.Message);
                         }                      
+                    }
+                    else if (RequestDTO.AgencyId == "4")
+                    {
+                        FinancialRequirement.PlainAmount = "599";
+                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt("599");
+                        FinancialRequirement.PlainAmmendmentFee = "0";
+                        FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt("0");
                     }
                 }
             }
