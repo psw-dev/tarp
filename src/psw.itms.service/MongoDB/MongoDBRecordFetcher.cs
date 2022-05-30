@@ -64,6 +64,29 @@ namespace PSW.ITMS.Service.MongoDB
             return FetchedRecord;
         }
 
+        public BsonDocument GetFilteredRecordFSCRD(string hscode, string purpose)
+        {
+            var database = MClient.GetDatabase(DbName);
+
+            var collection = database.GetCollection<BsonDocument>(CollectionName);
+
+            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hscode);
+            var purposeFilter = Builders<BsonDocument>.Filter.Eq("PURPOSE", purpose);
+
+            var combinedFilter = Builders<BsonDocument>.Filter.And(hsCodeFilter, purposeFilter);
+
+            Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
+
+            var FetchedRecord = collection.Find(combinedFilter, new FindOptions { Collation = collation }).FirstOrDefault();
+
+            if (FetchedRecord == null)
+            {
+                return null;
+            }
+
+            return FetchedRecord;
+        }
+
         public bool UpdateRecord(string hscode, string purpose, string propertyToBeUpdated, string updatedValue)
         {
             var recordFetch = GetFilteredRecord(hscode, purpose);
@@ -135,6 +158,24 @@ namespace PSW.ITMS.Service.MongoDB
             }
         }
 
+        public bool CheckIfLPCORequiredFSCRD(BsonDocument mongoRecord, string requiredDocumentParentCode, out bool IsParenCodeValid)
+        {
+            switch (requiredDocumentParentCode)
+            {
+                case "SE":
+                    IsParenCodeValid = true;
+                    return mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
+
+                case "RO":
+                    IsParenCodeValid = true;
+                    return mongoRecord["RELEASE ORDER REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
+
+                default:
+                    IsParenCodeValid = false;
+                    return false;
+            }
+        }
+
         public string GetFormNumber(BsonDocument mongoRecord, string requiredDocumentParentCode)
         {
             switch (requiredDocumentParentCode)
@@ -163,6 +204,16 @@ namespace PSW.ITMS.Service.MongoDB
                     
                 case "EC":
                     return mongoRecord["Form"].ToString();
+            }
+            return "";
+        }
+
+        public string GetFormNumberFSCRD(BsonDocument mongoRecord, string requiredDocumentParentCode)
+        {
+            switch (requiredDocumentParentCode)
+            {
+                case "RO":
+                    return mongoRecord["RO Certificate Number"].ToString();
             }
             return "";
         }
