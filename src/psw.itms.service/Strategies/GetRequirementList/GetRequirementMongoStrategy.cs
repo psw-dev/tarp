@@ -380,7 +380,7 @@ namespace PSW.ITMS.Service.Strategies
                     roDocRequirements = mongoRecord["RELEASE ORDER DOCUMENTARY REQUIRMENTS"].ToString().Split('|').ToList();
                     roDocOptional = mongoRecord["RELEASE ORDER DOCUMENTARY REQUIRMENTS (Optional)"].ToString().Split('|').ToList();
                     ipReq = mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
-                    docClassificCode = "SE";
+                    docClassificCode = "RO";
 
                     //Financial Requirements
                     FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
