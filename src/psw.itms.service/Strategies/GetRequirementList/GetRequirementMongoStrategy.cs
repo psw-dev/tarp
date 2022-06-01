@@ -345,24 +345,27 @@ namespace PSW.ITMS.Service.Strategies
                     }
                 }
 
-                foreach (var lpco in ipDocRequirements)
+                if (ipDocRequirements != null && !ipDocRequirements.Contains("NaN"))
                 {
-                    ipDocRequirementsTrimmed.Add(lpco.Trim());
-                }
+                    foreach (var lpco in ipDocRequirements)
+                    {
+                        ipDocRequirementsTrimmed.Add(lpco.Trim());
+                    }
 
-                foreach (var doc in ipDocRequirementsTrimmed)
-                {
-                    var tempReq = new DocumentaryRequirement();
+                    foreach (var doc in ipDocRequirementsTrimmed)
+                    {
+                        var tempReq = new DocumentaryRequirement();
 
-                    tempReq.Name = doc + " For Import Permit"; //replace DPP with collectionName 
-                    tempReq.DocumentName = doc;
-                    tempReq.IsMandatory = true;
-                    tempReq.RequirementType = "Documentary";
+                        tempReq.Name = doc + " For Import Permit"; //replace DPP with collectionName 
+                        tempReq.DocumentName = doc;
+                        tempReq.IsMandatory = true;
+                        tempReq.RequirementType = "Documentary";
 
-                    tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
-                    tempReq.AttachedObjectFormatID = 1;
+                        tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                        tempReq.AttachedObjectFormatID = 1;
 
-                    tarpDocumentRequirements.Add(tempReq);
+                        tarpDocumentRequirements.Add(tempReq);
+                    }
                 }
             }
             //for ReleaseOrder = RO
@@ -421,29 +424,32 @@ namespace PSW.ITMS.Service.Strategies
                     }
                 }
 
-                foreach (var lpco in roDocRequirements)
+                if (roDocOptional != null && !roDocOptional.Contains("NaN"))
                 {
-                    var removespaces = lpco.Trim();
-                    roDocRequirementsTrimmed.Add(removespaces.TrimEnd('\n'));
-                }
-
-                // roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
-                // roDocRequirementsTrimmed.Remove("Fee Challan");
-
-                //DocumentaryRequirements
-                foreach (var doc in roDocRequirementsTrimmed)
-                {
-                    var tempReq = new DocumentaryRequirement();
-
-                    tempReq.Name = doc + " For " + "Release Order"; //replace DPP with collectionName 
-                    tempReq.DocumentName = doc;
-                    tempReq.IsMandatory = true;
-                    tempReq.RequirementType = "Documentary";
-
-                    tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
-                    tempReq.AttachedObjectFormatID = 1;
-
-                    tarpDocumentRequirements.Add(tempReq);
+                    foreach (var lpco in roDocRequirements)
+                    {
+                        var removespaces = lpco.Trim();
+                        roDocRequirementsTrimmed.Add(removespaces.TrimEnd('\n'));
+                    }
+    
+                    // roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
+                    // roDocRequirementsTrimmed.Remove("Fee Challan");
+    
+                    //DocumentaryRequirements
+                    foreach (var doc in roDocRequirementsTrimmed)
+                    {
+                        var tempReq = new DocumentaryRequirement();
+    
+                        tempReq.Name = doc + " For " + "Release Order"; //replace DPP with collectionName 
+                        tempReq.DocumentName = doc;
+                        tempReq.IsMandatory = true;
+                        tempReq.RequirementType = "Documentary";
+    
+                        tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                        tempReq.AttachedObjectFormatID = 1;
+    
+                        tarpDocumentRequirements.Add(tempReq);
+                    }
                 }
 
                 if (ipReq)
