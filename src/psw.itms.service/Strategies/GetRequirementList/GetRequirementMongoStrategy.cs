@@ -424,7 +424,7 @@ namespace PSW.ITMS.Service.Strategies
                     }
                 }
 
-                if (roDocOptional != null && !roDocOptional.Contains("NaN"))
+                if (roDocRequirements != null && !roDocRequirements.Contains("NaN"))
                 {
                     foreach (var lpco in roDocRequirements)
                     {
