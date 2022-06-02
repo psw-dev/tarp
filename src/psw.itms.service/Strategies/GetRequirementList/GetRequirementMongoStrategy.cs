@@ -452,7 +452,7 @@ namespace PSW.ITMS.Service.Strategies
                     }
                 }
 
-                if (ipReq)
+                if (ipReq == true)
                 {
                     var tempReq = new DocumentaryRequirement();
                     var ipDocRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new { AgencyID = RequestDTO.AgencyId, documentClassificationCode = docClassificCode, AttachedObjectFormatID = 2, AltCode = "C" }).FirstOrDefault();
