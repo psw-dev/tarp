@@ -127,7 +127,15 @@ namespace PSW.ITMS.Service.Strategies
                         mongoDoc = mongoDBRecordFetcher.GetFilteredRecordFSCRD(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
                         if (mongoDoc == null)
                         {
-                            return BadRequestReply(String.Format("No record found for HsCode : {0}  Category : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}  Purpose : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
+                        }
+                    }
+                    else if (RequestDTO.AgencyId == "5")
+                    {
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordPSQCA(RequestDTO.HsCode);
+                        if (mongoDoc == null)
+                        {
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
                         }
                     }
                 }
@@ -164,6 +172,10 @@ namespace PSW.ITMS.Service.Strategies
                 else if (RequestDTO.AgencyId == "4")
                 {
                     DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredFSCRD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                }
+                else if (RequestDTO.AgencyId == "5")
+                {
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredPSQCA(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
                 }
 
                 if (!IsParenCodeValid)
@@ -386,6 +398,16 @@ namespace PSW.ITMS.Service.Strategies
                     //Financial Requirements
                     FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
                     FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RELEASE ORDER FEES"].ToString());
+                }
+                else if (RequestDTO.AgencyId == "5")
+                {
+                    roDocRequirements = mongoRecord["RO  Mandatory DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                    roDocOptional = mongoRecord["RO  Optional DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                    ipReq = false;
+
+                    //Financial Requirements
+                    // FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
+                    // FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RELEASE ORDER FEES"].ToString());
                 }
                 else
                 {
