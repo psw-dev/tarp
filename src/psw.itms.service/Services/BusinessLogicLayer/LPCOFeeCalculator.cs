@@ -46,8 +46,8 @@ namespace PSW.ITMS.service
         {
             var result = 0m;
             var percentage = lpcoFeeEntity.Rate == null ? 0m : (lpcoFeeEntity.Rate/100);
-            var minAmount = lpcoFeeEntity.MinAmount == null ? 0m : lpcoFeeEntity.MinAmount;
-            var additionalAmount = lpcoFeeEntity.AdditionalAmount == null ? 0m : lpcoFeeEntity.AdditionalAmount;
+            var minAmount = lpcoFeeEntity.MinAmount ?? 0m;
+            var additionalAmount = lpcoFeeEntity.AdditionalAmount ?? 0m;
 
             var percentageOfValue = percentage * importExportValue;
 
