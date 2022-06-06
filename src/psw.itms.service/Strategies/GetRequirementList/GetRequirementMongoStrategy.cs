@@ -37,10 +37,10 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-                if (RequestDTO.FactorCodeValuePair == null || RequestDTO.FactorCodeValuePair.Count == 0)
-                {
-                    return BadRequestReply("Please provide valid request parameters");
-                }
+                // if (RequestDTO.FactorCodeValuePair == null || RequestDTO.FactorCodeValuePair.Count == 0)
+                // {
+                //     return BadRequestReply("Please provide valid request parameters");
+                // }
 
                 Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
 
