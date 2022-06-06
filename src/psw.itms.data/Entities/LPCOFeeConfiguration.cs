@@ -22,10 +22,12 @@ namespace PSW.ITMS.Data.Entities
         public int? _qtyRangeTo;
         public int? _qtyRangeFrom;
         public string _currencyCode;
-        public decimal _rate;
+        public decimal? _rate;
         public DateTime _effectiveFromDt;
         public DateTime? _effectiveThruDt;
         public short? _tradeTranTypeID;
+        public decimal? _minAmount;
+        public decimal? _additionalAmount;
         #endregion
 
         #region Properties
@@ -41,10 +43,12 @@ namespace PSW.ITMS.Data.Entities
         public int? QtyRangeTo { get { return _qtyRangeTo; } set { _qtyRangeTo = value; } }
         public int? QtyRangeFrom { get { return _qtyRangeFrom; } set { _qtyRangeFrom = value; } }
         public string CurrencyCode { get { return _currencyCode; } set { _currencyCode = value; } }
-        public decimal Rate { get { return _rate; } set { _rate = value; } }
+        public decimal? Rate { get { return _rate; } set { _rate = value; } }
         public DateTime EffectiveFromDt { get { return _effectiveFromDt; } set { _effectiveFromDt = value; } }
         public DateTime? EffectiveThruDt { get { return _effectiveThruDt; } set { _effectiveThruDt = value; } }
         public short? TradeTranTypeID { get { return _tradeTranTypeID; } set { _tradeTranTypeID = value; } }
+        public decimal? MinAmount { get { return _rate; } set { _rate = value; } }
+        public decimal? AdditionalAmount { get { return _rate; } set { _rate = value; } }
 
 
         #endregion
@@ -72,7 +76,9 @@ namespace PSW.ITMS.Data.Entities
                 {"Rate", Rate},
                 {"EffectiveFromDt", EffectiveFromDt},
                 {"EffectiveThruDt", EffectiveThruDt},
-                {"TradeTranTypeID", TradeTranTypeID}
+                {"TradeTranTypeID", TradeTranTypeID},
+                {"MinAmount", MinAmount},
+                {"AdditionalAmount", AdditionalAmount}
             };
         }
 
