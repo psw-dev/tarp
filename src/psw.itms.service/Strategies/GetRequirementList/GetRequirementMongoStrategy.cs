@@ -406,15 +406,18 @@ namespace PSW.ITMS.Service.Strategies
                     ipReq = false;
 
                     //Financial Requirements
-                    var feeConfigurationList = Command.UnitOfWork.LPCOFeeConfigurationRepository.GetFeeConfig(
-                        RequestDTO.HsCode,
-                        RequestDTO.TradeTranTypeID,
-                        Convert.ToInt32(RequestDTO.AgencyId)
-                    ).ToList();
-                    var calculatedFee = new LPCOFeeCalculator(feeConfigurationList, RequestDTO).Calculate().ToString();
+                    if (RequestDTO.IsFinancialRequirement)
+                    {
+                        var feeConfigurationList = Command.UnitOfWork.LPCOFeeConfigurationRepository.GetFeeConfig(
+                            RequestDTO.HsCode,
+                            RequestDTO.TradeTranTypeID,
+                            Convert.ToInt32(RequestDTO.AgencyId)
+                        ).ToList();
+                        var calculatedFee = new LPCOFeeCalculator(feeConfigurationList, RequestDTO).Calculate().ToString();
 
-                    FinancialRequirement.PlainAmount = calculatedFee;
-                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(calculatedFee);
+                        FinancialRequirement.PlainAmount = calculatedFee;
+                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(calculatedFee);
+                    }
                 }
                 else
                 {
