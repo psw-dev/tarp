@@ -30,6 +30,8 @@ namespace PSW.ITMS.Service.DTO
         [JsonPropertyName("isFinancialRequirement")]
         public bool IsFinancialRequirement { get; set; }
 
+        [JsonPropertyName("importExportValue")]
+        public decimal ImportExportValue { get; set; }
     }
 
     public class FactorData
