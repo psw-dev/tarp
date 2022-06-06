@@ -406,8 +406,15 @@ namespace PSW.ITMS.Service.Strategies
                     ipReq = false;
 
                     //Financial Requirements
-                    // FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
-                    // FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RELEASE ORDER FEES"].ToString());
+                    var feeConfigurationList = Command.UnitOfWork.LPCOFeeConfigurationRepository.GetFeeConfig(
+                        RequestDTO.HsCode,
+                        RequestDTO.TradeTranTypeID,
+                        Convert.ToInt32(RequestDTO.AgencyId)
+                    ).ToList();
+                    var calculatedFee = new LPCOFeeCalculator(feeConfigurationList, RequestDTO).Calculate().ToString();
+
+                    FinancialRequirement.PlainAmount = calculatedFee;
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(calculatedFee);
                 }
                 else
                 {
