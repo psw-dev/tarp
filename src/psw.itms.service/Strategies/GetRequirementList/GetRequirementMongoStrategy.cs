@@ -74,25 +74,23 @@ namespace PSW.ITMS.Service.Strategies
 
                 //var FactorsIDAppliedTORule = GetFactorAppliedInRule(TempRule);
                 var factorsIDAppliedTORule = tempRule.GetFactorAppliedInRule();
-
-                if (factorsIDAppliedTORule.Count == 0)
-                {
-                    return BadRequestReply("No factor found in rule");
-                }
+                var factorDataList = new List<Factors>();
 
                 Log.Information("|{0}|{1}| FactorID's Applied To Rule DbRecord {@factorsIDAppliedTORule}", StrategyName, MethodID, factorsIDAppliedTORule);
 
-                var factorDataList = Command.UnitOfWork.FactorRepository.GetFactorsData(factorsIDAppliedTORule);
-
-                if (factorDataList == null)
+                if (factorsIDAppliedTORule.Count > 0)
                 {
-                    return BadRequestReply("Factors data not found");
+                    factorDataList = Command.UnitOfWork.FactorRepository.GetFactorsData(factorsIDAppliedTORule);
+
+                    if (factorDataList == null)
+                    {
+                        return BadRequestReply("Factors data not found");
+                    }
+    
+                    Log.Information("|{0}|{1}| FactorData DbRecord {@factorDataList}", StrategyName, MethodID, factorDataList);
                 }
 
-                Log.Information("|{0}|{1}| FactorData DbRecord {@factorDataList}", StrategyName, MethodID, factorDataList);
-
                 var mongoDoc = new BsonDocument();
-
                 MongoDbRecordFetcher mongoDBRecordFetcher;
 
                 try
