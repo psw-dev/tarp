@@ -47,8 +47,8 @@ namespace PSW.ITMS.Data.Entities
         public DateTime EffectiveFromDt { get { return _effectiveFromDt; } set { _effectiveFromDt = value; } }
         public DateTime? EffectiveThruDt { get { return _effectiveThruDt; } set { _effectiveThruDt = value; } }
         public short? TradeTranTypeID { get { return _tradeTranTypeID; } set { _tradeTranTypeID = value; } }
-        public decimal? MinAmount { get { return _rate; } set { _rate = value; } }
-        public decimal? AdditionalAmount { get { return _rate; } set { _rate = value; } }
+        public decimal? MinAmount { get { return _minAmount; } set { _minAmount = value; } }
+        public decimal? AdditionalAmount { get { return _additionalAmount; } set { _additionalAmount = value; } }
 
 
         #endregion
