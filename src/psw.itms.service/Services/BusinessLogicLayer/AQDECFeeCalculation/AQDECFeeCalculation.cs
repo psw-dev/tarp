@@ -6,6 +6,7 @@ using System.Linq;
 using Constants = PSW.ITMS.Common.Enums;
 using System.Reflection;
 using PSW.Lib.Logs;
+using System;
 
 namespace PSW.ITMS.service
 {
@@ -13,10 +14,7 @@ namespace PSW.ITMS.service
     {
         private AQDECFeeCalculateRequestDTO request { get; set; }
         private IUnitOfWork unitOfWork { get; set; }
-
-        public int? Quantity { get; set; }
-
-        public decimal? Amount { get; set; }
+        // public decimal? Amount { get; set; }
 
         public AQDECFeeCalculation(IUnitOfWork unitOfWork, AQDECFeeCalculateRequestDTO request)
         {
@@ -26,53 +24,44 @@ namespace PSW.ITMS.service
 
         public SingleResponseModel<AQDECFeeCalculateResponseDTO> CalculateECFee()
         {
+            decimal amount = 0;
             // var test = unitOfWork.UV_UnitAQDRepository.Where(new { ID = "100001" }).FirstOrDefault();
             Log.Information("[{0}.{1}] Started", GetType().Name, MethodBase.GetCurrentMethod().Name);
             var response = new SingleResponseModel<AQDECFeeCalculateResponseDTO>();
             var model = new AQDECFeeCalculateResponseDTO();
-            var feeConfiguration = unitOfWork.LPCOFeeConfigurationRepository.Where(new
+            var feeConfigurationList = unitOfWork.LPCOFeeConfigurationRepository.Where(new
             {
                 HSCodeExt = request.HsCodeExt,
                 Unit_ID = request.AgencyUOMId,
-                TradeTranTypeID = request.TradeTranTypeID
-            }).FirstOrDefault();
+                TradeTranTypeID = request.TradeTranTypeID,
+            }).Where(x => x.EffectiveFromDt < DateTime.Now && x.EffectiveThruDt > DateTime.Now);
 
-            if (feeConfiguration != null)
+            if (feeConfigurationList != null && feeConfigurationList.Count() > 0)
             {
-                Quantity = request.Quantity == 0 ? request.UserSelectedQuantity : request.Quantity;
+                var quantity = request.Quantity;
 
                 if (request.AgencyUOMId == (int)Constants.AgencyUOMTypes.PackingUnits)
                 {
-                    var feeList = unitOfWork.LPCOFeeConfigurationRepository.Where(new
-                    {
-                        HSCodeExt = request.HsCodeExt,
-                        Unit_ID = request.AgencyUOMId,
-                        TradeTranTypeID = request.TradeTranTypeID
-                    }).ToList();
-
                     //Select Fee from list on the basis of quantity
-                    var feeObj = feeList.Where(d =>
-                     (double?)d.QtyRangeFrom >= Quantity
-                      && (double?)d.QtyRangeTo <= Quantity)
-                      .FirstOrDefault();
+                    var feeConfiguration = feeConfigurationList.Where(d => (double?)d.QtyRangeFrom >= quantity && (double?)d.QtyRangeTo <= quantity).FirstOrDefault();
 
-                    if (feeObj is null) //When quantity exceed max(201) limit
+                    if (feeConfiguration is null) //When quantity exceed max(201) limit
                     {
-                        Quantity = (Quantity-1) / 100;          // (Quantity - 1) beacause of range 201-300 lie in same block Ex: On 300 Fee should be 275 => (300 -1)/100 = 2 => 2-1 => 1*25+250 = 275
-                        Quantity = Quantity - 1;
-                        Amount = ((Quantity * (int)Constants.LPCOConfiguration.IncreasedRate) + 250);
+                        quantity = (quantity - 1) / 100;          // (Quantity - 1) beacause of range 201-300 lie in same block Ex: On 300 Fee should be 275 => (300 -1)/100 = 2 => 2-1 => 1*25+250 = 275
+                        quantity = quantity - 1;
+                        amount = ((quantity * (int)Constants.LPCOConfiguration.IncreasedRate) + 250);
                     }
                     else
                     {
-                        Amount = feeObj.Rate;
+                        amount = feeConfiguration.Rate;
                     }
                 }
                 else
                 {
-                    Amount = feeConfiguration.Rate * request.Quantity;
+                    amount = feeConfigurationList.FirstOrDefault().Rate * request.Quantity;
                 }
 
-                model.Amount = Amount.ToString();
+                model.Amount = amount.ToString();
                 response.Model = model;
             }
             else
