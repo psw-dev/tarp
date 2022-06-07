@@ -34,7 +34,7 @@ namespace PSW.ITMS.service
                 HSCodeExt = request.HsCodeExt,
                 Unit_ID = request.AgencyUOMId,
                 TradeTranTypeID = request.TradeTranTypeID,
-            }).Where(x => x.EffectiveThruDt > DateTime.Now);
+            }).Where(x => x.EffectiveFromDt < DateTime.Now && x.EffectiveThruDt > DateTime.Now);
 
             if (feeConfigurationList != null && feeConfigurationList.Count() > 0)
             {
