@@ -53,12 +53,12 @@ namespace PSW.ITMS.service
                     }
                     else
                     {
-                        amount = feeConfiguration.Rate;
+                        amount = feeConfiguration.Rate.GetValueOrDefault();
                     }
                 }
                 else
                 {
-                    amount = feeConfigurationList.FirstOrDefault().Rate * request.Quantity;
+                    amount = feeConfigurationList.FirstOrDefault().Rate.GetValueOrDefault() * request.Quantity;
                 }
 
                 model.Amount = amount.ToString();
