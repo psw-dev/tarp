@@ -582,8 +582,8 @@ namespace PSW.ITMS.Service.Strategies
 
                             FinancialRequirement.PlainAmount = responseModel.Model.Amount;
                             FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmount);
-                            FinancialRequirement.PlainAmmendmentFee = "0";
-                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt("0");
+                            FinancialRequirement.PlainAmmendmentFee = responseModel.Model.Amount;
+                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmmendmentFee);
                         }
                         else
                         {
