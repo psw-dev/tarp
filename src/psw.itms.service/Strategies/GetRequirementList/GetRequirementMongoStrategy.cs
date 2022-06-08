@@ -37,10 +37,10 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-                if (RequestDTO.FactorCodeValuePair == null || RequestDTO.FactorCodeValuePair.Count == 0)
-                {
-                    return BadRequestReply("Please provide valid request parameters");
-                }
+                // if (RequestDTO.FactorCodeValuePair == null || RequestDTO.FactorCodeValuePair.Count == 0)
+                // {
+                //     return BadRequestReply("Please provide valid request parameters");
+                // }
 
                 Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
 
@@ -74,25 +74,23 @@ namespace PSW.ITMS.Service.Strategies
 
                 //var FactorsIDAppliedTORule = GetFactorAppliedInRule(TempRule);
                 var factorsIDAppliedTORule = tempRule.GetFactorAppliedInRule();
-
-                if (factorsIDAppliedTORule.Count == 0)
-                {
-                    return BadRequestReply("No factor found in rule");
-                }
+                var factorDataList = new List<Factors>();
 
                 Log.Information("|{0}|{1}| FactorID's Applied To Rule DbRecord {@factorsIDAppliedTORule}", StrategyName, MethodID, factorsIDAppliedTORule);
 
-                var factorDataList = Command.UnitOfWork.FactorRepository.GetFactorsData(factorsIDAppliedTORule);
-
-                if (factorDataList == null)
+                if (factorsIDAppliedTORule.Count > 0)
                 {
-                    return BadRequestReply("Factors data not found");
+                    factorDataList = Command.UnitOfWork.FactorRepository.GetFactorsData(factorsIDAppliedTORule);
+
+                    if (factorDataList == null)
+                    {
+                        return BadRequestReply("Factors data not found");
+                    }
+    
+                    Log.Information("|{0}|{1}| FactorData DbRecord {@factorDataList}", StrategyName, MethodID, factorDataList);
                 }
 
-                Log.Information("|{0}|{1}| FactorData DbRecord {@factorDataList}", StrategyName, MethodID, factorDataList);
-
                 var mongoDoc = new BsonDocument();
-
                 MongoDbRecordFetcher mongoDBRecordFetcher;
 
                 try
@@ -129,7 +127,15 @@ namespace PSW.ITMS.Service.Strategies
                         mongoDoc = mongoDBRecordFetcher.GetFilteredRecordFSCRD(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue);
                         if (mongoDoc == null)
                         {
-                            return BadRequestReply(String.Format("No record found for HsCode : {0}  Category : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}  Purpose : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
+                        }
+                    }
+                    else if (RequestDTO.AgencyId == "5")
+                    {
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordPSQCA(RequestDTO.HsCode);
+                        if (mongoDoc == null)
+                        {
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
                         }
                     }
                 }
@@ -166,6 +172,10 @@ namespace PSW.ITMS.Service.Strategies
                 else if (RequestDTO.AgencyId == "4")
                 {
                     DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredFSCRD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                }
+                else if (RequestDTO.AgencyId == "5")
+                {
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredPSQCA(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
                 }
 
                 if (!IsParenCodeValid)
@@ -388,6 +398,26 @@ namespace PSW.ITMS.Service.Strategies
                     //Financial Requirements
                     FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
                     FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RELEASE ORDER FEES"].ToString());
+                }
+                else if (RequestDTO.AgencyId == "5")
+                {
+                    roDocRequirements = mongoRecord["RO  Mandatory DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                    roDocOptional = mongoRecord["RO  Optional DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                    ipReq = false;
+
+                    //Financial Requirements
+                    if (RequestDTO.IsFinancialRequirement)
+                    {
+                        var feeConfigurationList = Command.UnitOfWork.LPCOFeeConfigurationRepository.GetFeeConfig(
+                            RequestDTO.HsCode,
+                            RequestDTO.TradeTranTypeID,
+                            Convert.ToInt32(RequestDTO.AgencyId)
+                        ).ToList();
+                        var calculatedFee = new LPCOFeeCalculator(feeConfigurationList, RequestDTO).Calculate().ToString();
+
+                        FinancialRequirement.PlainAmount = calculatedFee;
+                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(calculatedFee);
+                    }
                 }
                 else
                 {
