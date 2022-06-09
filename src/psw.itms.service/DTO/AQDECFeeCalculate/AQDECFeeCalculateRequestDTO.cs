@@ -12,17 +12,11 @@ namespace PSW.ITMS.Service.DTO
         [JsonPropertyName("agencyId")]
         public int AgencyId { get; set; }
 
-        [JsonPropertyName("oGAItemCategory")]
-        public string OGAItemCategory { get; set; }
-
         [JsonPropertyName("agencyUOMId")]
         public int AgencyUOMId { get; set; }
 
         [JsonPropertyName("quantity")]
-        public int? Quantity { get; set; }
-
-        [JsonPropertyName("userSelectedQuantity")]
-        public int? UserSelectedQuantity { get; set; }
+        public int Quantity { get; set; }
 
         [JsonPropertyName("tradeTranTypeId")]
         public int TradeTranTypeID { get; set; }
