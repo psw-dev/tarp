@@ -294,7 +294,7 @@ namespace PSW.ITMS.Service.Strategies
             tarpRequirments.isLPCORequired = true;
 
             //for Import Permit = IMP
-            if (documentClassification == "IMP" || documentClassification == "SE")
+            if (documentClassification == "IMP" || documentClassification == "PRD")
             {
                 var ipDocRequirements = new List<string>();
                 var ipDocRequirementsTrimmed = new List<string>();
@@ -393,7 +393,7 @@ namespace PSW.ITMS.Service.Strategies
                     roDocRequirements = mongoRecord["RELEASE ORDER DOCUMENTARY REQUIRMENTS"].ToString().Split('|').ToList();
                     roDocOptional = mongoRecord["RELEASE ORDER DOCUMENTARY REQUIRMENTS (Optional)"].ToString().Split('|').ToList();
                     ipReq = mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
-                    docClassificCode = "SE";
+                    docClassificCode = "PRD";
 
                     //Financial Requirements
                     FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
@@ -612,8 +612,8 @@ namespace PSW.ITMS.Service.Strategies
 
                             FinancialRequirement.PlainAmount = responseModel.Model.Amount;
                             FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmount);
-                            FinancialRequirement.PlainAmmendmentFee = "0";
-                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt("0");
+                            FinancialRequirement.PlainAmmendmentFee = responseModel.Model.Amount;
+                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmmendmentFee);
                         }
                         else
                         {
