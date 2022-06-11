@@ -16,5 +16,6 @@ namespace PSW.ITMS.Data.Repositories
         List<ProductDetail> GetPCTCodeList(string hscode);
         List<string> GetExtHsCodeList(int agencyId, string requiredDocumentTypeCode, int tradeTransitTypeId);
         RegulatedHSCode GetActiveHsCode(string hsCodeExt, string agencyId, int tradeTranTypeId, string requiredDocumentTypeCode);
+        RegulatedHSCode GetActiveHsCode(string agencyId, int tradeTranTypeId, string requiredDocumentTypeCode);
     }
 }

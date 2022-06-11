@@ -38,16 +38,12 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide valid request parameters");
                 }
 
-                var hsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
-                    new
-                    {
-                        HSCodeExt = RequestDTO.HsCode,
-                        AgencyID = RequestDTO.AgencyId,
-                        RequiredDocumentTypeCode = RequestDTO.documentTypeCode,
-                        TradeTranTypeID = RequestDTO.TradeTranTypeID
-                    }
-                    ).FirstOrDefault();
-
+                var hsCode = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
+                    RequestDTO.HsCode,
+                    RequestDTO.AgencyId.ToString(),
+                    RequestDTO.TradeTranTypeID,
+                    RequestDTO.documentTypeCode
+                );
                 var mongoDoc = new BsonDocument();
 
                 MongoDbRecordFetcher mongoDBRecordFetcher;
