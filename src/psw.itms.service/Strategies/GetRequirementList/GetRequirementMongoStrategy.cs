@@ -413,10 +413,12 @@ namespace PSW.ITMS.Service.Strategies
                             RequestDTO.TradeTranTypeID,
                             Convert.ToInt32(RequestDTO.AgencyId)
                         ).ToList();
-                        var calculatedFee = new LPCOFeeCalculator(feeConfigurationList, RequestDTO).Calculate().ToString();
+                        var calculatedFee = new LPCOFeeCalculator(feeConfigurationList, RequestDTO).Calculate();
 
-                        FinancialRequirement.PlainAmount = calculatedFee;
-                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(calculatedFee);
+                        FinancialRequirement.PlainAmount = calculatedFee.Fee.ToString();
+                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(calculatedFee.Fee.ToString());
+                        FinancialRequirement.AdditionalAmount = calculatedFee.AdditionalAmount;
+                        FinancialRequirement.AdditionalAmountOn = calculatedFee.AdditionalAmountOn;
                     }
                 }
                 else

@@ -28,6 +28,7 @@ namespace PSW.ITMS.Data.Entities
         public short? _tradeTranTypeID;
         public decimal? _minAmount;
         public decimal? _additionalAmount;
+        public string _additionalAmountOn;
         #endregion
 
         #region Properties
@@ -49,6 +50,7 @@ namespace PSW.ITMS.Data.Entities
         public short? TradeTranTypeID { get { return _tradeTranTypeID; } set { _tradeTranTypeID = value; } }
         public decimal? MinAmount { get { return _minAmount; } set { _minAmount = value; } }
         public decimal? AdditionalAmount { get { return _additionalAmount; } set { _additionalAmount = value; } }
+        public string AdditionalAmountOn { get { return _additionalAmountOn; } set { _additionalAmountOn = value; } }
 
 
         #endregion
@@ -78,7 +80,8 @@ namespace PSW.ITMS.Data.Entities
                 {"EffectiveThruDt", EffectiveThruDt},
                 {"TradeTranTypeID", TradeTranTypeID},
                 {"MinAmount", MinAmount},
-                {"AdditionalAmount", AdditionalAmount}
+                {"AdditionalAmount", AdditionalAmount},
+                {"AdditionalAmountOn", AdditionalAmountOn}
             };
         }
 
