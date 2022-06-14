@@ -61,6 +61,12 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("plainExtensionFee")]
         public string PlainExtensionFee { get; set; }
+
+        [JsonPropertyName("additionalAmount")]
+        public decimal AdditionalAmount { get; set; }
+
+        [JsonPropertyName("additionalAmountOn")]
+        public string AdditionalAmountOn { get; set; }
     }
 
     public class ValidityRequirement
