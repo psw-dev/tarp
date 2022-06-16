@@ -35,15 +35,12 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide valid request parameters");
                 }
 
-                var tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
-                    new
-                    {
-                        HSCodeExt = RequestDTO.HsCode,
-                        AgencyID = RequestDTO.AgencyId,
-                        RequiredDocumentTypeCode = RequestDTO.documentTypeCode,
-                        TradeTranTypeID = RequestDTO.TradeTranTypeID
-                    }
-                    ).FirstOrDefault();
+                var tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
+                    RequestDTO.HsCode,
+                    RequestDTO.AgencyId.ToString(),
+                    RequestDTO.TradeTranTypeID,
+                    RequestDTO.documentTypeCode
+                );
 
                 if (tempHsCode == null)
                 {
