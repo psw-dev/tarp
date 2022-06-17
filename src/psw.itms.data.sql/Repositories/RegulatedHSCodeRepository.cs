@@ -49,9 +49,9 @@ namespace PSW.ITMS.Data.Sql.Repositories
             return _connection.Query<HscodeDetails>(string.Format("SELECT DISTINCT ITEMDESCRIPTION, PRODUCTCODE, ITEMDESCRIPTIONEXT, TECHNICALNAME FROM REGULATEDHSCODE WHERE HSCODE = '{0}' AND REQUIREDDOCUMENTTYPECODE = '{1}' AND AGENCYID = '{2}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", hscode, documentTypeCode, agencyId)).ToList();
         }
 
-        public List<ProductDetail> GetPCTCodeList(string hscode)
+        public List<ProductDetail> GetPCTCodeList(string hscode, int tradeTranTypeID)
         {
-            return _connection.Query<ProductDetail>(string.Format("SELECT DISTINCT PRODUCTCODE, Concat(ProductCode, ItemDescription) as  ItemDescription  FROM REGULATEDHSCODE WHERE HSCODE = '{0}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", hscode)).ToList();
+            return _connection.Query<ProductDetail>(string.Format("SELECT DISTINCT PRODUCTCODE, Concat(ProductCode, ItemDescription) as  ItemDescription  FROM REGULATEDHSCODE WHERE HSCODE = '{0}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT AND tradeTranTypeId = {1}", hscode, tradeTranTypeID)).ToList();
         }
 
         public List<string> GetExtHsCodeList(int agencyId, string requiredDocumentTypeCode, int tradeTransitTypeId)
@@ -61,6 +61,10 @@ namespace PSW.ITMS.Data.Sql.Repositories
         public RegulatedHSCode GetActiveHsCode(string hsCodeExt, string agencyId, int tradeTranTypeId, string requiredDocumentTypeCode)
         {
             return _connection.Query<RegulatedHSCode>(string.Format("select * from RegulatedHSCode where HSCodeExt = '{0}' AND AgencyId = '{1}' AND TradeTranTypeID = '{2}' AND RequiredDocumentTypeCode = '{3}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT",hsCodeExt, agencyId, tradeTranTypeId, requiredDocumentTypeCode)).FirstOrDefault();
+        }
+        public RegulatedHSCode GetActiveHsCode(string agencyId, int tradeTranTypeId, string requiredDocumentTypeCode)
+        {
+            return _connection.Query<RegulatedHSCode>(string.Format("select * from RegulatedHSCode where AgencyId = '{0}' AND TradeTranTypeID = '{1}' AND RequiredDocumentTypeCode = '{2}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT",agencyId, tradeTranTypeId, requiredDocumentTypeCode)).FirstOrDefault();
         }
 
         #endregion

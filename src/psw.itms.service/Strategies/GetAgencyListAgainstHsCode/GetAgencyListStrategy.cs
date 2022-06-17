@@ -46,13 +46,11 @@ namespace PSW.ITMS.Service.Strategies
 
                 foreach(var agency in tempAgencyList)
                 {
-                    agency.RequiredDocumentCode = this.Command.UnitOfWork.DocumentToInitiateRepository?.Where(new 
-                    {
-                        AgencyId = agency.Id, 
-                        HsCodeExt = RequestDTO.HsCode, 
-                        TradeTranTypeId = RequestDTO.tradeTranTypeId, 
-                        DocumentCode = RequestDTO.DocumentCode
-                    }
+                    agency.RequiredDocumentCode = this.Command.UnitOfWork.DocumentToInitiateRepository?.GetActiveList(
+                        RequestDTO.HsCode,
+                        agency.Id.ToString(),
+                        RequestDTO.tradeTranTypeId,
+                        RequestDTO.DocumentCode
                     ).FirstOrDefault().RequiredDocumentCode;
                 }
 
