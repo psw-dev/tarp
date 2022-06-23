@@ -3910,7 +3910,7 @@
   "ACT/RULES": "Rule 14 of the Pakistan Animal Quarantine\n(Import and Export of Animals and Animal Products) Rules, 1980.",
   "BANNED COUNTRY (where commodity is not allowed for export)": "Not Applicable",
   "BANNED PORT OF LOADING (Any port from where commodity canNOt be loaded for export) ": "Nill",
-  "UNIT": "Beef Quarter",
+  "UNIT": "Packing Units",
   "CONSULTANT REMARKS": "NaN",
   "TECHNICAL NAME": "NaN"
 },{
@@ -4090,7 +4090,7 @@
   "ACT/RULES": "Rule 14 of the Pakistan Animal Quarantine\n(Import and Export of Animals and Animal Products) Rules, 1980.",
   "BANNED COUNTRY (where commodity is not allowed for export)": "Not Applicable",
   "BANNED PORT OF LOADING (Any port from where commodity canNOt be loaded for export) ": "Nill",
-  "UNIT": "Beef Quarter",
+  "UNIT": "Packing Units",
   "CONSULTANT REMARKS": "NaN",
   "TECHNICAL NAME": "NaN"
 },{
@@ -4540,7 +4540,7 @@
   "ACT/RULES": "Rule 14 of the Pakistan Animal Quarantine\n(Import and Export of Animals and Animal Products) Rules, 1980.",
   "BANNED COUNTRY (where commodity is not allowed for export)": "Not Applicable",
   "BANNED PORT OF LOADING (Any port from where commodity canNOt be loaded for export) ": "Nill",
-  "UNIT": "Mutton Carcass",
+  "UNIT": "Packing Units",
   "CONSULTANT REMARKS": "NaN",
   "TECHNICAL NAME": "NaN"
 },{
@@ -4720,7 +4720,7 @@
   "ACT/RULES": "Rule 14 of the Pakistan Animal Quarantine\n(Import and Export of Animals and Animal Products) Rules, 1980.",
   "BANNED COUNTRY (where commodity is not allowed for export)": "Not Applicable",
   "BANNED PORT OF LOADING (Any port from where commodity canNOt be loaded for export) ": "Nill",
-  "UNIT": "Mutton Carcass",
+  "UNIT": "Packing Units",
   "CONSULTANT REMARKS": "NaN",
   "TECHNICAL NAME": "NaN"
 },{
@@ -4900,7 +4900,7 @@
   "ACT/RULES": "Rule 14 of the Pakistan Animal Quarantine\n(Import and Export of Animals and Animal Products) Rules, 1980.",
   "BANNED COUNTRY (where commodity is not allowed for export)": "Not Applicable",
   "BANNED PORT OF LOADING (Any port from where commodity canNOt be loaded for export) ": "Nill",
-  "UNIT": "Mutton Carcass|Beef Quarter",
+  "UNIT": "Beef Quarter",
   "CONSULTANT REMARKS": "NaN",
   "TECHNICAL NAME": "NaN"
 },{
