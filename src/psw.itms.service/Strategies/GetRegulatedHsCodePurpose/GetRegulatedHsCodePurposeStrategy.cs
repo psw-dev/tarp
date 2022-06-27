@@ -37,14 +37,11 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide valid request parameters");
                 }
 
-                var mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
-                    new
-                    {
-                        AgencyId = RequestDTO.AgencyId,
-                        RequiredDocumentTypeCode = RequestDTO.DocumentTypeCode,
-                        TradeTranTypeId = RequestDTO.TradeTranTypeID
-                    }
-                    ).FirstOrDefault().CollectionName;
+                var mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
+                    RequestDTO.AgencyId.ToString(),
+                    RequestDTO.TradeTranTypeID,
+                    RequestDTO.DocumentTypeCode
+                ).CollectionName;
 
                 if (string.IsNullOrEmpty(mongoDbCollection))
                 {

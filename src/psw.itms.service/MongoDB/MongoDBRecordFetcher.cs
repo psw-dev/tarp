@@ -182,7 +182,7 @@ namespace PSW.ITMS.Service.MongoDB
         {
             switch (requiredDocumentParentCode)
             {
-                case "SE":
+                case "PRD":
                     IsParenCodeValid = true;
                     return mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
 
