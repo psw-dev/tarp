@@ -15,14 +15,18 @@ namespace PSW.ITMS.service
             this.Request = request;
         }
 
-        public decimal Calculate()
+        public LPCOFeeDTO Calculate()
         {
+            LPCOFeeDTO calculatedFee = new LPCOFeeDTO();
+            calculatedFee.Fee = 0m;
+            calculatedFee.AdditionalAmount = 0m;
+            calculatedFee.AdditionalAmountOn = string.Empty;
+
             if(LPCOFeeEntity == null || LPCOFeeEntity.Count <= 0)
             {
-                return 0;
+                return calculatedFee;
             }
 
-            var calculatedFee = 0m;
             var calculationBasis = LPCOFeeEntity[0].CalculationBasis;
 
             switch(calculationBasis)
@@ -42,25 +46,31 @@ namespace PSW.ITMS.service
         }
 
         // Handled only for PSQCA right now
-        private decimal CalculateAsAdVal(LPCOFeeConfiguration lpcoFeeEntity, decimal importExportValue)
+        private LPCOFeeDTO CalculateAsAdVal(LPCOFeeConfiguration lpcoFeeEntity, decimal importExportValue)
         {
+            LPCOFeeDTO lpcoFee = new LPCOFeeDTO();
             var result = 0m;
             var percentage = lpcoFeeEntity.Rate == null ? 0m : (lpcoFeeEntity.Rate/100);
             var minAmount = lpcoFeeEntity.MinAmount ?? 0m;
             var additionalAmount = lpcoFeeEntity.AdditionalAmount ?? 0m;
+            var additionalAmountOn = lpcoFeeEntity.AdditionalAmountOn ?? string.Empty;
 
             var percentageOfValue = percentage * importExportValue;
 
             if(percentageOfValue > minAmount)
             {
-                result = (decimal)(percentageOfValue + additionalAmount);
+                result = (decimal)(percentageOfValue);
             }
             else
             {
-                result = (decimal)(minAmount + additionalAmount);
+                result = (decimal)(minAmount);
             }
 
-            return result;
+            lpcoFee.Fee = result;
+            lpcoFee.AdditionalAmount = additionalAmount;
+            lpcoFee.AdditionalAmountOn = additionalAmountOn;
+
+            return lpcoFee;
         }
 
         private decimal CalculateAsFixed(LPCOFeeConfiguration lpcoFeeEntity)
