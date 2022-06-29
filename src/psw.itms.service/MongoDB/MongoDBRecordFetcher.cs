@@ -166,7 +166,7 @@ namespace PSW.ITMS.Service.MongoDB
 
                 case "RO":
                     IsParenCodeValid = true;
-                    return mongoRecord["RO REQUIRED"].ToString().ToLower() == "yes";
+                    return mongoRecord["RELEASE ORDER"].ToString().ToLower() == "yes";
 
                 case "EC":
                     IsParenCodeValid = true;
@@ -234,7 +234,7 @@ namespace PSW.ITMS.Service.MongoDB
                     return mongoRecord["IP CERTIFICATE FORM NUMBER"].ToString();
 
                 case "RO":
-                    return mongoRecord["RO CERTIFICATE FORM NUMBER"].ToString();
+                    return mongoRecord["RELEASE ORDER FORM NUMBER"].ToString();
                     
                 case "EC":
                     return mongoRecord["Form"].ToString();
