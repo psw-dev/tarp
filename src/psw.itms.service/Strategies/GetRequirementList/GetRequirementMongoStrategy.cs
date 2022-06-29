@@ -86,7 +86,7 @@ namespace PSW.ITMS.Service.Strategies
                     {
                         return BadRequestReply("Factors data not found");
                     }
-    
+
                     Log.Information("|{0}|{1}| FactorData DbRecord {@factorDataList}", StrategyName, MethodID, factorDataList);
                 }
 
@@ -388,7 +388,46 @@ namespace PSW.ITMS.Service.Strategies
                 var ipReq = false;
                 var docClassificCode = string.Empty;
 
-                if (RequestDTO.AgencyId == "4")
+
+                if (RequestDTO.AgencyId == "3")
+                {
+                    roDocRequirements = mongoRecord["RELEASE ORDER PROCESSING MANDATORY REQUIREMENTS"].ToString().Split('|').ToList();
+                    roDocOptional = mongoRecord["RELEASE ORDER PROCESSING OPTIONAL REQUIREMENTS"].ToString().Split('|').ToList();
+                   // ipReq = mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
+                  //  docClassificCode = "PRD";
+
+                    if (RequestDTO.IsFinancialRequirement)
+                    {
+                        AQDECFeeCalculateRequestDTO calculateECFeeRequest = new AQDECFeeCalculateRequestDTO();
+                        calculateECFeeRequest.AgencyId = Convert.ToInt32(RequestDTO.AgencyId);
+                        calculateECFeeRequest.HsCodeExt = RequestDTO.HsCode;
+                        calculateECFeeRequest.Quantity = Convert.ToInt32(RequestDTO.Quantity);
+                        calculateECFeeRequest.TradeTranTypeID = RequestDTO.TradeTranTypeID;
+                        FactorData factorData = RequestDTO.FactorCodeValuePair["UNIT"];
+                        if (factorData != null && !string.IsNullOrEmpty(factorData.FactorValueID))
+                        {
+                            calculateECFeeRequest.AgencyUOMId = Convert.ToInt32(factorData.FactorValueID);
+                        }
+
+                        AQDECFeeCalculation feeCalculation = new AQDECFeeCalculation(Command.UnitOfWork, calculateECFeeRequest);
+                        var responseModel = feeCalculation.CalculateECFee();
+                        if (!responseModel.IsError)
+                        {
+
+                            FinancialRequirement.PlainAmount = responseModel.Model.Amount;
+                            FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmount);
+                            FinancialRequirement.PlainAmmendmentFee = responseModel.Model.Amount;
+                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmmendmentFee);
+                        }
+                        else
+                        {
+                            Log.Information("Response {@message}", responseModel.Error.InternalError.Message);
+                            // return InternalServerErrorReply(responseModel.Error.InternalError.Message);
+                        }
+
+                    }
+                }
+                else if (RequestDTO.AgencyId == "4")
                 {
                     roDocRequirements = mongoRecord["RELEASE ORDER DOCUMENTARY REQUIRMENTS"].ToString().Split('|').ToList();
                     roDocOptional = mongoRecord["RELEASE ORDER DOCUMENTARY REQUIRMENTS (Optional)"].ToString().Split('|').ToList();
@@ -463,23 +502,23 @@ namespace PSW.ITMS.Service.Strategies
                         var removespaces = lpco.Trim();
                         roDocRequirementsTrimmed.Add(removespaces.TrimEnd('\n'));
                     }
-    
+
                     // roDocRequirementsTrimmed.Remove("Application on DPP prescribed form 20 [Rule 44(1) of PQR 2019]");
                     // roDocRequirementsTrimmed.Remove("Fee Challan");
-    
+
                     //DocumentaryRequirements
                     foreach (var doc in roDocRequirementsTrimmed)
                     {
                         var tempReq = new DocumentaryRequirement();
-    
+
                         tempReq.Name = doc + " For " + "Release Order"; //replace DPP with collectionName 
                         tempReq.DocumentName = doc;
                         tempReq.IsMandatory = true;
                         tempReq.RequirementType = "Documentary";
-    
+
                         tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
                         tempReq.AttachedObjectFormatID = 1;
-    
+
                         tarpDocumentRequirements.Add(tempReq);
                     }
                 }
@@ -609,7 +648,7 @@ namespace PSW.ITMS.Service.Strategies
 
                         AQDECFeeCalculation feeCalculation = new AQDECFeeCalculation(Command.UnitOfWork, calculateECFeeRequest);
                         var responseModel = feeCalculation.CalculateECFee();
-                        if(!responseModel.IsError)
+                        if (!responseModel.IsError)
                         {
 
                             FinancialRequirement.PlainAmount = responseModel.Model.Amount;
@@ -621,7 +660,7 @@ namespace PSW.ITMS.Service.Strategies
                         {
                             Log.Information("Response {@message}", responseModel.Error.InternalError.Message);
                             // return InternalServerErrorReply(responseModel.Error.InternalError.Message);
-                        }                      
+                        }
                     }
                 }
             }
