@@ -26,7 +26,7 @@ namespace PSW.ITMS.service
         {
             decimal amount = 0;
             // var test = unitOfWork.UV_UnitAQDRepository.Where(new { ID = "100001" }).FirstOrDefault();
-            Log.Information("[{0}.{1}] Started", GetType().Name, MethodBase.GetCurrentMethod().Name);
+            Log.Information("[{0}.{1}] Started. Request: {@RequestDTO}", GetType().Name, MethodBase.GetCurrentMethod().Name, request);
             var response = new SingleResponseModel<AQDECFeeCalculateResponseDTO>();
             var model = new AQDECFeeCalculateResponseDTO();
             var feeConfigurationList = unitOfWork.LPCOFeeConfigurationRepository.Where(new
@@ -53,12 +53,12 @@ namespace PSW.ITMS.service
                     }
                     else
                     {
-                        amount = feeConfiguration.Rate;
+                        amount = feeConfiguration.Rate.GetValueOrDefault();
                     }
                 }
                 else
                 {
-                    amount = feeConfigurationList.FirstOrDefault().Rate * request.Quantity;
+                    amount = feeConfigurationList.FirstOrDefault().Rate.GetValueOrDefault() * request.Quantity;
                 }
 
                 model.Amount = amount.ToString();
@@ -67,7 +67,6 @@ namespace PSW.ITMS.service
             else
             {
                 var errorMessage = "Fee Configuration data not found ";
-
                 response.IsError = true;
                 response.Error = new ErrorResponseModel()
                                      .Category(ErrorCategories.BadRequest)

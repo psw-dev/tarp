@@ -59,23 +59,20 @@ namespace PSW.ITMS.Service.Strategies
                 Log.Information("|{0}|{1}| Rule record fetched from db: {@tempRule}", StrategyName, MethodID, tempRule);
 
                 var factorsApplicable = FactorsPresentInRule(tempRule);
-
-                if (factorsApplicable.Count == 0)
-                {
-                    return BadRequestReply("Factors data not available");
-                }
+                var factorsData = new List<Factors>();
 
                 Log.Information("|{0}|{1}| Applicable factor ID applied in rule : {@factorsApplicable}", StrategyName, MethodID, factorsApplicable);
 
-                var factorsData = new List<Factors>();
-
-                factorsData = Command.UnitOfWork.FactorRepository.GetFactorsData(factorsApplicable);
-
-                Log.Information("|{0}|{1}| Factor data fetched from rule : {@factorsData}", StrategyName, MethodID, factorsData);
-
-                if (factorsData == null || factorsData.Count == 0)
+                if (factorsApplicable.Count > 0)
                 {
-                    return BadRequestReply("Factors Details not available");
+                    factorsData = Command.UnitOfWork.FactorRepository.GetFactorsData(factorsApplicable);
+
+                    Log.Information("|{0}|{1}| Factor data fetched from rule : {@factorsData}", StrategyName, MethodID, factorsData);
+    
+                    if (factorsData == null || factorsData.Count == 0)
+                    {
+                        return BadRequestReply("Factors Details not available");
+                    }
                 }
 
                 ResponseDTO = new GetFactorListAgainstHscodeResponse
