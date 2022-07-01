@@ -44,6 +44,7 @@ namespace PSW.ITMS.Data.Sql
         private IDocumentToInitiateRepository _documentToInitiateRepository;
         private ILPCOFeeConfigurationRepository _lPCOFeeConfigurationRepository;
         private IOGAItemCategoryRepository _oGAItemCategoryRepository;
+        private IRef_UnitsRepository _ref_UnitsRepository;
 
         #endregion
 
@@ -100,7 +101,7 @@ namespace PSW.ITMS.Data.Sql
         public IDocumentToInitiateRepository DocumentToInitiateRepository => _documentToInitiateRepository ?? (_documentToInitiateRepository = new DocumentToInitiateRepository(_connection));
         public ILPCOFeeConfigurationRepository LPCOFeeConfigurationRepository => _lPCOFeeConfigurationRepository ?? (_lPCOFeeConfigurationRepository = new LPCOFeeConfigurationRepository(_connection));
         public IOGAItemCategoryRepository OGAItemCategoryRepository => _oGAItemCategoryRepository ?? (_oGAItemCategoryRepository = new OGAItemCategoryRepository(_connection));
-
+        public IRef_UnitsRepository Ref_UnitsRepository => _ref_UnitsRepository ?? (_ref_UnitsRepository = new Ref_UnitsRepository(_connection));
 
         #endregion
 
