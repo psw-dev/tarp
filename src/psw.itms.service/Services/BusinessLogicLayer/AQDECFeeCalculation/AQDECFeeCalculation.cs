@@ -40,29 +40,46 @@ namespace PSW.ITMS.service
             {
                 var quantity = request.Quantity;
 
-                if (request.AgencyUOMId == (int)Constants.AgencyUOMTypes.PackingUnits)
+                var refUnits = unitOfWork.Ref_UnitsRepository.Where(new
                 {
-                    //Select Fee from list on the basis of quantity
-                    var feeConfiguration = feeConfigurationList.Where(d => (double?)d.QtyRangeFrom >= quantity && (double?)d.QtyRangeTo <= quantity).FirstOrDefault();
+                    Unit_ID = request.AgencyUOMId,
+                    IsActive = true
+                }).FirstOrDefault();
 
-                    if (feeConfiguration is null) //When quantity exceed max(201) limit
+                if (refUnits != null)
+                {
+                    if (refUnits.Unit_Code == Ref_Units.PackingUnits)
                     {
-                        quantity = (quantity - 1) / 100;          // (Quantity - 1) beacause of range 201-300 lie in same block Ex: On 300 Fee should be 275 => (300 -1)/100 = 2 => 2-1 => 1*25+250 = 275
-                        quantity = quantity - 1;
-                        amount = ((quantity * (int)Constants.LPCOConfiguration.IncreasedRate) + 250);
+                        //Select Fee from list on the basis of quantity
+                        var feeConfiguration = feeConfigurationList.Where(d => (double?)d.QtyRangeFrom >= quantity && (double?)d.QtyRangeTo <= quantity).FirstOrDefault();
+
+                        if (feeConfiguration is null) //When quantity exceed max(201) limit
+                        {
+                            quantity = (quantity - 1) / 100;          // (Quantity - 1) beacause of range 201-300 lie in same block Ex: On 300 Fee should be 275 => (300 -1)/100 = 2 => 2-1 => 1*25+250 = 275
+                            quantity = quantity - 1;
+                            amount = ((quantity * (int)Constants.LPCOConfiguration.IncreasedRate) + 250);
+                        }
+                        else
+                        {
+                            amount = feeConfiguration.Rate.GetValueOrDefault();
+                        }
                     }
                     else
                     {
-                        amount = feeConfiguration.Rate.GetValueOrDefault();
+                        amount = feeConfigurationList.FirstOrDefault().Rate.GetValueOrDefault() * request.Quantity;
                     }
+
+                    model.Amount = amount.ToString();
+                    response.Model = model;
                 }
                 else
                 {
-                    amount = feeConfigurationList.FirstOrDefault().Rate.GetValueOrDefault() * request.Quantity;
+                    var errorMessage = "Unit not found ";
+                    response.IsError = true;
+                    response.Error = new ErrorResponseModel()
+                                         .Category(ErrorCategories.BadRequest)
+                                         .Message(errorMessage);
                 }
-
-                model.Amount = amount.ToString();
-                response.Model = model;
             }
             else
             {
