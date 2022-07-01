@@ -35,6 +35,7 @@ namespace PSW.ITMS.Data
         ILPCOFeeConfigurationRepository LPCOFeeConfigurationRepository { get; }
         IOGAItemCategoryRepository OGAItemCategoryRepository { get; }
 
+        IRef_UnitsRepository Ref_UnitsRepository { get; }
         #endregion
 
         #region TARP View Repositories
