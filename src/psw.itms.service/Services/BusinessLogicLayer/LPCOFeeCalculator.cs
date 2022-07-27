@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using PSW.ITMS.Data.Entities;
 using PSW.ITMS.Service.DTO;
@@ -66,8 +67,8 @@ namespace PSW.ITMS.service
                 result = (decimal)(minAmount);
             }
 
-            lpcoFee.Fee = result;
-            lpcoFee.AdditionalAmount = additionalAmount;
+            lpcoFee.Fee = Math.Round(result);
+            lpcoFee.AdditionalAmount = Math.Round(additionalAmount);
             lpcoFee.AdditionalAmountOn = additionalAmountOn;
 
             return lpcoFee;
