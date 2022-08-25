@@ -29,4 +29,8 @@ namespace PSW.ITMS.Common.Constants
         public const string BeefQuartrer = "BQ";
         public const string PackingUnits = "PU";
     }
+
+    public static class TradePurpose{
+        public const string ScreeningResearchTrial = "screening / research/ trial";
+    }
 }

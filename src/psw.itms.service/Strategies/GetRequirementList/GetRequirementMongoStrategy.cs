@@ -330,6 +330,11 @@ namespace PSW.ITMS.Service.Strategies
                     ValidityRequirement.ExtensionAllowed = mongoRecord["IP Extention Allowed"].ToString().ToLower() == "yes" ? true : false;
                     ValidityRequirement.ExtensionPeriod = Convert.ToInt32(mongoRecord["IP Extention Period (Months)"]);
                     ValidityRequirement.ExtensionPeriodUnitName = "Months";     // Hard coded till we have a separate column in sheet for this
+
+                    //Quantity Allowed
+                    if(RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue.ToString().Trim().ToLower()==Common.Constants.TradePurpose.ScreeningResearchTrial){
+                        tarpRequirments.AllowedQuantity = mongoRecord["QUANTITY ALLOWED"].ToString();
+                    }
                 }
 
                 if (ipDocOptional != null && !ipDocOptional.Contains("NaN"))
