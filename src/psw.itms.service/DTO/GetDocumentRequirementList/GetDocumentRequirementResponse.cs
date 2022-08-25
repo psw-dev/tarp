@@ -16,6 +16,9 @@ namespace PSW.ITMS.Service.DTO
         public List<DocumentaryRequirement> DocumentaryRequirementList { get; set; }
         public FinancialRequirement FinancialRequirement { get; set; }
         public ValidityRequirement ValidityRequirement { get; set; }
+
+        [JsonPropertyName("allowedQuantity")]
+        public string AllowedQuantity { get; set; }
     }
 
     public class DocumentaryRequirement
