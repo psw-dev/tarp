@@ -332,7 +332,8 @@ namespace PSW.ITMS.Service.Strategies
                     ValidityRequirement.ExtensionPeriodUnitName = "Months";     // Hard coded till we have a separate column in sheet for this
 
                     //Quantity Allowed
-                    if(RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue.ToString().Trim().ToLower()==Common.Constants.TradePurpose.ScreeningResearchTrial){
+                    if (RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue.ToString().Trim().ToLower() == Common.Constants.TradePurpose.ScreeningResearchTrial)
+                    {
                         tarpRequirments.AllowedQuantity = mongoRecord["QUANTITY ALLOWED"].ToString();
                     }
                 }
@@ -391,6 +392,8 @@ namespace PSW.ITMS.Service.Strategies
                 var roDocOptional = new List<string>();
                 var roDocOptionalTrimmed = new List<string>();
                 var ipReq = false;
+                var psiReq = false;
+
                 var docClassificCode = string.Empty;
 
 
@@ -398,8 +401,8 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     roDocRequirements = mongoRecord["RELEASE ORDER PROCESSING MANDATORY REQUIREMENTS"].ToString().Split('|').ToList();
                     roDocOptional = mongoRecord["RELEASE ORDER PROCESSING OPTIONAL REQUIREMENTS"].ToString().Split('|').ToList();
-                   // ipReq = mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
-                  //  docClassificCode = "PRD";
+                    // ipReq = mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
+                    //  docClassificCode = "PRD";
 
                     if (RequestDTO.IsFinancialRequirement)
                     {
@@ -472,6 +475,14 @@ namespace PSW.ITMS.Service.Strategies
                     ipReq = mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";
                     docClassificCode = "IMP";
 
+                    // Check if HS Code is PSI related.  
+                    var IsPSi = mongoRecord["IS PSI"].ToString().ToLower() == "yes";
+                    if (IsPSi)
+                    {
+                        psiReq = mongoRecord["PSI REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+                    }
+
+
                     //Financial Requirements
                     FinancialRequirement.PlainAmount = mongoRecord["RO FEES"].ToString();
                     FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RO FEES"].ToString());
@@ -539,6 +550,30 @@ namespace PSW.ITMS.Service.Strategies
                     tempReq.RequirementType = "Documentary";
                     tempReq.DocumentTypeCode = ipDocRequired.Code;
                     tempReq.AttachedObjectFormatID = ipDocRequired.AttachedObjectFormatID;
+
+                    tarpDocumentRequirements.Add(tempReq);
+
+                }
+
+                if (psiReq)
+                {
+                    var tempReq = new DocumentaryRequirement();
+
+                    var psiDocRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new
+                    {
+                        // AgencyID = RequestDTO.AgencyId, 
+                        // documentClassificationCode = docClassificCode, 
+                        // AttachedObjectFormatID = 2, 
+                        // AltCode = "C" 
+                        Code = "D58" // TODO : Remove hardcoded values
+                    }).FirstOrDefault();
+
+                    tempReq.Name = psiDocRequired.Name + " For " + "Release Order"; //replace DPP with collectionName 
+                    tempReq.DocumentName = psiDocRequired.Name;
+                    tempReq.IsMandatory = false;
+                    tempReq.RequirementType = "Documentary";
+                    tempReq.DocumentTypeCode = psiDocRequired.Code;
+                    tempReq.AttachedObjectFormatID = psiDocRequired.AttachedObjectFormatID;
 
                     tarpDocumentRequirements.Add(tempReq);
 
