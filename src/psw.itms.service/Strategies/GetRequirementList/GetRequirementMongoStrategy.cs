@@ -393,6 +393,8 @@ namespace PSW.ITMS.Service.Strategies
                 var roDocOptionalTrimmed = new List<string>();
                 var ipReq = false;
                 var psiReq = false;
+                var psiRegReq = false;
+
 
                 var docClassificCode = string.Empty;
 
@@ -480,6 +482,7 @@ namespace PSW.ITMS.Service.Strategies
                     if (IsPSi)
                     {
                         psiReq = mongoRecord["PSI REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+                        psiRegReq = mongoRecord["REGISTRATION REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
                     }
 
 
@@ -576,7 +579,28 @@ namespace PSW.ITMS.Service.Strategies
                     tempReq.AttachedObjectFormatID = psiDocRequired.AttachedObjectFormatID;
 
                     tarpDocumentRequirements.Add(tempReq);
+                }
+                if (psiRegReq)
+                {
+                    var tempReq = new DocumentaryRequirement();
 
+                    var psiRegRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new
+                    {
+                        // AgencyID = RequestDTO.AgencyId, 
+                        // documentClassificationCode = docClassificCode, 
+                        // AttachedObjectFormatID = 2, 
+                        // AltCode = "C" 
+                        Code = "D60" // TODO : 
+                    }).FirstOrDefault();
+
+                    tempReq.Name = psiRegRequired.Name + " For " + "Release Order"; //replace DPP with collectionName //
+                    tempReq.DocumentName = psiRegRequired.Name;
+                    tempReq.IsMandatory = false;
+                    tempReq.RequirementType = "Documentary";
+                    tempReq.DocumentTypeCode = psiRegRequired.Code;
+                    tempReq.AttachedObjectFormatID = psiRegRequired.AttachedObjectFormatID;
+
+                    tarpDocumentRequirements.Add(tempReq);
                 }
             }
 
