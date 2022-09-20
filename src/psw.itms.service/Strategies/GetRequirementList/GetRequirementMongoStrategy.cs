@@ -589,7 +589,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     ecDocRequirements = mongoRecord["Certificate of Quality and Origin Processing Mandatory Documentary Requirements"].ToString().Split('|').ToList();
                     ecDocOptional = mongoRecord["Certificate of Quality and Origin Processing  Optional  Documentary Requirements"].ToString().Split('|').ToList();
-                    premisesRegistrationRequired = mongoRecord["Is Premises Registration Required ? (Yes / No)"].ToString().ToLower() == "yes";
+                    premisesRegistrationRequired = mongoRecord["Is Premises Registration Required? (Yes/No)"].ToString().ToLower() == "yes";
                 }
 
 
@@ -661,26 +661,24 @@ namespace PSW.ITMS.Service.Strategies
                 if (premisesRegistrationRequired == true)
                 {
                     // TODO : Attach this Later
-                    // var tempReq = new DocumentaryRequirement();
-                    // var premisesRegistration = Command.UnitOfWork.DocumentTypeRepository.Where(new
-                    // {
-                    //     // AgencyID = RequestDTO.AgencyId,
-                    //     // documentClassificationCode = docClassificCode,
-                    //     // AttachedObjectFormatID = 2,
-                    //     // AltCode = "C"
-                    //     Code = ""
+                    var tempReq = new DocumentaryRequirement();
+                    var premisesRegistration = Command.UnitOfWork.DocumentTypeRepository.Where(new
+                    {
+                        AgencyID = RequestDTO.AgencyId,
+                        Code = "A09"
+                    }).FirstOrDefault();
 
-                    // }
-                    // ).FirstOrDefault();
+                    if (premisesRegistration != null)
+                    {
+                        tempReq.Name = premisesRegistration.Name + " For " + "Certificate";
+                        tempReq.DocumentName = premisesRegistration.Name;
+                        tempReq.IsMandatory = false; // Change this later 
+                        tempReq.RequirementType = "Documentary";
+                        tempReq.DocumentTypeCode = premisesRegistration.Code;
+                        tempReq.AttachedObjectFormatID = premisesRegistration.AttachedObjectFormatID;
+                        tarpDocumentRequirements.Add(tempReq);
 
-                    // tempReq.Name = premisesRegistration.Name + " For " + "Certificate"; //replace DPP with collectionName 
-                    // tempReq.DocumentName = premisesRegistration.Name;
-                    // tempReq.IsMandatory = true;
-                    // tempReq.RequirementType = "Documentary";
-                    // tempReq.DocumentTypeCode = premisesRegistration.Code;
-                    // tempReq.AttachedObjectFormatID = premisesRegistration.AttachedObjectFormatID;
-
-                    // tarpDocumentRequirements.Add(tempReq);
+                    }
 
                 }
 
@@ -727,9 +725,8 @@ namespace PSW.ITMS.Service.Strategies
                     {
 
                         // TODO Fee releated stuff later 
-                        // FinancialRequirement.PlainAmount = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
-                        // FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString());
-
+                        FinancialRequirement.PlainAmount = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
+                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString());
 
                         // // The column that tells if Health Certificate is Fee Required (Conditional)
                         // // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
