@@ -728,9 +728,9 @@ namespace PSW.ITMS.Service.Strategies
                         FinancialRequirement.PlainAmount = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
                         FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString());
 
-                        // // The column that tells if Health Certificate is Fee Required (Conditional)
-                        // // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
-                        // // "Names of Countries Requiring Health Certificate on prescribed format"
+                        // The column that tells if Health Certificate is Fee Required (Conditional)
+                        // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
+                        // "Names of Countries Requiring Health Certificate on prescribed format"
                         // countries = mongoRecord["Names of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
                         // if (countries.Contains("RequestDTO.DestinationCountry"))
                         // {
