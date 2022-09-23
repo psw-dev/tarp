@@ -479,12 +479,12 @@ namespace PSW.ITMS.Service.Strategies
 
                     // Turn off PSI Releated Work 
                     // // Check if HS Code is PSI related.  
-                    // var IsPSi = mongoRecord["IS PSI"].ToString().ToLower() == "yes";
-                    // if (IsPSi)
-                    // {
-                    //     psiReq = mongoRecord["PSI REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
-                    //     psiRegReq = mongoRecord["REGISTRATION REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
-                    // }
+                    var IsPSi = mongoRecord["Is PSI"].ToString().ToLower() == "yes";
+                    if (IsPSi)
+                    {
+                        psiReq = mongoRecord["PSI REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+                        psiRegReq = mongoRecord["REGISTRATION REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+                    }
 
 
                     //Financial Requirements
