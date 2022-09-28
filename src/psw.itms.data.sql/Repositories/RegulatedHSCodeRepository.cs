@@ -29,6 +29,22 @@ namespace PSW.ITMS.Data.Sql.Repositories
             return _connection.Query<AgencyList>(string.Format("SELECT A.ID, A.NAME, RHS.ITEMDESCRIPTION FROM REGULATEDHSCODE RHS INNER JOIN SHRD.DBO.AGENCY A ON RHS.AGENCYID = A.ID WHERE HSCODEEXT = '{0}' AND TRADETRANTYPEID = '{1}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", hscode, tradeTranTypeID)).ToList();
         }
 
+        public List<ViewRegulatedHsCodeExt> GetRegulatedHsCodeExtList()
+        {
+            //, ItemDescription, ItemDescriptionExt
+            return _connection.Query<ViewRegulatedHsCodeExt>(string.Format("SELECT DISTINCT HsCodeExt, AgencyID FROM REGULATEDHSCODE WHERE GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT")).ToList();
+        }
+
+        public List<ViewRegulatedHsCodeExt> GetRegulatedHsCodeExtList(int agencyId)
+        {
+            //, ItemDescription, ItemDescriptionExt
+            return _connection.Query<ViewRegulatedHsCodeExt>(string.Format("SELECT DISTINCT HsCodeExt, AgencyID FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId)).ToList();
+        }
+        public List<ViewRegulatedHsCodeExt> GetRegulatedHsCodeExtList(int agencyId, string chapter)
+        {
+            return _connection.Query<ViewRegulatedHsCodeExt>(string.Format("SELECT DISTINCT HsCodeExt, ItemDescription, ItemDescriptionExt, AgencyID FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND HSCodeExt like '{1}%' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId)).ToList();
+        }
+
         public List<ViewRegulatedHsCode> GetRegulatedHsCodeList()
         {
             return _connection.Query<ViewRegulatedHsCode>(string.Format("SELECT DISTINCT HsCode, AgencyID FROM REGULATEDHSCODE WHERE GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT")).ToList();
