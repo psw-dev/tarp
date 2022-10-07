@@ -32,17 +32,17 @@ namespace PSW.ITMS.Data.Sql.Repositories
         public List<ViewRegulatedHsCodeExt> GetRegulatedHsCodeExtList()
         {
             //, ItemDescription, ItemDescriptionExt
-            return _connection.Query<ViewRegulatedHsCodeExt>(string.Format("SELECT DISTINCT HsCodeExt, AgencyID FROM REGULATEDHSCODE WHERE GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT")).ToList();
+            return _connection.Query<ViewRegulatedHsCodeExt>(string.Format("SELECT DISTINCT HsCodeExt, ItemDescription AS [HsCodeDescription], ItemDescriptionExt AS [HsCodeDescriptionExt], AgencyID FROM REGULATEDHSCODE WHERE GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT")).ToList();
         }
 
         public List<ViewRegulatedHsCodeExt> GetRegulatedHsCodeExtList(int agencyId)
         {
             //, ItemDescription, ItemDescriptionExt
-            return _connection.Query<ViewRegulatedHsCodeExt>(string.Format("SELECT DISTINCT HsCodeExt, AgencyID FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId)).ToList();
+            return _connection.Query<ViewRegulatedHsCodeExt>(string.Format("SELECT DISTINCT HsCodeExt, ItemDescription AS [HsCodeDescription], ItemDescriptionExt AS [HsCodeDescriptionExt], AgencyID FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId)).ToList();
         }
         public List<ViewRegulatedHsCodeExt> GetRegulatedHsCodeExtList(int agencyId, string chapter)
         {
-            return _connection.Query<ViewRegulatedHsCodeExt>(string.Format("SELECT DISTINCT HsCodeExt, ItemDescription, ItemDescriptionExt, AgencyID FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND HSCodeExt like '{1}%' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId)).ToList();
+            return _connection.Query<ViewRegulatedHsCodeExt>(string.Format("SELECT DISTINCT HsCodeExt, ItemDescription AS [HsCodeDescription], ItemDescriptionExt AS [HsCodeDescriptionExt], AgencyID FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND HSCodeExt like '{1}%' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId)).ToList();
         }
 
         public List<ViewRegulatedHsCode> GetRegulatedHsCodeList()
