@@ -46,6 +46,7 @@ namespace PSW.ITMS.Service.Strategies
                 }
 
                 var mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
+                    RequestDTO.HSCodeExt.ToString(),
                     RequestDTO.AgencyId.ToString(),
                     RequestDTO.TradeTranTypeID,
                     RequestDTO.DocumentTypeCode
