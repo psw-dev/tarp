@@ -30,7 +30,7 @@ namespace PSW.ITMS.service
             calculatedFee.AdditionalAmount = 0m;
             calculatedFee.AdditionalAmountOn = string.Empty;
 
-            if(LPCOFeeEntity == null || Request == null || Request.Count <= 0)
+            if(Request == null || Request.Count <= 0)
             {
                 return calculatedFee;
             }
