@@ -392,6 +392,8 @@ namespace PSW.ITMS.Service.Strategies
                 var roDocOptional = new List<string>();
                 var roDocOptionalTrimmed = new List<string>();
                 var ipReq = false;
+                var psiReq = false;
+                var psiRegReq = false;
                 var docClassificCode = string.Empty;
 
 
@@ -482,6 +484,15 @@ namespace PSW.ITMS.Service.Strategies
                     ipReq = mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";
                     docClassificCode = "IMP";
 
+                    // Check if HS Code is PSI related.  
+                    var IsPSi = mongoRecord["Is PSI"].ToString().ToLower() == "yes";
+                    if (IsPSi)
+                    {
+                        psiReq = mongoRecord["PSI REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+                        psiRegReq = mongoRecord["REGISTRATION REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+                    }
+
+
                     //Financial Requirements
                     FinancialRequirement.PlainAmount = mongoRecord["RO FEES"].ToString();
                     FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RO FEES"].ToString());
@@ -553,6 +564,54 @@ namespace PSW.ITMS.Service.Strategies
                     tarpDocumentRequirements.Add(tempReq);
 
                 }
+
+                if (psiReq)
+                {
+                    var tempReq = new DocumentaryRequirement();
+
+                    var psiDocRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new
+                    {
+                        // AgencyID = RequestDTO.AgencyId, 
+                        // documentClassificationCode = docClassificCode, 
+                        // AttachedObjectFormatID = 2, 
+                        // AltCode = "C" 
+                        Code = "D58" // TODO : Remove hardcoded values
+                    }).FirstOrDefault();
+
+                    tempReq.Name = psiDocRequired.Name + " For " + "Release Order"; //replace DPP with collectionName 
+                    tempReq.DocumentName = psiDocRequired.Name;
+                    tempReq.IsMandatory = false;
+                    tempReq.RequirementType = "Documentary";
+                    tempReq.DocumentTypeCode = psiDocRequired.Code;
+                    tempReq.AttachedObjectFormatID = psiDocRequired.AttachedObjectFormatID;
+
+                    tarpDocumentRequirements.Add(tempReq);
+
+                }
+
+                if (psiRegReq)
+                {
+                    var tempReq = new DocumentaryRequirement();
+
+                    var psiRegRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new
+                    {
+                        // AgencyID = RequestDTO.AgencyId, 
+                        // documentClassificationCode = docClassificCode, 
+                        // AttachedObjectFormatID = 2, 
+                        // AltCode = "C" 
+                        Code = "D60" // TODO : 
+                    }).FirstOrDefault();
+
+                    tempReq.Name = psiRegRequired.Name + " For " + "Release Order"; //replace DPP with collectionName //
+                    tempReq.DocumentName = psiRegRequired.Name;
+                    tempReq.IsMandatory = false;
+                    tempReq.RequirementType = "Documentary";
+                    tempReq.DocumentTypeCode = psiRegRequired.Code;
+                    tempReq.AttachedObjectFormatID = psiRegRequired.AttachedObjectFormatID;
+
+                    tarpDocumentRequirements.Add(tempReq);
+                }
+
             }
 
             //for PythoCertificate = EC
