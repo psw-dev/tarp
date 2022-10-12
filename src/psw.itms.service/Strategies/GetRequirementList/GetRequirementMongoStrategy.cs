@@ -456,7 +456,7 @@ namespace PSW.ITMS.Service.Strategies
                             RequestDTO.HsCode,
                             RequestDTO.TradeTranTypeID,
                             Convert.ToInt32(RequestDTO.AgencyId)
-                        ).ToList();
+                        ).FirstOrDefault();
                         var calculatedFee = new LPCOFeeCalculator(feeConfigurationList, RequestDTO).Calculate();
 
                         FinancialRequirement.PlainAmount = calculatedFee.Fee.ToString();
