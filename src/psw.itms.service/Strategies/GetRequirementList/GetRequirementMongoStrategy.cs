@@ -332,7 +332,8 @@ namespace PSW.ITMS.Service.Strategies
                     ValidityRequirement.ExtensionPeriodUnitName = "Months";     // Hard coded till we have a separate column in sheet for this
 
                     //Quantity Allowed
-                    if(RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue.ToString().Trim().ToLower()==Common.Constants.TradePurpose.ScreeningResearchTrial){
+                    if (RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue.ToString().Trim().ToLower() == Common.Constants.TradePurpose.ScreeningResearchTrial)
+                    {
                         tarpRequirments.AllowedQuantity = mongoRecord["QUANTITY ALLOWED"].ToString();
                     }
                 }
@@ -398,8 +399,8 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     roDocRequirements = mongoRecord["RELEASE ORDER PROCESSING MANDATORY REQUIREMENTS"].ToString().Split('|').ToList();
                     roDocOptional = mongoRecord["RELEASE ORDER PROCESSING OPTIONAL REQUIREMENTS"].ToString().Split('|').ToList();
-                   // ipReq = mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
-                  //  docClassificCode = "PRD";
+                    // ipReq = mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
+                    //  docClassificCode = "PRD";
 
                     if (RequestDTO.IsFinancialRequirement)
                     {
@@ -457,7 +458,16 @@ namespace PSW.ITMS.Service.Strategies
                             RequestDTO.TradeTranTypeID,
                             Convert.ToInt32(RequestDTO.AgencyId)
                         ).FirstOrDefault();
-                        var calculatedFee = new LPCOFeeCalculator(feeConfigurationList, RequestDTO).Calculate();
+
+                        var feeConfig = new LPCOFeeCleanResp();
+                        feeConfig.AdditionalAmount = feeConfigurationList.AdditionalAmount;
+                        feeConfig.AdditionalAmountOn = feeConfigurationList.AdditionalAmountOn;
+                        feeConfig.Rate = feeConfigurationList.Rate;
+                        feeConfig.CalculationBasis = feeConfigurationList.CalculationBasis;
+                        feeConfig.CalculationSource = feeConfigurationList.CalculationSource;
+                        feeConfig.MinAmount = feeConfigurationList.MinAmount;
+
+                        var calculatedFee = new LPCOFeeCalculator(feeConfig, RequestDTO).Calculate();
 
                         FinancialRequirement.PlainAmount = calculatedFee.Fee.ToString();
                         FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(calculatedFee.Fee.ToString());
@@ -627,7 +637,6 @@ namespace PSW.ITMS.Service.Strategies
                     }
 
                 }
-
                 if (RequestDTO.IsFinancialRequirement)
                 {
                     //Financial Requirements

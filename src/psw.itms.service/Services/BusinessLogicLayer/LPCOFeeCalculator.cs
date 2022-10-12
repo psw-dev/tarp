@@ -8,16 +8,16 @@ namespace PSW.ITMS.service
 {
     public class LPCOFeeCalculator
     {
-        private LPCOFeeConfiguration LPCOFeeEntity { get; set; }
+        private LPCOFeeCleanResp LPCOFeeEntity { get; set; }
         private List<GetDocumentRequirementRequest> Request { get; set; }
 
-        public LPCOFeeCalculator(LPCOFeeConfiguration lpcoFeeEntity, GetDocumentRequirementRequest request)
+        public LPCOFeeCalculator(LPCOFeeCleanResp lpcoFeeEntity, GetDocumentRequirementRequest request)
         {
             this.LPCOFeeEntity = lpcoFeeEntity;
             this.Request.Add(request);
         }
 
-        public LPCOFeeCalculator(LPCOFeeConfiguration lpcoFeeEntity, List<GetDocumentRequirementRequest> request)
+        public LPCOFeeCalculator(LPCOFeeCleanResp lpcoFeeEntity, List<GetDocumentRequirementRequest> request)
         {
             this.LPCOFeeEntity = lpcoFeeEntity;
             this.Request = request;

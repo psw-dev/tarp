@@ -15,13 +15,13 @@ namespace PSW.ITMS.Service.Strategies
 {
     public class GetFinancialRequirementStrategy : ApiStrategy<List<GetDocumentRequirementRequest>, GetFinancialRequirementResponse>
     {
-        private Dictionary<LPCOFeeConfiguration, List<GetDocumentRequirementRequest>> psqcaFeeDict;
+        private Dictionary<LPCOFeeCleanResp, List<GetDocumentRequirementRequest>> psqcaFeeDict;
 
         #region Constructors 
         public GetFinancialRequirementStrategy(CommandRequest request) : base(request)
         {
             Reply = new CommandReply();
-            psqcaFeeDict = new Dictionary<LPCOFeeConfiguration, List<GetDocumentRequirementRequest>>();
+            psqcaFeeDict = new Dictionary<LPCOFeeCleanResp, List<GetDocumentRequirementRequest>>();
         }
         #endregion 
 
@@ -353,15 +353,24 @@ namespace PSW.ITMS.Service.Strategies
                             Convert.ToInt32(request.AgencyId)
                         ).FirstOrDefault();
 
-                        if (psqcaFeeDict.ContainsKey(feeConfigurationList))
+                        var feeConfig = new LPCOFeeCleanResp();
+                        feeConfig.AdditionalAmount = feeConfigurationList.AdditionalAmount;
+                        feeConfig.AdditionalAmountOn = feeConfigurationList.AdditionalAmountOn;
+                        feeConfig.Rate = feeConfigurationList.Rate;
+                        feeConfig.CalculationBasis = feeConfigurationList.CalculationBasis;
+                        feeConfig.CalculationSource = feeConfigurationList.CalculationSource;
+                        feeConfig.MinAmount = feeConfigurationList.MinAmount;
+                        
+
+                        if (psqcaFeeDict.ContainsKey(feeConfig))
                         {
-                            psqcaFeeDict[feeConfigurationList].Add(request);
+                            psqcaFeeDict[feeConfig].Add(request);
                         }
                         else
                         {
                             var req = new List<GetDocumentRequirementRequest>();
                             req.Add(request);
-                            psqcaFeeDict.Add(feeConfigurationList, req);
+                            psqcaFeeDict.Add(feeConfig, req);
                         }
                     }
                 }
