@@ -1,6 +1,6 @@
 namespace PSW.ITMS.Service.DTO
 {
-    public class LPCOFeeCleanResp
+    public struct LPCOFeeCleanResp
     {
         public string CalculationBasis { get; set; }
         public string CalculationSource { get; set; }
