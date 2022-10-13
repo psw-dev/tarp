@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using psw.security.Encryption;
+using PSW.ITMS.Common.Enums;
 using PSW.ITMS.Data.Entities;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
@@ -33,7 +34,7 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-                if (string.IsNullOrEmpty(RequestDTO.HsCode) && string.IsNullOrEmpty(RequestDTO.documentTypeCode) && string.IsNullOrEmpty(RequestDTO.TradePurpose))
+                if (string.IsNullOrEmpty(RequestDTO.HsCode) && string.IsNullOrEmpty(RequestDTO.documentTypeCode))
                 {
                     return BadRequestReply("Please provide valid request parameters");
                 }
@@ -61,7 +62,15 @@ namespace PSW.ITMS.Service.Strategies
 
                 try
                 {
-                    mongoDoc = mongoDBRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.TradePurpose);
+                    switch (RequestDTO.AgencyId)
+                    {
+                        case (int)AgencyEnum.DPP:
+                            mongoDoc = mongoDBRecordFetcher.GetFilteredRecord(RequestDTO.HsCode, RequestDTO.TradePurpose);
+                            break;
+                        case (int)AgencyEnum.AQD:
+                            mongoDoc = mongoDBRecordFetcher.GetFilteredRecordAQD(RequestDTO.HsCode, RequestDTO.TradePurpose);
+                            break;
+                    }
                 }
                 catch (SystemException ex)
                 {
@@ -72,7 +81,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 if (mongoDoc == null)
                 {
-                    return BadRequestReply(String.Format("No record found for HsCode : {0}  Purpose : {1}",RequestDTO.HsCode, RequestDTO.TradePurpose));
+                    return BadRequestReply(String.Format("No record found for HsCode : {0}  Purpose : {1}", RequestDTO.HsCode, RequestDTO.TradePurpose));
                 }
 
                 Log.Information("|{0}|{1}| Mongo Record fetched {@mongoDoc}", StrategyName, MethodID, mongoDoc);
