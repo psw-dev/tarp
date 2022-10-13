@@ -56,7 +56,11 @@ namespace PSW.ITMS.Service.Strategies
                     
                     if (documentToInitiate != null)
                     {
-                        agency.RequiredDocumentCode = documentToInitiate.RequiredDocumentCode;
+                        agency.RequiredDocumentCode = documentToInitiate.RequiredDocumentCode;      
+                    }
+                    else
+                    {
+                        tempAgencyList.Remove(agency);              // Agency has no requirement against this HS Code so no need to return agency Name // PSW-42659
                     }
                 }
 
