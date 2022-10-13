@@ -29,6 +29,7 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
+                Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
                 var regulatedHSCodeList = new List<ViewRegulatedHsCode>();
 
                 //Get Regulated Hscode list filtered on base of AgencyId 

@@ -28,6 +28,7 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
+                Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
                 if (string.IsNullOrEmpty(RequestDTO.HsCode))
                 {
                     return BadRequestReply("Hscode cannot be null");
