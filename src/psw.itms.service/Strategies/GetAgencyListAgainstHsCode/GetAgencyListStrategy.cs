@@ -28,6 +28,7 @@ namespace PSW.ITMS.Service.Strategies
 
         public override CommandReply Execute()
         {
+            Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
             try
             {
                 if (string.IsNullOrEmpty(RequestDTO.HsCode))
@@ -46,14 +47,19 @@ namespace PSW.ITMS.Service.Strategies
 
                 foreach(var agency in tempAgencyList)
                 {
-                    agency.RequiredDocumentCode = this.Command.UnitOfWork.DocumentToInitiateRepository?.GetActiveList(
+                    var documentToInitiate = this.Command.UnitOfWork.DocumentToInitiateRepository?.GetActiveList(
                         RequestDTO.HsCode,
                         agency.Id.ToString(),
                         RequestDTO.tradeTranTypeId,
                         RequestDTO.DocumentCode
-                    ).FirstOrDefault().RequiredDocumentCode;
+                    ).FirstOrDefault();
+                    
+                    if (documentToInitiate != null)
+                    {
+                        agency.RequiredDocumentCode = documentToInitiate.RequiredDocumentCode;      
+                    }  
                 }
-
+                tempAgencyList = tempAgencyList.Where(x => !string.IsNullOrEmpty( x.RequiredDocumentCode)).ToList();
                 var distinctAgencyList = tempAgencyList.Distinct(new objCompare()).ToList();
 
                 ResponseDTO = new GetListOfAgencyAgainstHscodeResponse
