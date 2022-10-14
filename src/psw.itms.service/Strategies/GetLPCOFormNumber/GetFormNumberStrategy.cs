@@ -33,6 +33,7 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
+                Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
                 if (string.IsNullOrEmpty(RequestDTO.HsCode) && string.IsNullOrEmpty(RequestDTO.documentTypeCode) && string.IsNullOrEmpty(RequestDTO.TradePurpose))
                 {
                     return BadRequestReply("Please provide valid request parameters");
