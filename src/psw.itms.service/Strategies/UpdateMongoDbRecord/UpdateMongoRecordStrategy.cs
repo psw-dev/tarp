@@ -30,6 +30,7 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
+                Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
                 if (RequestDTO.HsCode == null || RequestDTO.Purpose == null || RequestDTO.UpdateKey == null || RequestDTO.UpdateValue == null || RequestDTO.Collection == null)
                 {
                     return BadRequestReply("Please provide proper Request parameters");

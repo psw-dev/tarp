@@ -477,8 +477,17 @@ namespace PSW.ITMS.Service.Strategies
                             RequestDTO.HsCode,
                             RequestDTO.TradeTranTypeID,
                             Convert.ToInt32(RequestDTO.AgencyId)
-                        ).ToList();
-                        var calculatedFee = new LPCOFeeCalculator(feeConfigurationList, RequestDTO).Calculate();
+                        ).FirstOrDefault();
+
+                        var feeConfig = new LPCOFeeCleanResp();
+                        feeConfig.AdditionalAmount = feeConfigurationList.AdditionalAmount;
+                        feeConfig.AdditionalAmountOn = feeConfigurationList.AdditionalAmountOn;
+                        feeConfig.Rate = feeConfigurationList.Rate;
+                        feeConfig.CalculationBasis = feeConfigurationList.CalculationBasis;
+                        feeConfig.CalculationSource = feeConfigurationList.CalculationSource;
+                        feeConfig.MinAmount = feeConfigurationList.MinAmount;
+
+                        var calculatedFee = new LPCOFeeCalculator(feeConfig, RequestDTO).Calculate();
 
                         FinancialRequirement.PlainAmount = calculatedFee.Fee.ToString();
                         FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(calculatedFee.Fee.ToString());
