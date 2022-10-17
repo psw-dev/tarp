@@ -32,6 +32,9 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("importExportValue")]
         public decimal ImportExportValue { get; set; }
+
+        [JsonPropertyName("destinationCountryCode")]
+        public string DestinationCountryCode { get; set; }
     }
 
     public class FactorData

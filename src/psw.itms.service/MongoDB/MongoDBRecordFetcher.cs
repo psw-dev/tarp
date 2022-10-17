@@ -125,7 +125,6 @@ namespace PSW.ITMS.Service.MongoDB
 
             return FetchedRecord;
         }
-
         public bool UpdateRecord(string hscode, string purpose, string propertyToBeUpdated, string updatedValue)
         {
             var recordFetch = GetFilteredRecord(hscode, purpose);
@@ -248,7 +247,6 @@ namespace PSW.ITMS.Service.MongoDB
                     return false;
             }
         }
-
         public string GetFormNumber(BsonDocument mongoRecord, string requiredDocumentParentCode)
         {
             switch (requiredDocumentParentCode)
@@ -299,6 +297,5 @@ namespace PSW.ITMS.Service.MongoDB
             }
             return "";
         }
-
     }
 }
