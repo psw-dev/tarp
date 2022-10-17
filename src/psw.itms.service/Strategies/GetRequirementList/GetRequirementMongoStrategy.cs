@@ -242,7 +242,6 @@ namespace PSW.ITMS.Service.Strategies
                     }
 
 
-
                     Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
                 }
                 else
@@ -412,8 +411,6 @@ namespace PSW.ITMS.Service.Strategies
                 var ipReq = false;
                 var psiReq = false;
                 var psiRegReq = false;
-
-
                 var docClassificCode = string.Empty;
 
 
@@ -504,8 +501,7 @@ namespace PSW.ITMS.Service.Strategies
                     ipReq = mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";
                     docClassificCode = "IMP";
 
-                    // Turn off PSI Releated Work 
-                    // // Check if HS Code is PSI related.  
+                    // Check if HS Code is PSI related.  
                     var IsPSi = mongoRecord["Is PSI"].ToString().ToLower() == "yes";
                     if (IsPSi)
                     {
@@ -607,7 +603,9 @@ namespace PSW.ITMS.Service.Strategies
                     tempReq.AttachedObjectFormatID = psiDocRequired.AttachedObjectFormatID;
 
                     tarpDocumentRequirements.Add(tempReq);
+
                 }
+
                 if (psiRegReq)
                 {
                     var tempReq = new DocumentaryRequirement();
@@ -643,7 +641,6 @@ namespace PSW.ITMS.Service.Strategies
                 var premisesRegistrationRequired = false;
                 var healthCertificateFeeRequired = false;
                 var countries = new List<string>();
-
 
                 if (RequestDTO.AgencyId == "2")
                 {
@@ -740,7 +737,7 @@ namespace PSW.ITMS.Service.Strategies
                     {
                         tempReq.Name = premisesRegistration.Name + " For " + "Certificate";
                         tempReq.DocumentName = premisesRegistration.Name;
-                        tempReq.IsMandatory = true;
+                        tempReq.IsMandatory = false; // Change this later 
                         tempReq.RequirementType = "Documentary";
                         tempReq.DocumentTypeCode = premisesRegistration.Code;
                         tempReq.AttachedObjectFormatID = premisesRegistration.AttachedObjectFormatID;
@@ -792,22 +789,41 @@ namespace PSW.ITMS.Service.Strategies
                     if (RequestDTO.AgencyId == "10")
                     {
 
-                        // TODO Fee releated stuff later 
-                        FinancialRequirement.PlainAmount = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
-                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString());
+                        // TODO Fee releated stuff later
+                        // // get fee  
+                        // FinancialRequirement.PlainAmount = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
+                        // FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString());
+                        // FinancialRequirement.PlainAmount = mongoRecord["Health Certificate Fee(PKR)"].ToString();
+                        // FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Health Certificate Fee(PKR)"].ToString());
+
+
+                        string ECFeeString = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
+
+                        decimal ECFeeDecimal = 0.0m;
+                        if (!string.IsNullOrEmpty(ECFeeString))
+                            decimal.TryParse(ECFeeString, out ECFeeDecimal);
+
 
                         // The column that tells if Health Certificate is Fee Required (Conditional)
                         // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
                         // "Names of Countries Requiring Health Certificate on prescribed format"
-                        // countries = mongoRecord["Names of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
-                        // if (countries.Contains("RequestDTO.DestinationCountry"))
-                        // {
-                        //     healthCertificateFeeRequired = true; // use later 
-                        //     // get fee  
-                        //     FinancialRequirement.PlainAmount = mongoRecord["Health Certificate Fee(PKR)"].ToString();
-                        //     FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Health Certificate Fee(PKR)"].ToString());
+                        countries = mongoRecord["Codes of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
+                        if (countries.Contains(RequestDTO.DestinationCountryCode))
+                        {
+                            healthCertificateFeeRequired = true; // use later 
 
-                        // }
+
+                            string HealthCertFeeString = mongoRecord["Health Certificate Fee (PKR)"].ToString();
+                            decimal HealthCertFeeDecimal = 0.0m;
+                            if (!string.IsNullOrEmpty(HealthCertFeeString))
+                                decimal.TryParse(HealthCertFeeString, out HealthCertFeeDecimal);
+
+                            ECFeeDecimal = HealthCertFeeDecimal + ECFeeDecimal;
+
+                        }
+
+                        FinancialRequirement.PlainAmount = ECFeeDecimal.ToString();
+                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(ECFeeDecimal.ToString());
 
                     }
                 }
