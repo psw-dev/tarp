@@ -82,6 +82,13 @@ namespace PSW.ITMS.Data.Sql.Repositories
         {
             return _connection.Query<RegulatedHSCode>(string.Format("select * from RegulatedHSCode where AgencyId = '{0}' AND TradeTranTypeID = '{1}' AND RequiredDocumentTypeCode = '{2}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT",agencyId, tradeTranTypeId, requiredDocumentTypeCode)).FirstOrDefault();
         }
+        public List<string> ValidateRegulatedHSCodes(List<string> HSCodes)
+        {
+            // var HSCodesArray = HSCodes.ToArray();
+            return _connection.Query<string>(
+                string.Format(@"select HSCodeExt from RegulatedHSCode where HSCodeExt in @hscodes"),
+                param: new {hscodes = HSCodes},transaction: _transaction).AsList();
+        }
 
         #endregion
     }
