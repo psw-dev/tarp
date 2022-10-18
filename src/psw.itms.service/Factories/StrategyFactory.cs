@@ -49,6 +49,7 @@ namespace PSW.ITMS.Service.Strategies
                 case "1731": return new TestStrategy(request);
                 case "1732": return new GetRegulatedHSCodeExtListStrategy(request);                
                 case "1733": return new GetFinancialRequirementStrategy(request);
+                case "1737": return new ValidateRegulatedHSCodes(request);
 
                 case "removelater": return null;
 
