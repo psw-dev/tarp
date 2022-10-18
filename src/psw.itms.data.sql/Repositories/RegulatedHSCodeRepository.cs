@@ -86,7 +86,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
         {
             // var HSCodesArray = HSCodes.ToArray();
             return _connection.Query<string>(
-                string.Format(@"select HSCodeExt from RegulatedHSCode where HSCodeExt in @hscodes"),
+                string.Format(@"select HSCodeExt from RegulatedHSCode where HSCodeExt in @hscodes AND AgencyId = 2 AND TradeTranTypeID = 1 AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT"),
                 param: new {hscodes = HSCodes},transaction: _transaction).AsList();
         }
 
