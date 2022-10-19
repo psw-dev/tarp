@@ -788,6 +788,8 @@ namespace PSW.ITMS.Service.Strategies
                     }
                     if (RequestDTO.AgencyId == "10")
                     {
+                        Log.Information("|{0}|{1}| RequestDTO.AgencyId  10 ", StrategyName, MethodID);
+
 
                         // TODO Fee releated stuff later
                         // // get fee  
@@ -808,17 +810,22 @@ namespace PSW.ITMS.Service.Strategies
                         // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
                         // "Names of Countries Requiring Health Certificate on prescribed format"
                         countries = mongoRecord["Codes of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
+                        Log.Information("|{0}|{1}| countries {@countries}", StrategyName, MethodID, countries);
                         if (countries.Contains(RequestDTO.DestinationCountryCode))
                         {
+                            Log.Information("|{0}|{1}| contians {@RequestDTO.DestinationCountryCode}", StrategyName, MethodID, RequestDTO.DestinationCountryCode);
                             healthCertificateFeeRequired = true; // use later 
 
+                            Log.Information("|{0}|{1}| ECFeeDecimal {@ECFeeDecimal}", StrategyName, MethodID, ECFeeDecimal);
 
                             string HealthCertFeeString = mongoRecord["Health Certificate Fee (PKR)"].ToString();
                             decimal HealthCertFeeDecimal = 0.0m;
                             if (!string.IsNullOrEmpty(HealthCertFeeString))
                                 decimal.TryParse(HealthCertFeeString, out HealthCertFeeDecimal);
 
+                            Log.Information("|{0}|{1}| ECFeeDecimal {@HealthCertFeeDecimal}", StrategyName, MethodID, HealthCertFeeDecimal);
                             ECFeeDecimal = HealthCertFeeDecimal + ECFeeDecimal;
+                            Log.Information("|{0}|{1}| HealthCertFeeDecimal + ECFeeDecimal {@ECFeeDecimal}", StrategyName, MethodID, ECFeeDecimal);
 
                         }
 
