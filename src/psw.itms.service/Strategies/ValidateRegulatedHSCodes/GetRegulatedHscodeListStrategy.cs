@@ -23,7 +23,7 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {   
-                var data = Command.UnitOfWork.RegulatedHSCodeRepository.ValidateRegulatedHSCodes(RequestDTO.HSCodes);
+                var data = Command.UnitOfWork.RegulatedHSCodeRepository.ValidateRegulatedHSCodes(RequestDTO.HSCodes, RequestDTO.AgencyID, RequestDTO.TradeTranTypeId);
                 ResponseDTO = new ValidateRegulatedHSCodesResponse{
                     HSCodes= data
                 };
