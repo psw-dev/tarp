@@ -297,5 +297,20 @@ namespace PSW.ITMS.Service.MongoDB
             }
             return "";
         }
+        public bool GetPSIInfo(BsonDocument mongoRecord, string hscode)
+        {
+            var database = MClient.GetDatabase(DbName);
+
+            var collection = database.GetCollection<BsonDocument>(CollectionName);
+
+            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hscode);
+
+            Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
+
+            var FetchedRecord = collection.Find(hsCodeFilter, new FindOptions { Collation = collation }).FirstOrDefault();
+
+            return FetchedRecord["PSI REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+           
+        }
     }
 }
