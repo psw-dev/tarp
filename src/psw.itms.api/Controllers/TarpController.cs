@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using PSW.ITMS.Api.ApiCommand;
 using PSW.ITMS.Data;
 using PSW.ITMS.Service;
@@ -9,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PSW.Common.Crypto;
 
 namespace PSW.ITMS.Api.Contollers
@@ -16,12 +16,13 @@ namespace PSW.ITMS.Api.Contollers
 
     [Route("api/v1/tarp/[controller]")]
     [ApiController]
-    public class TarpController
+    public class TarpController : Controller
     {
 
         #region Properties
 
         private IItmsService service { get; set; }
+        private IItmsSecureService SecureService { get; set; }
         // private Logger _logger { get; set; }
 
         #endregion
@@ -29,8 +30,23 @@ namespace PSW.ITMS.Api.Contollers
 
         #region Constructors
 
-        public TarpController(IItmsService service, IUnitOfWork uow, ICryptoAlgorithm cryptoAlgorithm)
+        // public TarpController(IItmsService service, IUnitOfWork uow, ICryptoAlgorithm cryptoAlgorithm)
+        // {
+        //     // Dependency Injection of services
+        //     this.service = service;
+        //     this.service.UnitOfWork = uow;
+        //     this.service.StrategyFactory = new StrategyFactory(uow);
+        //     this.service.CryptoAlgorithm = cryptoAlgorithm;
+        // }
+
+        public TarpController(IItmsService service, IItmsSecureService secureService, IUnitOfWork uow, ICryptoAlgorithm cryptoAlgorithm)
         {
+            this.SecureService = secureService;
+            this.SecureService.UnitOfWork = uow;
+            this.SecureService.StrategyFactory = new SecureStrategyFactory(uow);
+            this.SecureService.CryptoAlgorithm = cryptoAlgorithm;
+
+
             // Dependency Injection of services
             this.service = service;
             this.service.UnitOfWork = uow;
@@ -73,11 +89,14 @@ namespace PSW.ITMS.Api.Contollers
                 {
                     // Crate JsonElement for service
                     // Calling Service 
-                    CommandReply commandReply = service.invokeMethod(
+                    CommandReply commandReply = SecureService.invokeMethod(
                        new CommandRequest()
                        {
-                           methodId = apiRequest.methodId,
-                           data = apiRequest.data
+                            methodId = apiRequest.methodId,
+                            data = apiRequest.data,
+                            CurrentUser = HttpContext.User,
+                            UserClaims = HttpContext.User.Claims,
+                            pagination = apiRequest.pagination
                        }
                    );
 
