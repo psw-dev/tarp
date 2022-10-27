@@ -8,7 +8,7 @@ namespace PSW.ITMS.Service
     public interface IService
     {
         IUnitOfWork UnitOfWork { get; set; }
-        StrategyFactory StrategyFactory { get; set; }
+        IStrategyFactory StrategyFactory { get; set; }
         CommandReply invokeMethod(CommandRequest request);
         ICryptoAlgorithm CryptoAlgorithm { get; set; }
     }
