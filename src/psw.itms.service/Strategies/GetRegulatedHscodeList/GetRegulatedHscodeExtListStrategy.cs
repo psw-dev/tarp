@@ -3,6 +3,7 @@ using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
 using PSW.Lib.Logs;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace PSW.ITMS.Service.Strategies
@@ -10,9 +11,16 @@ namespace PSW.ITMS.Service.Strategies
     public class GetRegulatedHSCodeExtListStrategy : ApiStrategy<GetRegulatedHscodeListRequest, GetRegulatedHSCodeExtListResponse>
     {
         #region Constructors 
+
+        private int agencyId = 0;
         public GetRegulatedHSCodeExtListStrategy(CommandRequest request) : base(request)
         {
             Reply = new CommandReply();
+            var claims = request.UserClaims.Where(x => x.Type == "agencyId").FirstOrDefault();
+            if (claims != null)
+            {
+                agencyId = Convert.ToInt32(claims.Value);
+            }
         }
         #endregion 
 
@@ -24,9 +32,9 @@ namespace PSW.ITMS.Service.Strategies
                 var regulatedHSCodeList = new List<ViewRegulatedHsCodeExt>();
 
                 //Get Regulated Hscode list filtered on base of AgencyId and chapter
-                if (RequestDTO.AgencyId != 0 && RequestDTO.Chapter != null && RequestDTO.DocumentTypeCode == null)
+                if (agencyId != 0 && RequestDTO.Chapter != null && RequestDTO.DocumentTypeCode == null)
                 {
-                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeExtList(RequestDTO.AgencyId, RequestDTO.Chapter);
+                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeExtList(agencyId, RequestDTO.Chapter);
 
                     if (regulatedHSCodeList == null || regulatedHSCodeList.Count == 0)
                     {
@@ -35,9 +43,9 @@ namespace PSW.ITMS.Service.Strategies
                 }
 
                 //Get Regulated Hscode list filtered on base of AgencyId 
-                if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode == null)
+                if (agencyId != 0 && RequestDTO.DocumentTypeCode == null)
                 {
-                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeExtList(RequestDTO.AgencyId);
+                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeExtList(agencyId);
 
                     if (regulatedHSCodeList == null || regulatedHSCodeList.Count == 0)
                     {

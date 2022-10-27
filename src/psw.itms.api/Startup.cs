@@ -124,6 +124,8 @@ namespace PSW.ITMS.Api
             services.AddConsul(Configuration);
             services.AddHealthChecks();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IItmsOpenService, ItmsOpenService>();
+            services.AddTransient<IItmsSecureService, ItmsSecureService>();
 
         }
 

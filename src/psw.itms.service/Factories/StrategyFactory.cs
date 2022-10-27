@@ -5,7 +5,7 @@ using PSW.ITMS.Service.Command;
 
 namespace PSW.ITMS.Service.Strategies
 {
-    public class StrategyFactory
+    public class StrategyFactory : IStrategyFactory
     {
         #region Private Variables
 
@@ -47,7 +47,6 @@ namespace PSW.ITMS.Service.Strategies
                 case "1729": return new GetRegulatedHsCodePurposeStrategy(request);
                 case "1730": return new GetFormNumberStrategy(request);
                 case "1731": return new TestStrategy(request);
-                case "1732": return new GetRegulatedHSCodeExtListStrategy(request);                
 
                 case "removelater": return null;
 
