@@ -2,6 +2,8 @@ using PSW.ITMS.Service.Command;
 using PSW.Lib.Logs;
 using System.Net;
 using System.Text.Json;
+using System.Linq;
+using FluentValidation;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -27,6 +29,33 @@ namespace PSW.ITMS.Service.Strategies
         /// </summary>
         public string StrategyName { get; set; }
         public string MethodID { get; set; }
+        public AbstractValidator<T1> Validator { get; set; }
+
+        public override bool Validate()
+        {
+            Log.Information("|{StrategyName}|{MethodID}| Request DTO: {@RequestDTO}", StrategyName, MethodID, RequestDTO);
+
+            if (Validator != null)
+            {
+                string message = "validated";
+                var results = Validator.Validate(RequestDTO);
+                this.IsValidated = results.IsValid;
+
+                if (!results.IsValid)
+                {
+                    var errors = results.Errors.Select(x => x.ErrorMessage).ToList();
+                    message = errors.Aggregate((i, j) => i + "\n" + j);
+                }
+
+                Log.Information("|{StrategyName}|{MethodID}| Validation Messages: {message}, Is Validated: {IsValidated}", StrategyName, MethodID, message, IsValidated);
+                this.ValidationMessage = message;
+
+                return this.IsValidated;
+            }
+
+            IsValidated = true;
+            return this.IsValidated;
+        }
 
         public ApiStrategy(CommandRequest request) : base(request)
         {
