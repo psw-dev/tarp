@@ -332,7 +332,8 @@ namespace PSW.ITMS.Service.Strategies
                     ValidityRequirement.ExtensionPeriodUnitName = "Months";     // Hard coded till we have a separate column in sheet for this
 
                     //Quantity Allowed
-                    if(RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue.ToString().Trim().ToLower()==Common.Constants.TradePurpose.ScreeningResearchTrial){
+                    if (RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue.ToString().Trim().ToLower() == Common.Constants.TradePurpose.ScreeningResearchTrial)
+                    {
                         tarpRequirments.AllowedQuantity = mongoRecord["QUANTITY ALLOWED"].ToString();
                     }
                 }
@@ -391,6 +392,8 @@ namespace PSW.ITMS.Service.Strategies
                 var roDocOptional = new List<string>();
                 var roDocOptionalTrimmed = new List<string>();
                 var ipReq = false;
+                var psiReq = false;
+                var psiRegReq = false;
                 var docClassificCode = string.Empty;
 
 
@@ -398,8 +401,8 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     roDocRequirements = mongoRecord["RELEASE ORDER PROCESSING MANDATORY REQUIREMENTS"].ToString().Split('|').ToList();
                     roDocOptional = mongoRecord["RELEASE ORDER PROCESSING OPTIONAL REQUIREMENTS"].ToString().Split('|').ToList();
-                   // ipReq = mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
-                  //  docClassificCode = "PRD";
+                    // ipReq = mongoRecord["ENLISTMENT OF SEED VARIETY REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
+                    //  docClassificCode = "PRD";
 
                     if (RequestDTO.IsFinancialRequirement)
                     {
@@ -456,8 +459,17 @@ namespace PSW.ITMS.Service.Strategies
                             RequestDTO.HsCode,
                             RequestDTO.TradeTranTypeID,
                             Convert.ToInt32(RequestDTO.AgencyId)
-                        ).ToList();
-                        var calculatedFee = new LPCOFeeCalculator(feeConfigurationList, RequestDTO).Calculate();
+                        ).FirstOrDefault();
+
+                        var feeConfig = new LPCOFeeCleanResp();
+                        feeConfig.AdditionalAmount = feeConfigurationList.AdditionalAmount;
+                        feeConfig.AdditionalAmountOn = feeConfigurationList.AdditionalAmountOn;
+                        feeConfig.Rate = feeConfigurationList.Rate;
+                        feeConfig.CalculationBasis = feeConfigurationList.CalculationBasis;
+                        feeConfig.CalculationSource = feeConfigurationList.CalculationSource;
+                        feeConfig.MinAmount = feeConfigurationList.MinAmount;
+
+                        var calculatedFee = new LPCOFeeCalculator(feeConfig, RequestDTO).Calculate();
 
                         FinancialRequirement.PlainAmount = calculatedFee.Fee.ToString();
                         FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(calculatedFee.Fee.ToString());
@@ -471,6 +483,15 @@ namespace PSW.ITMS.Service.Strategies
                     roDocOptional = mongoRecord["RO  DOCUMENTARY REQUIREMENTS(Optional)"].ToString().Split('|').ToList();
                     ipReq = mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";
                     docClassificCode = "IMP";
+
+                    // Check if HS Code is PSI related.  
+                    var IsPSi = mongoRecord["Is PSI"].ToString().ToLower() == "yes";
+                    if (IsPSi)
+                    {
+                        psiReq = mongoRecord["PSI REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+                        psiRegReq = mongoRecord["REGISTRATION REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+                    }
+
 
                     //Financial Requirements
                     FinancialRequirement.PlainAmount = mongoRecord["RO FEES"].ToString();
@@ -543,6 +564,54 @@ namespace PSW.ITMS.Service.Strategies
                     tarpDocumentRequirements.Add(tempReq);
 
                 }
+
+                if (psiReq)
+                {
+                    var tempReq = new DocumentaryRequirement();
+
+                    var psiDocRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new
+                    {
+                        // AgencyID = RequestDTO.AgencyId, 
+                        // documentClassificationCode = docClassificCode, 
+                        // AttachedObjectFormatID = 2, 
+                        // AltCode = "C" 
+                        Code = "D58" // TODO : Remove hardcoded values
+                    }).FirstOrDefault();
+
+                    tempReq.Name = psiDocRequired.Name + " For " + "Release Order"; //replace DPP with collectionName 
+                    tempReq.DocumentName = psiDocRequired.Name;
+                    tempReq.IsMandatory = false;
+                    tempReq.RequirementType = "Documentary";
+                    tempReq.DocumentTypeCode = psiDocRequired.Code;
+                    tempReq.AttachedObjectFormatID = psiDocRequired.AttachedObjectFormatID;
+
+                    tarpDocumentRequirements.Add(tempReq);
+
+                }
+
+                if (psiRegReq)
+                {
+                    var tempReq = new DocumentaryRequirement();
+
+                    var psiRegRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new
+                    {
+                        // AgencyID = RequestDTO.AgencyId, 
+                        // documentClassificationCode = docClassificCode, 
+                        // AttachedObjectFormatID = 2, 
+                        // AltCode = "C" 
+                        Code = "D60" // TODO : 
+                    }).FirstOrDefault();
+
+                    tempReq.Name = psiRegRequired.Name + " For " + "Release Order"; //replace DPP with collectionName //
+                    tempReq.DocumentName = psiRegRequired.Name;
+                    tempReq.IsMandatory = false;
+                    tempReq.RequirementType = "Documentary";
+                    tempReq.DocumentTypeCode = psiRegRequired.Code;
+                    tempReq.AttachedObjectFormatID = psiRegRequired.AttachedObjectFormatID;
+
+                    tarpDocumentRequirements.Add(tempReq);
+                }
+
             }
 
             //for PythoCertificate = EC
@@ -627,7 +696,6 @@ namespace PSW.ITMS.Service.Strategies
                     }
 
                 }
-
                 if (RequestDTO.IsFinancialRequirement)
                 {
                     //Financial Requirements
