@@ -185,6 +185,10 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredPSQCA(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
                 }
+                else if (RequestDTO.AgencyId == "10")
+                {
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMFD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                }
 
                 if (!IsParenCodeValid)
                 {
