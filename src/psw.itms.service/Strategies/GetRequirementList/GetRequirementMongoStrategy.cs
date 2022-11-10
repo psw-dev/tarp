@@ -747,6 +747,8 @@ namespace PSW.ITMS.Service.Strategies
                 }
                 if (RequestDTO.IsFinancialRequirement)
                 {
+                    Log.Information("|{0}|{1}| RequestDTO.IsFinancialRequirement {RequestDTO.IsFinancialRequirement}", StrategyName, MethodID, RequestDTO.IsFinancialRequirement);
+
                     //Financial Requirements
                     if (RequestDTO.AgencyId == "2")
                     {
@@ -786,6 +788,8 @@ namespace PSW.ITMS.Service.Strategies
                     }
                     if (RequestDTO.AgencyId == "10")
                     {
+                        Log.Information("|{0}|{1}| RequestDTO.AgencyId == 10 ", StrategyName, MethodID);
+
 
                         // TODO Fee releated stuff later
                         // // get fee  
@@ -796,27 +800,35 @@ namespace PSW.ITMS.Service.Strategies
 
 
                         string ECFeeString = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
+                        Log.Information("|{0}|{1}| ECFeeString {ECFeeString}", StrategyName, MethodID, ECFeeString);
 
                         decimal ECFeeDecimal = 0.0m;
                         if (!string.IsNullOrEmpty(ECFeeString))
                             decimal.TryParse(ECFeeString, out ECFeeDecimal);
 
+                        Log.Information("|{0}|{1}| ECFeeDecimal {ECFeeDecimal}", StrategyName, MethodID, ECFeeDecimal);
 
                         // The column that tells if Health Certificate is Fee Required (Conditional)
                         // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
                         // "Names of Countries Requiring Health Certificate on prescribed format"
                         countries = mongoRecord["Codes of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
+                        Log.Information("|{0}|{1}| countries {@countries}", StrategyName, MethodID, countries);
+                        Log.Information("|{0}|{1}| RequestDTO.DestinationCountryCode {RequestDTO.DestinationCountryCode}", StrategyName, MethodID, RequestDTO.DestinationCountryCode);
+
                         if (countries.Contains(RequestDTO.DestinationCountryCode))
                         {
                             healthCertificateFeeRequired = true; // use later 
 
 
                             string HealthCertFeeString = mongoRecord["Health Certificate Fee (PKR)"].ToString();
+                            Log.Information("|{0}|{1}| HealthCertFeeString {HealthCertFeeString}", StrategyName, MethodID, HealthCertFeeString);
                             decimal HealthCertFeeDecimal = 0.0m;
                             if (!string.IsNullOrEmpty(HealthCertFeeString))
                                 decimal.TryParse(HealthCertFeeString, out HealthCertFeeDecimal);
+                            Log.Information("|{0}|{1}| ECFeeDecimal {ECFeeDecimal}", StrategyName, MethodID, ECFeeDecimal);
 
                             ECFeeDecimal = HealthCertFeeDecimal + ECFeeDecimal;
+                            Log.Information("|{0}|{1}| HealthCertFeeDecimal + ECFeeDecimal {ECFeeDecimal}", StrategyName, MethodID, ECFeeDecimal);
 
                         }
 
