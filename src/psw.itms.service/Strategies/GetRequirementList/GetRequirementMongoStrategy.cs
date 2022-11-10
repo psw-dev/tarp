@@ -300,6 +300,8 @@ namespace PSW.ITMS.Service.Strategies
         public SingleResponseModel<GetDocumentRequirementResponse> GetRequirements(BsonDocument mongoRecord, string documentClassification)
         {
             Log.Information("[{0}.{1}] Started", GetType().Name, MethodBase.GetCurrentMethod().Name);
+            Log.Information("|{0}|{1}| documentClassification {documentClassification}", StrategyName, MethodID, documentClassification);
+
             GetDocumentRequirementResponse tarpRequirments = new GetDocumentRequirementResponse();
             var response = new SingleResponseModel<GetDocumentRequirementResponse>();
 
@@ -634,6 +636,8 @@ namespace PSW.ITMS.Service.Strategies
             // NO EC in Agency 4 - FSCRD
             else if (documentClassification == "EC")
             {
+                Log.Information("|{0}|{1}| documentClassification {documentClassification}", StrategyName, MethodID, documentClassification);
+
                 var ecDocRequirements = new List<string>();
                 var ecDocRequirementsTrimmed = new List<string>();
                 var ecDocOptional = new List<string>();
@@ -812,6 +816,11 @@ namespace PSW.ITMS.Service.Strategies
                         // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
                         // "Names of Countries Requiring Health Certificate on prescribed format"
                         countries = mongoRecord["Codes of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
+                        if (countries.Count > 0)
+                        {
+                            countries = countries.Select(t => t.Trim()).ToList();
+                            countries = countries.Select(t => t.Replace("\n", "").Replace("\r", "")).ToList();
+                        }
                         Log.Information("|{0}|{1}| countries {@countries}", StrategyName, MethodID, countries);
                         Log.Information("|{0}|{1}| RequestDTO.DestinationCountryCode {RequestDTO.DestinationCountryCode}", StrategyName, MethodID, RequestDTO.DestinationCountryCode);
 
