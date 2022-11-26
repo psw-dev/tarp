@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PSW.Common.Crypto;
+using StackExchange.Redis;
 
 namespace PSW.ITMS.Api.Contollers
 {
@@ -39,12 +40,13 @@ namespace PSW.ITMS.Api.Contollers
         //     this.service.CryptoAlgorithm = cryptoAlgorithm;
         // }
 
-        public TarpController(IItmsService service, IItmsSecureService secureService, IUnitOfWork uow, ICryptoAlgorithm cryptoAlgorithm)
+        public TarpController(IItmsService service, IItmsSecureService secureService, IUnitOfWork uow, ICryptoAlgorithm cryptoAlgorithm, IConnectionMultiplexer redisConnection = null)
         {
             this.SecureService = secureService;
             this.SecureService.UnitOfWork = uow;
             this.SecureService.StrategyFactory = new SecureStrategyFactory(uow);
             this.SecureService.CryptoAlgorithm = cryptoAlgorithm;
+            this.SecureService.RedisConnection = redisConnection;
 
 
             // Dependency Injection of services
@@ -52,6 +54,7 @@ namespace PSW.ITMS.Api.Contollers
             this.service.UnitOfWork = uow;
             this.service.StrategyFactory = new StrategyFactory(uow);
             this.service.CryptoAlgorithm = cryptoAlgorithm;
+            this.service.RedisConnection = redisConnection;
         }
 
         #endregion
@@ -92,11 +95,12 @@ namespace PSW.ITMS.Api.Contollers
                     CommandReply commandReply = SecureService.invokeMethod(
                        new CommandRequest()
                        {
-                            methodId = apiRequest.methodId,
-                            data = apiRequest.data,
-                            CurrentUser = HttpContext.User,
-                            UserClaims = HttpContext.User.Claims,
-                            pagination = apiRequest.pagination
+                           methodId = apiRequest.methodId,
+                           data = apiRequest.data,
+                           CurrentUser = HttpContext.User,
+                           UserClaims = HttpContext.User.Claims,
+                           pagination = apiRequest.pagination,
+                           RedisConnection = this.SecureService.RedisConnection
                        }
                    );
 
@@ -160,7 +164,8 @@ namespace PSW.ITMS.Api.Contollers
                    new CommandRequest()
                    {
                        methodId = apiRequest.methodId,
-                       data = apiRequest.data
+                       data = apiRequest.data,
+                       RedisConnection = this.service.RedisConnection
                    }
                );
 

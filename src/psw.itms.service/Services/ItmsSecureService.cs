@@ -6,6 +6,7 @@ using PSW.ITMS.Service.Strategies;
 using System.Security.Claims;
 using System.Collections.Generic;
 using PSW.Common.Crypto;
+using StackExchange.Redis;
 
 namespace PSW.ITMS.Service
 {
@@ -17,6 +18,7 @@ namespace PSW.ITMS.Service
         public IStrategyFactory StrategyFactory { get; set; }
         public ICryptoAlgorithm CryptoAlgorithm { get; set; }
         public IEnumerable<Claim> UserClaims { get; set; }
+        public IConnectionMultiplexer RedisConnection { get; set; }
         #endregion
 
 
@@ -57,7 +59,7 @@ namespace PSW.ITMS.Service
                 //validate request for strategy
                 var isSecure = strategy.Validate();
                 //Execute strategy
-                var reply = isSecure 
+                var reply = isSecure
                     ? strategy.Execute()
                     : strategy.BadRequestReply(strategy.ValidationMessage);
                 return reply;

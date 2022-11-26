@@ -6,6 +6,7 @@ using PSW.Common.Crypto;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Linq;
+using StackExchange.Redis;
 
 namespace PSW.ITMS.Service.Command
 {
@@ -19,6 +20,7 @@ namespace PSW.ITMS.Service.Command
         public IEnumerable<Claim> UserClaims { get; set; }
         public ClaimsPrincipal CurrentUser { get; set; }
         public ServerPaginationModel pagination { get; set; }
+        public IConnectionMultiplexer RedisConnection { get; set; }
 
         public string SubscriptionTypeCode
         {
@@ -27,7 +29,7 @@ namespace PSW.ITMS.Service.Command
                 return UserClaims?.First(claim => claim.Type == "subscriptionTypeCode").Value;
             }
         }
-        
+
         // public int ParentUserRoleID
         // {
         //     get
