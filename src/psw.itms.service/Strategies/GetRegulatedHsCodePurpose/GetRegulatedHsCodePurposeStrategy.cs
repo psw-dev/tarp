@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
+using PSW.ITMS.Common;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
 using PSW.ITMS.Service.MongoDB;
@@ -12,6 +13,19 @@ namespace PSW.ITMS.Service.Strategies
 {
     public class GetRegulatedHsCodePurposeStrategy : ApiStrategy<RegulatedHsCodePurposeRequestDTO, RegulatedHsCodePurposeResponseDTO>
     {
+        RedisCacheService _RedisCacheService = null;
+        public RedisCacheService RedisService
+        {
+            get
+            {
+                if (_RedisCacheService == null)
+                {
+                    _RedisCacheService = new RedisCacheService(RedisConnection);
+                }
+                return _RedisCacheService;
+            }
+        }
+
         #region Constructors 
         public GetRegulatedHsCodePurposeStrategy(CommandRequest request) : base(request)
         {
@@ -30,6 +44,7 @@ namespace PSW.ITMS.Service.Strategies
 
         public override CommandReply Execute()
         {
+            List<RegulatedHsCodePurpose> regulatedHsCodePurposeList = new List<RegulatedHsCodePurpose>();
             try
             {
                 Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
@@ -37,56 +52,66 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     return BadRequestReply("Please provide valid request parameters");
                 }
-
-                var mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
-                    RequestDTO.AgencyId.ToString(),
-                    RequestDTO.TradeTranTypeID,
-                    RequestDTO.DocumentTypeCode
-                ).CollectionName;
-
-                if (string.IsNullOrEmpty(mongoDbCollection))
+                string keyHSCodeWithAgencyDocumentTradeTransaction = "TARP:HSCODE:" + RequestDTO.AgencyId + ":" + RequestDTO.TradeTranTypeID + ":" + RequestDTO.DocumentTypeCode;
+                if (RedisService.KeyExists(keyHSCodeWithAgencyDocumentTradeTransaction))
                 {
-                    return BadRequestReply("No record found for provided request parameters");
+                    Log.Information($"|{StrategyName}| Getting Key: {keyHSCodeWithAgencyDocumentTradeTransaction} data from Redis");
+                    regulatedHsCodePurposeList = RedisService.Get<List<RegulatedHsCodePurpose>>(keyHSCodeWithAgencyDocumentTradeTransaction);
                 }
-
-                Log.Information("|{0}|{1}| MongoDb Collection Name : {@mongoDbCollection}", StrategyName, MethodID, mongoDbCollection);
-
-                var extHsCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetExtHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode, RequestDTO.TradeTranTypeID);
-
-                if (extHsCodeList == null)
+                else
                 {
-                    var errorMessage = String.Format("No HsCode found in Db for AgencyID : '{0}', RequiredDocumentTypeCode : '{1}', TradeTranTypeId : '{2}'", RequestDTO.AgencyId, RequestDTO.DocumentTypeCode, RequestDTO.TradeTranTypeID);
+                    var mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
+                        RequestDTO.AgencyId.ToString(),
+                        RequestDTO.TradeTranTypeID,
+                        RequestDTO.DocumentTypeCode
+                    ).CollectionName;
 
-                    return BadRequestReply(errorMessage);
+                    if (string.IsNullOrEmpty(mongoDbCollection))
+                    {
+                        return BadRequestReply("No record found for provided request parameters");
+                    }
+
+                    Log.Information("|{0}|{1}| MongoDb Collection Name : {@mongoDbCollection}", StrategyName, MethodID, mongoDbCollection);
+
+                    var extHsCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetExtHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode, RequestDTO.TradeTranTypeID);
+
+                    if (extHsCodeList == null)
+                    {
+                        var errorMessage = String.Format("No HsCode found in Db for AgencyID : '{0}', RequiredDocumentTypeCode : '{1}', TradeTranTypeId : '{2}'", RequestDTO.AgencyId, RequestDTO.DocumentTypeCode, RequestDTO.TradeTranTypeID);
+
+                        return BadRequestReply(errorMessage);
+                    }
+
+                    MongoDbRecordFetcher mongoDBRecordFetcher;
+
+                    IMongoCollection<BsonDocument> documentInCollection;
+
+                    try
+                    {
+                        mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", mongoDbCollection, Environment.GetEnvironmentVariable("MONGODBConnString"));
+                    }
+                    catch (SystemException ex)
+                    {
+                        Log.Error("|{0}|{1}| Error occured in connecting to MongoDB {@ex}", StrategyName, MethodID, ex.ToString());
+
+                        return BadRequestReply("Error occured in connecting to MongoDB");
+                    }
+
+                    try
+                    {
+                        documentInCollection = mongoDBRecordFetcher.GetCollection();
+                    }
+                    catch (SystemException ex)
+                    {
+                        Log.Error("|{0}|{1}| Error occured in fetching record from MongoDB {@ex}", StrategyName, MethodID, ex.ToString());
+
+                        return BadRequestReply("Error occured in fetching record from MongoDB");
+                    }
+
+                    regulatedHsCodePurposeList = GetPurposeListAgainstRegulatedHsCode(extHsCodeList, documentInCollection);
+                    RedisService.Set(keyHSCodeWithAgencyDocumentTradeTransaction, regulatedHsCodePurposeList, TimeSpan.FromHours(24));
+                    Log.Information($"|{StrategyName}| Getting Key: {keyHSCodeWithAgencyDocumentTradeTransaction} data from Redis");
                 }
-
-                MongoDbRecordFetcher mongoDBRecordFetcher;
-
-                IMongoCollection<BsonDocument> documentInCollection;
-
-                try
-                {
-                    mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", mongoDbCollection, Environment.GetEnvironmentVariable("MONGODBConnString"));
-                }
-                catch (SystemException ex)
-                {
-                    Log.Error("|{0}|{1}| Error occured in connecting to MongoDB {@ex}", StrategyName, MethodID, ex.ToString());
-
-                    return BadRequestReply("Error occured in connecting to MongoDB");
-                }
-
-                try
-                {
-                    documentInCollection = mongoDBRecordFetcher.GetCollection();
-                }
-                catch (SystemException ex)
-                {
-                    Log.Error("|{0}|{1}| Error occured in fetching record from MongoDB {@ex}", StrategyName, MethodID, ex.ToString());
-
-                    return BadRequestReply("Error occured in fetching record from MongoDB");
-                }
-
-                var regulatedHsCodePurposeList = GetPurposeListAgainstRegulatedHsCode(extHsCodeList, documentInCollection);
 
                 ResponseDTO = new RegulatedHsCodePurposeResponseDTO
                 {
