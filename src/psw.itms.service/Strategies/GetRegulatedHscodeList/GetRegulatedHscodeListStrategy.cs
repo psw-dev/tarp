@@ -54,6 +54,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     if (RedisService.KeyExists(keyHSCodeWithAgency))
                     {
+                        Log.Information($"Getting Key:{keyHSCodeWithAgency} data from Redis");
                         regulatedHSCodeList = RedisService.Get<List<ViewRegulatedHsCode>>(keyHSCodeWithAgency);
                         ResponseDTO = new GetRegulatedHscodeListResponse
                         {
@@ -78,6 +79,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     if (RedisService.KeyExists(keyHSCodeWithAgencyAndDocumentType))
                     {
+                        Log.Information($"Getting Key:{keyHSCodeWithAgencyAndDocumentType} data from Redis");
                         regulatedHSCodeList = RedisService.Get<List<ViewRegulatedHsCode>>(keyHSCodeWithAgencyAndDocumentType);
                         ResponseDTO = new GetRegulatedHscodeListResponse
                         {
@@ -101,6 +103,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     if (RedisService.KeyExists(keyHSCodeOnly))
                     {
+                        Log.Information($"Getting Key:{keyHSCodeOnly} data from Redis");
                         regulatedHSCodeList = RedisService.Get<List<ViewRegulatedHsCode>>(keyHSCodeOnly);
                         ResponseDTO = new GetRegulatedHscodeListResponse
                         {
@@ -129,14 +132,17 @@ namespace PSW.ITMS.Service.Strategies
                 if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode == null)
                 {
                     RedisService.Set(keyHSCodeWithAgency, regulatedHSCodeList, TimeSpan.FromHours(24));
+                    Log.Information($"Setting Key:{keyHSCodeWithAgency} data in Redis");
                 }
                 else if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode != null)
                 {
                     RedisService.Set(keyHSCodeWithAgencyAndDocumentType, regulatedHSCodeList, TimeSpan.FromHours(24));
+                    Log.Information($"Setting Key:{keyHSCodeWithAgencyAndDocumentType} data in Redis");
                 }
                 else
                 {
                     RedisService.Set(keyHSCodeOnly, regulatedHSCodeList, TimeSpan.FromHours(24));
+                    Log.Information($"Setting Key:{regulatedHSCodeList} data in Redis");
                 }
 
                 ResponseDTO = new GetRegulatedHscodeListResponse
