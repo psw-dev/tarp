@@ -4,6 +4,7 @@ using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.Exceptions;
 using PSW.ITMS.Service.Strategies;
 using PSW.Common.Crypto;
+using StackExchange.Redis;
 
 namespace PSW.ITMS.Service
 {
@@ -14,6 +15,7 @@ namespace PSW.ITMS.Service
         public IUnitOfWork UnitOfWork { get; set; }
         public IStrategyFactory StrategyFactory { get; set; }
         public ICryptoAlgorithm CryptoAlgorithm { get; set; }
+        public IConnectionMultiplexer RedisConnection { get; set; }
         #endregion
 
 

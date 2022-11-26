@@ -19,7 +19,7 @@ using PSW.ITMS.RabbitMq;
 using PSW.Common.Crypto;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Logging;
-
+using StackExchange.Redis;
 
 namespace PSW.ITMS.Api
 {
@@ -106,6 +106,13 @@ namespace PSW.ITMS.Api
             services.AddSingleton<IAppSettingsProcessor>(_ => new AppSettingsDecrypter<AesManaged>(_.GetService<IConfiguration>(),
                 password,
                 salt));
+
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+             ConnectionMultiplexer.Connect(new ConfigurationOptions
+             {
+                 EndPoints = { "redis:6379" },
+                 AbortOnConnectFail = false
+             }));
 
             services.AddScoped<ICryptoAlgorithm>(x =>
              {

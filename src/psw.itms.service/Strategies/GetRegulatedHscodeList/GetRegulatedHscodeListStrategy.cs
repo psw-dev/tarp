@@ -1,3 +1,4 @@
+using PSW.ITMS.Common;
 using PSW.ITMS.Data.Entities;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
@@ -9,6 +10,19 @@ namespace PSW.ITMS.Service.Strategies
 {
     public class GetRegulatedHSCodeListStrategy : ApiStrategy<GetRegulatedHscodeListRequest, GetRegulatedHscodeListResponse>
     {
+        RedisCacheService _RedisCacheService = null;
+        public RedisCacheService RedisService
+        {
+            get
+            {
+                if (_RedisCacheService == null)
+                {
+                    _RedisCacheService = new RedisCacheService(RedisConnection);
+                }
+                return _RedisCacheService;
+            }
+        }
+
         #region Constructors 
         public GetRegulatedHSCodeListStrategy(CommandRequest request) : base(request)
         {
@@ -27,6 +41,9 @@ namespace PSW.ITMS.Service.Strategies
 
         public override CommandReply Execute()
         {
+            string keyHSCodeWithAgency = "TARP:REGULATEDHSCODES:" + RequestDTO.AgencyId;
+            string keyHSCodeWithAgencyAndDocumentType = "TARP:REGULATEDHSCODES:" + RequestDTO.AgencyId + ":" + RequestDTO.DocumentTypeCode;
+            string keyHSCodeOnly = "TARP:REGULATEDHSCODES";
             try
             {
                 Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
@@ -35,8 +52,21 @@ namespace PSW.ITMS.Service.Strategies
                 //Get Regulated Hscode list filtered on base of AgencyId 
                 if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode == null)
                 {
-                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(RequestDTO.AgencyId);
+                    if (RedisService.KeyExists(keyHSCodeWithAgency))
+                    {
+                        regulatedHSCodeList = RedisService.Get<List<ViewRegulatedHsCode>>(keyHSCodeWithAgency);
+                        ResponseDTO = new GetRegulatedHscodeListResponse
+                        {
+                            RegulatedHsCodeList = regulatedHSCodeList
+                        };
 
+                        // Send Command Reply 
+                        return OKReply();
+                    }
+                    else
+                    {
+                        regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(RequestDTO.AgencyId);
+                    }
                     if (regulatedHSCodeList == null || regulatedHSCodeList.Count == 0)
                     {
                         return BadRequestReply("Hscodes not available against provided Agency");
@@ -46,21 +76,47 @@ namespace PSW.ITMS.Service.Strategies
                 //Get Regulated Hscode list filtered on base of AgencyId and DocumentTypeCode
                 else if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode != null)
                 {
-                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode);
+                    if (RedisService.KeyExists(keyHSCodeWithAgencyAndDocumentType))
+                    {
+                        regulatedHSCodeList = RedisService.Get<List<ViewRegulatedHsCode>>(keyHSCodeWithAgencyAndDocumentType);
+                        ResponseDTO = new GetRegulatedHscodeListResponse
+                        {
+                            RegulatedHsCodeList = regulatedHSCodeList
+                        };
 
+                        // Send Command Reply 
+                        return OKReply();
+                    }
+                    else
+                    {
+                        regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode);
+                    }
                     if (regulatedHSCodeList == null || regulatedHSCodeList.Count == 0)
                     {
-                        return BadRequestReply("Hscodes not available against provided Agency");
+                        return BadRequestReply("Hscodes not available against provided Agency and Document");
                     }
                 }
 
                 else
                 {
-                    regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList();
+                    if (RedisService.KeyExists(keyHSCodeOnly))
+                    {
+                        regulatedHSCodeList = RedisService.Get<List<ViewRegulatedHsCode>>(keyHSCodeOnly);
+                        ResponseDTO = new GetRegulatedHscodeListResponse
+                        {
+                            RegulatedHsCodeList = regulatedHSCodeList
+                        };
 
+                        // Send Command Reply 
+                        return OKReply();
+                    }
+                    else
+                    {
+                        regulatedHSCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetRegulatedHsCodeList();
+                    }
                     if (regulatedHSCodeList == null || regulatedHSCodeList.Count == 0)
                     {
-                        return BadRequestReply("Hscodes not available against provided Agency");
+                        return BadRequestReply("Hscodes not available");
                     }
                 }
 
@@ -68,6 +124,19 @@ namespace PSW.ITMS.Service.Strategies
                 foreach (var regulatedHscode in regulatedHSCodeList)
                 {
                     regulatedHscode.HsCodeDetailsList = Command.UnitOfWork.RegulatedHSCodeRepository.GetHsCodeDetailList(regulatedHscode.HsCode, RequestDTO.DocumentTypeCode, RequestDTO.AgencyId);
+                }
+
+                if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode == null)
+                {
+                    RedisService.Set(keyHSCodeWithAgency, regulatedHSCodeList, TimeSpan.FromHours(24));
+                }
+                else if (RequestDTO.AgencyId != 0 && RequestDTO.DocumentTypeCode != null)
+                {
+                    RedisService.Set(keyHSCodeWithAgencyAndDocumentType, regulatedHSCodeList, TimeSpan.FromHours(24));
+                }
+                else
+                {
+                    RedisService.Set(keyHSCodeOnly, regulatedHSCodeList, TimeSpan.FromHours(24));
                 }
 
                 ResponseDTO = new GetRegulatedHscodeListResponse

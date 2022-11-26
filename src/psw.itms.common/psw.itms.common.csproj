@@ -10,6 +10,8 @@
    <ItemGroup>
     <PackageReference Include="FluentValidation" Version="9.3.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.6.80" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

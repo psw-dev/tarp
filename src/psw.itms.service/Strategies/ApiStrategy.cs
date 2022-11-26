@@ -4,6 +4,7 @@ using System.Net;
 using System.Text.Json;
 using System.Linq;
 using FluentValidation;
+using StackExchange.Redis;
 
 namespace PSW.ITMS.Service.Strategies
 {
@@ -30,6 +31,7 @@ namespace PSW.ITMS.Service.Strategies
         public string StrategyName { get; set; }
         public string MethodID { get; set; }
         public AbstractValidator<T1> Validator { get; set; }
+        public IConnectionMultiplexer RedisConnection { get; set; }
 
         public override bool Validate()
         {
@@ -69,6 +71,7 @@ namespace PSW.ITMS.Service.Strategies
             var jsonString = Command.data.GetRawText();
             // Deserialize Json to DTO
             RequestDTO = JsonSerializer.Deserialize<T1>(jsonString);
+            RedisConnection = request.RedisConnection;
         }
 
         public CommandReply OKReply(string message = "success")
