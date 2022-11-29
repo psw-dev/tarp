@@ -737,7 +737,7 @@ namespace PSW.ITMS.Service.Strategies
                     {
                         tempReq.Name = premisesRegistration.Name + " For " + "Certificate";
                         tempReq.DocumentName = premisesRegistration.Name;
-                        tempReq.IsMandatory = false; // Change this later 
+                        tempReq.IsMandatory = true; // Change this later 
                         tempReq.RequirementType = "Documentary";
                         tempReq.DocumentTypeCode = premisesRegistration.Code;
                         tempReq.AttachedObjectFormatID = premisesRegistration.AttachedObjectFormatID;
