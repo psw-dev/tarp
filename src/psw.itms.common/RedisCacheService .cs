@@ -12,15 +12,19 @@ namespace PSW.ITMS.Common
         public RedisCacheService(IConnectionMultiplexer redisConnection)
         {
             _redisConnection = redisConnection;
-            _database = _redisConnection.GetDatabase();
+            if (_redisConnection != null)
+                _database = _redisConnection.GetDatabase();
         }
 
         public dynamic Get<T>(string key)
         {
-            var value = _database.StringGet(key);
-            if (value.HasValue)
+            if (_database != null)
             {
-                return JsonSerializer.Deserialize<T>(value);
+                var value = _database.StringGet(key);
+                if (value.HasValue)
+                {
+                    return JsonSerializer.Deserialize<T>(value);
+                }
             }
 
             return null;
@@ -28,15 +32,23 @@ namespace PSW.ITMS.Common
 
         public bool KeyExists(string key)
         {
-            var value = _database.KeyExists(key);
-            return value;
+            if (_database != null)
+            {
+                var value = _database.KeyExists(key);
+                return value;
+            }
+            return false;
         }
 
         public bool Set<T>(string key, T value, TimeSpan expiry)
         {
-            _database.StringSet(key, JsonSerializer.Serialize(value), expiry);
+            if (_database != null)
+            {
+                _database.StringSet(key, JsonSerializer.Serialize(value), expiry);
 
-            return true;
+                return true;
+            }
+            return false;
         }
     }
 }
