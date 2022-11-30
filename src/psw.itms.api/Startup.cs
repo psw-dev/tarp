@@ -107,12 +107,12 @@ namespace PSW.ITMS.Api
                 password,
                 salt));
 
-            services.AddSingleton<IConnectionMultiplexer>(sp =>
-             ConnectionMultiplexer.Connect(new ConfigurationOptions
-             {
-                 EndPoints = { "redis:6379" },
-                 AbortOnConnectFail = false
-             }));
+            // services.AddSingleton<IConnectionMultiplexer>(sp =>
+            //  ConnectionMultiplexer.Connect(new ConfigurationOptions
+            //  {
+            //      EndPoints = { "redis:6379" },
+            //      AbortOnConnectFail = false
+            //  }));
 
             services.AddScoped<ICryptoAlgorithm>(x =>
              {
