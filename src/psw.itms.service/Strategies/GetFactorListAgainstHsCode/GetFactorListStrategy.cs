@@ -30,20 +30,18 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
+                Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
                 if (string.IsNullOrEmpty(RequestDTO.HsCode) || string.IsNullOrEmpty(RequestDTO.AgencyId) || string.IsNullOrEmpty(RequestDTO.documentTypeCode))
                 {
                     return BadRequestReply("Please provide valid request parameters");
                 }
 
-                var tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.Where(
-                    new
-                    {
-                        HSCodeExt = RequestDTO.HsCode,
-                        AgencyID = RequestDTO.AgencyId,
-                        RequiredDocumentTypeCode = RequestDTO.documentTypeCode,
-                        TradeTranTypeID = RequestDTO.TradeTranTypeID
-                    }
-                    ).FirstOrDefault();
+                var tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
+                    RequestDTO.HsCode,
+                    RequestDTO.AgencyId.ToString(),
+                    RequestDTO.TradeTranTypeID,
+                    RequestDTO.documentTypeCode
+                );
 
                 if (tempHsCode == null)
                 {

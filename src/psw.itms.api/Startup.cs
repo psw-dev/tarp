@@ -35,6 +35,7 @@ namespace PSW.ITMS.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddControllers();
             services.AddTransient<IItmsService, ItmsService>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -103,17 +104,13 @@ namespace PSW.ITMS.Api
             }
 
             services.AddSingleton<IAppSettingsProcessor>(_ => new AppSettingsDecrypter<AesManaged>(_.GetService<IConfiguration>(),
-               password,
-               salt));
+                password,
+                salt));
 
             services.AddScoped<ICryptoAlgorithm>(x =>
              {
                  return new CryptoFactory().Create<AesManaged>(password, salt);
              });
-             
-            services.AddSingleton<IAppSettingsProcessor>(_ => new AppSettingsDecrypter<AesManaged>(_.GetService<IConfiguration>(),
-                                                                         "pass",
-                                                                         "random"));
 
             services.AddCors(options =>
                 {
@@ -127,11 +124,13 @@ namespace PSW.ITMS.Api
             services.AddConsul(Configuration);
             services.AddHealthChecks();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IItmsOpenService, ItmsOpenService>();
+            services.AddTransient<IItmsSecureService, ItmsSecureService>();
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IItmsService itmsService, IUnitOfWork unitOfWork, IEventBus eventBus, IHostApplicationLifetime lifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IAppSettingsProcessor appSettingsProcessor, IItmsService itmsService, IUnitOfWork unitOfWork, IEventBus eventBus, IHostApplicationLifetime lifetime)
         {
             if (env.IsDevelopment())
             {

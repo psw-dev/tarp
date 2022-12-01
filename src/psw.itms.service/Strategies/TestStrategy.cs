@@ -1,11 +1,12 @@
- using PSW.ITMS.Service.Command;
+using PSW.ITMS.Common.Model;
+using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
 using PSW.Lib.Logs;
 using System;
 
 namespace PSW.ITMS.Service.Strategies
 {
-    public class TestStrategy : ApiStrategy<AQDECFeeCalculateRequestDTO, Unspecified>
+    public class TestStrategy : ApiStrategy<AQDECFeeCalculateRequestDTO, string>
     {
         CommandRequest request;
 
@@ -32,8 +33,17 @@ namespace PSW.ITMS.Service.Strategies
             try
             {
                 var AQDECFeeCalculation = new PSW.ITMS.service.AQDECFeeCalculation(Command.UnitOfWork,RequestDTO);
-                var response = AQDECFeeCalculation.CalculateECFee();
-                return OKReply();
+                var responseModel = AQDECFeeCalculation.CalculateECFee();
+                if (!responseModel.IsError)
+                {
+                    ResponseDTO = responseModel.Model.Amount;
+                    return OKReply();
+                }
+                else
+                {
+                    Log.Information("Response {@message}", responseModel.Error.InternalError.Message);
+                    return BadRequestReply(responseModel.Error.InternalError.Message);
+                }
             }
             catch (Exception ex)
             {

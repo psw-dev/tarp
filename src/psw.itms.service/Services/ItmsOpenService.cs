@@ -12,7 +12,7 @@ namespace PSW.ITMS.Service
         #region properties 
         public readonly IMapper _mapper;
         public IUnitOfWork UnitOfWork { get; set; }
-        public StrategyFactory StrategyFactory { get; set; }
+        public IStrategyFactory StrategyFactory { get; set; }
         public ICryptoAlgorithm CryptoAlgorithm { get; set; }
         #endregion
 

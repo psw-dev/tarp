@@ -19,4 +19,18 @@ namespace PSW.ITMS.Common.Constants
 
         #endregion Public Fields
     }
+
+    public static class Ref_Units
+    {
+        public const string Piece = "APT";
+        public const string Cage = "CGE";
+        public const string Box = "BX";
+        public const string MuttonCarcass = "MC";
+        public const string BeefQuartrer = "BQ";
+        public const string PackingUnits = "PU";
+    }
+
+    public static class TradePurpose{
+        public const string ScreeningResearchTrial = "screening / research/ trial";
+    }
 }

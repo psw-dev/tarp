@@ -28,12 +28,14 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
+                Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
                 if (string.IsNullOrEmpty(RequestDTO.HsCode))
                 {
                     return BadRequestReply("Hscode cannot be null");
                 }
 
-                var tempPctCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetPCTCodeList(RequestDTO.HsCode);
+                
+                var tempPctCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetPCTCodeList(RequestDTO.HsCode, RequestDTO.TradeTranTypeID);
 
                 if (tempPctCodeList == null || tempPctCodeList.Count == 0)
                 {

@@ -1,12 +1,13 @@
 /*This code is a generated one , Change the source code of the generator if you want some change in this code
 You can find the source code of the code generator from here -> https://git.psw.gov.pk/unais.vayani/DalGenerator*/
 
+using System.Collections.Generic;
 using PSW.ITMS.Data.Entities;
 
 namespace PSW.ITMS.Data.Repositories
 {
     public interface IDocumentToInitiateRepository : IRepository<DocumentToInitiate>
     {
-
+        List<DocumentToInitiate> GetActiveList(string hsCodeExt, string agencyId, int tradeTranTypeId, string documentTypeCode);
     }
 }

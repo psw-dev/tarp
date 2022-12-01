@@ -16,6 +16,9 @@ namespace PSW.ITMS.Service.DTO
         public List<DocumentaryRequirement> DocumentaryRequirementList { get; set; }
         public FinancialRequirement FinancialRequirement { get; set; }
         public ValidityRequirement ValidityRequirement { get; set; }
+
+        [JsonPropertyName("allowedQuantity")]
+        public string AllowedQuantity { get; set; }
     }
 
     public class DocumentaryRequirement
@@ -61,6 +64,12 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("plainExtensionFee")]
         public string PlainExtensionFee { get; set; }
+
+        [JsonPropertyName("additionalAmount")]
+        public decimal AdditionalAmount { get; set; }
+
+        [JsonPropertyName("additionalAmountOn")]
+        public string AdditionalAmountOn { get; set; }
     }
 
     public class ValidityRequirement
