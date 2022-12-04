@@ -6,8 +6,8 @@ namespace PSW.ITMS.Service.DTO
 {
     public class GetCountryListResponse
     {
-        [JsonPropertyName("isPrintAllowed")]
-        public bool isPrintAllowed { get; set; }
+        [JsonPropertyName("countryList")]
+        public List<string> CountryList { get; set; }
 
     }
 

@@ -37,54 +37,33 @@ namespace PSW.ITMS.Service.Strategies
         {
             try
             {
-               
+
 
                 Log.Information("|{0}|{1}| Request DTO {@RequestDTO}", StrategyName, MethodID, RequestDTO);
 
-                RegulatedHSCode tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(RequestDTO.HsCode, RequestDTO.AgencyId, RequestDTO.TradeTranTypeID, RequestDTO.documentTypeCode);
-
-                // Log.Information("|{0}|{1}| RegulatedHSCode DbRecord {@tempHsCode}", StrategyName, MethodID, tempHsCode);
-
-                // if (tempHsCode == null)
-                // {
-                //     return BadRequestReply("Record for hscode does not exist");
-                // }
-
-                // var tempRule = Command.UnitOfWork.RuleRepository.Get(Convert.ToInt16(tempHsCode.RuleID));
-
-                // if (tempRule == null)
-                // {
-                //     return BadRequestReply("Record for rule against hscode does not exist");
-                // }
-
-
+                var regulatedHSCode = this.Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
+                         RequestDTO.AgencyId.ToString(),
+                         RequestDTO.TradeTranTypeID,
+                         RequestDTO.documentTypeCode
+                     );
                 var mongoDoc = new BsonDocument();
                 MongoDbRecordFetcher mongoDBRecordFetcher;
 
-                // try
-                // {
-                    mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", tempHsCode.CollectionName, Environment.GetEnvironmentVariable("MONGODBConnString"));
-              //  }
-                // catch (SystemException ex)
-                // {
-                //     Log.Error("|{0}|{1}| Error occured in connecting to MongoDB {@ex}", StrategyName, MethodID, ex.ToString());
-
-                //     return BadRequestReply("Error occured in connecting to MongoDB");
-                // }
+                mongoDBRecordFetcher = new MongoDbRecordFetcher("TARP", regulatedHSCode.CollectionName, Environment.GetEnvironmentVariable("MONGODBConnString"));
 
                 try
                 {
-                   //here is my change
-                   if(mongoDBRecordFetcher!=null)
-                       { mongoDoc = mongoDBRecordFetcher.GetFilteredRecordMFD(RequestDTO.HsCode);
+                    //here is my change
+                    if (mongoDBRecordFetcher != null)
+                    {
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordMFD(regulatedHSCode.HSCodeExt);
                         if (mongoDoc == null)
                         {
                             return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
                         }
-                       }
-                  
-                   
-                 }
+                    }
+
+                }
                 catch (SystemException ex)
                 {
                     Log.Error("|{0}|{1}| Error occured in fetching record from MongoDB {@ex}", StrategyName, MethodID, ex.ToString());
@@ -100,10 +79,10 @@ namespace PSW.ITMS.Service.Strategies
                 var docType = this.Command.UnitOfWork.DocumentTypeRepository.Where(new
                 { Code = RequestDTO.documentTypeCode }).FirstOrDefault();
 
-              var response = GetRequirements(mongoDoc, docType.DocumentClassificationCode);
+                var response = GetRequirements(mongoDoc, docType.DocumentClassificationCode);
                 Log.Information("|{0}|{1}| Required LPCO Parent Code {@documentClassification}", StrategyName, MethodID, docType.DocumentClassificationCode);
 
-               ResponseDTO = response;
+                ResponseDTO = response;
 
 
                 Log.Information("|{0}|{1}| LPCO required {2}", StrategyName, MethodID, "true");
@@ -122,48 +101,47 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion
 
-       
+
         public GetCountryListResponse GetRequirements(BsonDocument mongoRecord, string documentClassification)
         {
             Log.Information("[{0}.{1}] Started", GetType().Name, MethodBase.GetCurrentMethod().Name);
             Log.Information("|{0}|{1}| documentClassification {documentClassification}", StrategyName, MethodID, documentClassification);
-            var response = new GetCountryListResponse();
-
-    
-            
+            GetCountryListResponse response = new GetCountryListResponse();
+            List<string> countryList = new List<string>();
             Log.Information("|{0}|{1}| documentClassification {documentClassification}", StrategyName, MethodID, documentClassification);
+            var countries = new List<string>();
+            string ECFeeString = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
+            Log.Information("|{0}|{1}| ECFeeString {ECFeeString}", StrategyName, MethodID, ECFeeString);
 
-                var healthCertificateFeeRequired = false;
-                var countries = new List<string>();
 
-            
-            
 
-                        string ECFeeString = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
-                        Log.Information("|{0}|{1}| ECFeeString {ECFeeString}", StrategyName, MethodID, ECFeeString);
+            // The column that tells if Health Certificate is Fee Required (Conditional)
+            // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
+            // "Names of Countries Requiring Health Certificate on prescribed format"
+            countries = mongoRecord["Codes of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
+            if (countries.Count > 0)
+            {
+                countries = countries.Select(t => t.Trim()).ToList();
+                countries = countries.Select(t => t.Replace("\n", "").Replace("\r", "")).ToList();
+            }
+            Log.Information("|{0}|{1}| countries {@countries}", StrategyName, MethodID, countries);
+          //  Log.Information("|{0}|{1}| RequestDTO.DestinationCountryCode {RequestDTO.DestinationCountryCode}", StrategyName, MethodID, RequestDTO.DestinationCountryCode);
 
-                
+            foreach (var country in countries)
+            {
+                countryList.Add(country);
+                // response.CountryList.Add(country);
 
-                        // The column that tells if Health Certificate is Fee Required (Conditional)
-                        // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
-                        // "Names of Countries Requiring Health Certificate on prescribed format"
-                        countries = mongoRecord["Codes of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
-                        if (countries.Count > 0)
-                        {
-                            countries = countries.Select(t => t.Trim()).ToList();
-                            countries = countries.Select(t => t.Replace("\n", "").Replace("\r", "")).ToList();
-                        }
-                        Log.Information("|{0}|{1}| countries {@countries}", StrategyName, MethodID, countries);
-                        Log.Information("|{0}|{1}| RequestDTO.DestinationCountryCode {RequestDTO.DestinationCountryCode}", StrategyName, MethodID, RequestDTO.DestinationCountryCode);
+            }
+            response.CountryList = countryList;
+            //   if (countries.Contains(RequestDTO.DestinationCountryCode))
+            // {
+            //     response.isPrintAllowed = true; // use later 
 
-                        if (countries.Contains(RequestDTO.DestinationCountryCode))
-                        {
-                            response.isPrintAllowed = true; // use later 
 
-                            
-                        }
+            // }
 
-           // Log.Information("Tarp Requirments Response: {@response}", response);
+            // Log.Information("Tarp Requirments Response: {@response}", response);
             Log.Information("[{0}.{1}] Ended", GetType().Name, MethodBase.GetCurrentMethod().Name);
             return response;
         }
