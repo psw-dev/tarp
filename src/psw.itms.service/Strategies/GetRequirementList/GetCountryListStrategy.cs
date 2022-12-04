@@ -130,18 +130,10 @@ namespace PSW.ITMS.Service.Strategies
             foreach (var country in countries)
             {
                 countryList.Add(country);
-                // response.CountryList.Add(country);
+              
 
             }
             response.CountryList = countryList;
-            //   if (countries.Contains(RequestDTO.DestinationCountryCode))
-            // {
-            //     response.isPrintAllowed = true; // use later 
-
-
-            // }
-
-            // Log.Information("Tarp Requirments Response: {@response}", response);
             Log.Information("[{0}.{1}] Ended", GetType().Name, MethodBase.GetCurrentMethod().Name);
             return response;
         }

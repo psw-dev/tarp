@@ -17,9 +17,6 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("tradeTranTypeId")]
         public int TradeTranTypeID { get; set; }
-
-        // [JsonPropertyName("destinationCountryCode")]
-        // public string DestinationCountryCode { get; set; }
     }
 
   
