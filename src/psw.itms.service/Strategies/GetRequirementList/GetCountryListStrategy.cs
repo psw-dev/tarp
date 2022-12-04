@@ -125,45 +125,21 @@ namespace PSW.ITMS.Service.Strategies
        
         public GetCountryListResponse GetRequirements(BsonDocument mongoRecord, string documentClassification)
         {
-            Log.Information("[{0}.{1}] Started", GetType().Name, MethodBase.GetCurrentMethod().Name);
+          Log.Information("[{0}.{1}] Started", GetType().Name, MethodBase.GetCurrentMethod().Name);
             Log.Information("|{0}|{1}| documentClassification {documentClassification}", StrategyName, MethodID, documentClassification);
-            var response = new GetCountryListResponse();
-
-    
-            
+            GetCountryListResponse response = new GetCountryListResponse();
+            List<string> countryList = new List<string>();
             Log.Information("|{0}|{1}| documentClassification {documentClassification}", StrategyName, MethodID, documentClassification);
+            var countries = new List<string>();
+       
 
-                var healthCertificateFeeRequired = false;
-                var countries = new List<string>();
+            foreach (var country in countries)
+            {
+                countryList.Add(country);
+              
 
-            
-            
-
-                        string ECFeeString = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
-                        Log.Information("|{0}|{1}| ECFeeString {ECFeeString}", StrategyName, MethodID, ECFeeString);
-
-                
-
-                        // The column that tells if Health Certificate is Fee Required (Conditional)
-                        // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
-                        // "Names of Countries Requiring Health Certificate on prescribed format"
-                        countries = mongoRecord["Codes of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
-                        if (countries.Count > 0)
-                        {
-                            countries = countries.Select(t => t.Trim()).ToList();
-                            countries = countries.Select(t => t.Replace("\n", "").Replace("\r", "")).ToList();
-                        }
-                        Log.Information("|{0}|{1}| countries {@countries}", StrategyName, MethodID, countries);
-                        Log.Information("|{0}|{1}| RequestDTO.DestinationCountryCode {RequestDTO.DestinationCountryCode}", StrategyName, MethodID, RequestDTO.DestinationCountryCode);
-
-                        if (countries.Contains(RequestDTO.DestinationCountryCode))
-                        {
-                            response.isPrintAllowed = true; // use later 
-
-                            
-                        }
-
-           // Log.Information("Tarp Requirments Response: {@response}", response);
+            }
+            response.CountryList = countryList;
             Log.Information("[{0}.{1}] Ended", GetType().Name, MethodBase.GetCurrentMethod().Name);
             return response;
         }
