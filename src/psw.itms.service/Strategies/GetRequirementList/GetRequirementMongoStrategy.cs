@@ -749,6 +749,8 @@ namespace PSW.ITMS.Service.Strategies
 
                 if (RequestDTO.IsFinancialRequirement)
                 {
+                    Log.Information("|{0}|{1}| RequestDTO.IsFinancialRequirement {@IsFinancialRequirement}", StrategyName, MethodID, RequestDTO.IsFinancialRequirement);
+
                     //Financial Requirements
                     if (RequestDTO.AgencyId == "2")
                     {
@@ -811,6 +813,8 @@ namespace PSW.ITMS.Service.Strategies
                         // "Names of Countries Requiring Health Certificate on prescribed format"
                         countries = mongoRecord["Codes of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
                         Log.Information("|{0}|{1}| countries {@countries}", StrategyName, MethodID, countries);
+                        Log.Information("|{0}|{1}| RequestDTO.DestinationCountryCode {@DestinationCountryCode}", StrategyName, MethodID, RequestDTO.DestinationCountryCode);
+                        string HealthCertFeeString = string.Empty;
                         if (countries.Contains(RequestDTO.DestinationCountryCode))
                         {
                             Log.Information("|{0}|{1}| contians {@RequestDTO.DestinationCountryCode}", StrategyName, MethodID, RequestDTO.DestinationCountryCode);
@@ -818,7 +822,8 @@ namespace PSW.ITMS.Service.Strategies
 
                             Log.Information("|{0}|{1}| ECFeeDecimal {@ECFeeDecimal}", StrategyName, MethodID, ECFeeDecimal);
 
-                            string HealthCertFeeString = mongoRecord["Health Certificate Fee (PKR)"].ToString();
+                            HealthCertFeeString = mongoRecord["Health Certificate Fee (PKR)"].ToString();
+                            Log.Information("|{0}|{1}| HealthCertFeeString {HealthCertFeeString}", StrategyName, MethodID, HealthCertFeeString);
                             decimal HealthCertFeeDecimal = 0.0m;
                             if (!string.IsNullOrEmpty(HealthCertFeeString))
                                 decimal.TryParse(HealthCertFeeString, out HealthCertFeeDecimal);
@@ -831,6 +836,16 @@ namespace PSW.ITMS.Service.Strategies
 
                         FinancialRequirement.PlainAmount = ECFeeDecimal.ToString();
                         FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(ECFeeDecimal.ToString());
+                        if (!string.IsNullOrEmpty(HealthCertFeeString))
+                        {
+                            FinancialRequirement.PlainAmmendmentFee = HealthCertFeeString;
+                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmmendmentFee);
+                        }
+                        else
+                        {
+                            FinancialRequirement.PlainAmmendmentFee = "0";
+                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmmendmentFee);
+                        }
 
                     }
                 }
