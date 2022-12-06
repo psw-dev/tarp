@@ -304,7 +304,7 @@ namespace PSW.ITMS.Service.MongoDB
 
             var collection = database.GetCollection<BsonDocument>(CollectionName);
 
-            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hscode);
+            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("FINAL PCT CODE", hscode);
 
             Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
 
