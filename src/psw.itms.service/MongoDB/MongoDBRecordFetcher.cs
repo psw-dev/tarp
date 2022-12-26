@@ -106,7 +106,25 @@ namespace PSW.ITMS.Service.MongoDB
 
             return FetchedRecord;
         }
+        public BsonDocument GetFilteredRecordMFD(string hscode)
+        {
+            var database = MClient.GetDatabase(DbName);
 
+            var collection = database.GetCollection<BsonDocument>(CollectionName);
+
+            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hscode);
+
+            Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
+
+            var FetchedRecord = collection.Find(hsCodeFilter, new FindOptions { Collation = collation }).FirstOrDefault();
+
+            if (FetchedRecord == null)
+            {
+                return null;
+            }
+
+            return FetchedRecord;
+        }
         public bool UpdateRecord(string hscode, string purpose, string propertyToBeUpdated, string updatedValue)
         {
             var recordFetch = GetFilteredRecord(hscode, purpose);
@@ -140,7 +158,7 @@ namespace PSW.ITMS.Service.MongoDB
             {
                 case "IMP":
                     IsParenCodeValid = true;
-                    return mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";          
+                    return mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";
 
                 case "RO":
                     IsParenCodeValid = true;
@@ -149,7 +167,7 @@ namespace PSW.ITMS.Service.MongoDB
                 case "EC":
                     IsParenCodeValid = true;
                     return mongoRecord["PHYTOSANITARY CERTIFICATION REQUIRED (Y /N)"].ToString().ToLower() == "yes";
-                
+
                 default:
                     IsParenCodeValid = false;
                     return false;
@@ -209,7 +227,26 @@ namespace PSW.ITMS.Service.MongoDB
                     return false;
             }
         }
+        public bool CheckIfLPCORequiredMFD(BsonDocument mongoRecord, string requiredDocumentParentCode, out bool IsParenCodeValid)
+        {
+            switch (requiredDocumentParentCode)
+            {
+                case "IMP":
+                    IsParenCodeValid = true;
+                    return mongoRecord["IP REQUIRED"].ToString().ToLower() == "yes";
 
+                case "RO":
+                    IsParenCodeValid = true;
+                    return mongoRecord["RELEASE ORDER"].ToString().ToLower() == "yes";
+
+                case "EC":
+                    IsParenCodeValid = true;
+                    return mongoRecord["Is Certificate of Quality and Origin Required (Yes/No)"].ToString().ToLower() == "yes";
+                default:
+                    IsParenCodeValid = false;
+                    return false;
+            }
+        }
         public string GetFormNumber(BsonDocument mongoRecord, string requiredDocumentParentCode)
         {
             switch (requiredDocumentParentCode)
@@ -219,7 +256,7 @@ namespace PSW.ITMS.Service.MongoDB
 
                 case "RO":
                     return mongoRecord["RO CERTIFICATE FORM NUMBER"].ToString();
-                    
+
                 case "EC":
                     return mongoRecord["PHYTOSANTARY CERTIFICATE FORM NUMBER"].ToString();
             }
@@ -235,7 +272,7 @@ namespace PSW.ITMS.Service.MongoDB
 
                 case "RO":
                     return mongoRecord["RELEASE ORDER FORM NUMBER"].ToString();
-                    
+
                 case "EC":
                     return mongoRecord["Form"].ToString();
             }
@@ -251,6 +288,15 @@ namespace PSW.ITMS.Service.MongoDB
             }
             return "";
         }
+        public string GetFormNumberMFD(BsonDocument mongoRecord, string requiredDocumentParentCode)
+        {
+            switch (requiredDocumentParentCode)
+            {
+                case "EC":
+                    return mongoRecord["Certificate of Quality and Origin Print Form Number"].ToString();
+            }
+            return "";
+        }
 
         public bool GetPSIInfo(BsonDocument mongoRecord, string hscode)
         {
@@ -258,14 +304,14 @@ namespace PSW.ITMS.Service.MongoDB
 
             var collection = database.GetCollection<BsonDocument>(CollectionName);
 
-            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hscode);
+            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("FINAL PCT CODE", hscode);
 
             Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
 
             var FetchedRecord = collection.Find(hsCodeFilter, new FindOptions { Collation = collation }).FirstOrDefault();
 
             return FetchedRecord["PSI REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
-           
+
         }
     }
 }

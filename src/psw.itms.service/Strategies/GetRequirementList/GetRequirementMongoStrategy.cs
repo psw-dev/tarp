@@ -138,6 +138,14 @@ namespace PSW.ITMS.Service.Strategies
                             return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
                         }
                     }
+                    else if (RequestDTO.AgencyId == "10")
+                    {
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordMFD(RequestDTO.HsCode);
+                        if (mongoDoc == null)
+                        {
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
+                        }
+                    }
                 }
                 catch (SystemException ex)
                 {
@@ -176,6 +184,10 @@ namespace PSW.ITMS.Service.Strategies
                 else if (RequestDTO.AgencyId == "5")
                 {
                     DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredPSQCA(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                }
+                else if (RequestDTO.AgencyId == "10")
+                {
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMFD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
                 }
 
                 if (!IsParenCodeValid)
@@ -223,6 +235,10 @@ namespace PSW.ITMS.Service.Strategies
                     else if (RequestDTO.AgencyId == "4")
                     {
                         ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberFSCRD(mongoDoc, docType.DocumentClassificationCode);
+                    }
+                    else if (RequestDTO.AgencyId == "10")
+                    {
+                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberMFD(mongoDoc, docType.DocumentClassificationCode);
                     }
 
                     Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
@@ -284,6 +300,8 @@ namespace PSW.ITMS.Service.Strategies
         public SingleResponseModel<GetDocumentRequirementResponse> GetRequirements(BsonDocument mongoRecord, string documentClassification)
         {
             Log.Information("[{0}.{1}] Started", GetType().Name, MethodBase.GetCurrentMethod().Name);
+            Log.Information("|{0}|{1}| documentClassification {documentClassification}", StrategyName, MethodID, documentClassification);
+
             GetDocumentRequirementResponse tarpRequirments = new GetDocumentRequirementResponse();
             var response = new SingleResponseModel<GetDocumentRequirementResponse>();
 
@@ -618,10 +636,15 @@ namespace PSW.ITMS.Service.Strategies
             // NO EC in Agency 4 - FSCRD
             else if (documentClassification == "EC")
             {
+                Log.Information("|{0}|{1}| documentClassification {documentClassification}", StrategyName, MethodID, documentClassification);
+
                 var ecDocRequirements = new List<string>();
                 var ecDocRequirementsTrimmed = new List<string>();
                 var ecDocOptional = new List<string>();
                 var ecDocOptionalTrimmed = new List<string>();
+                var premisesRegistrationRequired = false;
+                var healthCertificateFeeRequired = false;
+                var countries = new List<string>();
 
                 if (RequestDTO.AgencyId == "2")
                 {
@@ -631,6 +654,13 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     ecDocRequirements = mongoRecord["Health Certificate Processing Requirements"].ToString().Split('|').ToList();
                 }
+                else if (RequestDTO.AgencyId == "10")
+                {
+                    ecDocRequirements = mongoRecord["Certificate of Quality and Origin Processing Mandatory Documentary Requirements"].ToString().Split('|').ToList();
+                    ecDocOptional = mongoRecord["Certificate of Quality and Origin Processing  Optional  Documentary Requirements"].ToString().Split('|').ToList();
+                    premisesRegistrationRequired = mongoRecord["Is Premises Registration Required? (Yes/No)"].ToString().ToLower() == "yes";
+                }
+
 
                 if (RequestDTO.AgencyId == "2")
                 {
@@ -696,8 +726,33 @@ namespace PSW.ITMS.Service.Strategies
                     }
 
                 }
+                if (premisesRegistrationRequired == true)
+                {
+                    // TODO : Attach this Later
+                    var tempReq = new DocumentaryRequirement();
+                    var premisesRegistration = Command.UnitOfWork.DocumentTypeRepository.Where(new
+                    {
+                        AgencyID = RequestDTO.AgencyId,
+                        Code = "A09"
+                    }).FirstOrDefault();
+
+                    if (premisesRegistration != null)
+                    {
+                        tempReq.Name = premisesRegistration.Name + " For " + "Certificate";
+                        tempReq.DocumentName = premisesRegistration.Name;
+                        tempReq.IsMandatory = true; // Change this later 
+                        tempReq.RequirementType = "Documentary";
+                        tempReq.DocumentTypeCode = premisesRegistration.Code;
+                        tempReq.AttachedObjectFormatID = premisesRegistration.AttachedObjectFormatID;
+                        tarpDocumentRequirements.Add(tempReq);
+
+                    }
+
+                }
                 if (RequestDTO.IsFinancialRequirement)
                 {
+                    Log.Information("|{0}|{1}| RequestDTO.IsFinancialRequirement {@IsFinancialRequirement}", StrategyName, MethodID, RequestDTO.IsFinancialRequirement);
+
                     //Financial Requirements
                     if (RequestDTO.AgencyId == "2")
                     {
@@ -735,7 +790,73 @@ namespace PSW.ITMS.Service.Strategies
                             // return InternalServerErrorReply(responseModel.Error.InternalError.Message);
                         }
                     }
+                    if (RequestDTO.AgencyId == "10")
+                    {
+                        Log.Information("|{0}|{1}| RequestDTO.AgencyId == 10 ", StrategyName, MethodID);
+
+
+                        // TODO Fee releated stuff later
+                        // // get fee  
+                        // FinancialRequirement.PlainAmount = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
+                        // FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString());
+                        // FinancialRequirement.PlainAmount = mongoRecord["Health Certificate Fee(PKR)"].ToString();
+                        // FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["Health Certificate Fee(PKR)"].ToString());
+
+
+                        string ECFeeString = mongoRecord["Certificate of Quality and Origin Processing Fee (PKR)"].ToString();
+                        Log.Information("|{0}|{1}| ECFeeString {ECFeeString}", StrategyName, MethodID, ECFeeString);
+
+                        decimal ECFeeDecimal = 0.0m;
+                        if (!string.IsNullOrEmpty(ECFeeString))
+                            decimal.TryParse(ECFeeString, out ECFeeDecimal);
+
+                        Log.Information("|{0}|{1}| ECFeeDecimal {ECFeeDecimal}", StrategyName, MethodID, ECFeeDecimal);
+
+                        // The column that tells if Health Certificate is Fee Required (Conditional)
+                        // Condition: If the destination country is from one of the countries in the following column, then fee is applied.
+                        // "Names of Countries Requiring Health Certificate on prescribed format"
+                        countries = mongoRecord["Codes of Countries Requiring Health Certificate on prescribed format"].ToString().Split('|').ToList();
+                        if (countries.Count > 0)
+                        {
+                            countries = countries.Select(t => t.Trim()).ToList();
+                            countries = countries.Select(t => t.Replace("\n", "").Replace("\r", "")).ToList();
+                        }
+                        Log.Information("|{0}|{1}| countries {@countries}", StrategyName, MethodID, countries);
+                        Log.Information("|{0}|{1}| RequestDTO.DestinationCountryCode {@DestinationCountryCode}", StrategyName, MethodID, RequestDTO.DestinationCountryCode);
+                        string HealthCertFeeString = string.Empty;
+                        if (countries.Contains(RequestDTO.DestinationCountryCode))
+                        {
+                            healthCertificateFeeRequired = true; // use later 
+
+
+                            HealthCertFeeString = mongoRecord["Health Certificate Fee (PKR)"].ToString();
+                            Log.Information("|{0}|{1}| HealthCertFeeString {HealthCertFeeString}", StrategyName, MethodID, HealthCertFeeString);
+                            decimal HealthCertFeeDecimal = 0.0m;
+                            if (!string.IsNullOrEmpty(HealthCertFeeString))
+                                decimal.TryParse(HealthCertFeeString, out HealthCertFeeDecimal);
+                            Log.Information("|{0}|{1}| ECFeeDecimal {ECFeeDecimal}", StrategyName, MethodID, ECFeeDecimal);
+
+                            ECFeeDecimal = HealthCertFeeDecimal + ECFeeDecimal;
+                            Log.Information("|{0}|{1}| HealthCertFeeDecimal + ECFeeDecimal {ECFeeDecimal}", StrategyName, MethodID, ECFeeDecimal);
+
+                        }
+
+                        FinancialRequirement.PlainAmount = ECFeeDecimal.ToString();
+                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(ECFeeDecimal.ToString());
+                        if (!string.IsNullOrEmpty(HealthCertFeeString))
+                        {
+                            FinancialRequirement.PlainAmmendmentFee = HealthCertFeeString;
+                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmmendmentFee);
+                        }
+                        else
+                        {
+                            FinancialRequirement.PlainAmmendmentFee = "0";
+                            FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(FinancialRequirement.PlainAmmendmentFee);
+                        }
+
+                    }
                 }
+
             }
 
             tarpRequirments.DocumentaryRequirementList = tarpDocumentRequirements;
