@@ -1,4 +1,5 @@
 using MongoDB.Bson;
+using psw.itms.common.Enums;
 using psw.security.Encryption;
 using PSW.ITMS.Common.Enums;
 using PSW.ITMS.Common.Model;
@@ -412,6 +413,9 @@ namespace PSW.ITMS.Service.Strategies
                 var ipReq = false;
                 var psiReq = false;
                 var psiRegReq = false;
+                var psiReqMand = false;
+                var psiRegReqMand = false;
+                var psiRegScheme = string.Empty;
                 var docClassificCode = string.Empty;
 
 
@@ -508,6 +512,9 @@ namespace PSW.ITMS.Service.Strategies
                     {
                         psiReq = mongoRecord["PSI REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
                         psiRegReq = mongoRecord["REGISTRATION REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+                        psiReqMand = mongoRecord["PSI REQUIRED MANDATORY (YES/NO)"].ToString().ToLower() == "yes";
+                        psiRegReqMand = mongoRecord["REGISTRATION REQUIRED MANDATORY (YES/NO)"].ToString().ToLower() == "yes";
+                        psiRegScheme = mongoRecord["REGISTRATION SCHEME DESCRIPTION"].ToString().ToLower();
                     }
 
 
@@ -589,16 +596,12 @@ namespace PSW.ITMS.Service.Strategies
 
                     var psiDocRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new
                     {
-                        // AgencyID = RequestDTO.AgencyId, 
-                        // documentClassificationCode = docClassificCode, 
-                        // AttachedObjectFormatID = 2, 
-                        // AltCode = "C" 
                         Code = "D58" // TODO : Remove hardcoded values
                     }).FirstOrDefault();
 
                     tempReq.Name = psiDocRequired.Name + " For " + "Release Order"; //replace DPP with collectionName 
                     tempReq.DocumentName = psiDocRequired.Name;
-                    tempReq.IsMandatory = false;
+                    tempReq.IsMandatory = psiReqMand;
                     tempReq.RequirementType = "Documentary";
                     tempReq.DocumentTypeCode = psiDocRequired.Code;
                     tempReq.AttachedObjectFormatID = psiDocRequired.AttachedObjectFormatID;
@@ -610,19 +613,16 @@ namespace PSW.ITMS.Service.Strategies
                 if (psiRegReq)
                 {
                     var tempReq = new DocumentaryRequirement();
+                    var documentCode = GetDocCodeByScheme(psiRegScheme);
 
                     var psiRegRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new
                     {
-                        // AgencyID = RequestDTO.AgencyId, 
-                        // documentClassificationCode = docClassificCode, 
-                        // AttachedObjectFormatID = 2, 
-                        // AltCode = "C" 
-                        Code = "D60" // TODO : 
+                        Code = documentCode
                     }).FirstOrDefault();
 
                     tempReq.Name = psiRegRequired.Name + " For " + "Release Order"; //replace DPP with collectionName //
                     tempReq.DocumentName = psiRegRequired.Name;
-                    tempReq.IsMandatory = false;
+                    tempReq.IsMandatory = psiRegReqMand;
                     tempReq.RequirementType = "Documentary";
                     tempReq.DocumentTypeCode = psiRegRequired.Code;
                     tempReq.AttachedObjectFormatID = psiRegRequired.AttachedObjectFormatID;
@@ -867,6 +867,23 @@ namespace PSW.ITMS.Service.Strategies
             Log.Information("Tarp Requirments Response: {@response}", response);
             Log.Information("[{0}.{1}] Ended", GetType().Name, MethodBase.GetCurrentMethod().Name);
             return response;
+        }
+
+        private string GetDocCodeByScheme(string PSIRegScheme)
+        {
+            var docCode = string.Empty;
+
+            switch(PSIRegScheme)
+            {
+                case PSIRegisterationScheme.Form1:
+                    return PSIRegisterationScheme.Form1_Certificate_DocType;
+                case PSIRegisterationScheme.Form16:
+                    return PSIRegisterationScheme.Form16_Certificate_DocType;
+                case PSIRegisterationScheme.Form17:
+                    return PSIRegisterationScheme.Form17_Certificate_DocType;
+                default:
+                    throw new Exception($"PSI registeration scheme [\"{PSIRegScheme}\"] not recognized");
+            }
         }
     }
 }
