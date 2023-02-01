@@ -305,10 +305,12 @@ namespace PSW.ITMS.Service.MongoDB
             var collection = database.GetCollection<BsonDocument>(CollectionName);
 
             var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("FINAL PCT CODE", hscode);
+            var psiFilter = Builders<BsonDocument>.Filter.Eq("PSI REQUIRED (YES/NO)", "yes");
+            var combinedFilter = Builders<BsonDocument>.Filter.And(hsCodeFilter, psiFilter);
 
             Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
 
-            var FetchedRecord = collection.Find(hsCodeFilter, new FindOptions { Collation = collation }).FirstOrDefault();
+            var FetchedRecord = collection.Find(combinedFilter, new FindOptions { Collation = collation }).FirstOrDefault();
 
             return FetchedRecord["PSI REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
 
