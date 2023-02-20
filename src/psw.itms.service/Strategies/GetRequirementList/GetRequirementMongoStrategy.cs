@@ -858,6 +858,85 @@ namespace PSW.ITMS.Service.Strategies
                 }
 
             }
+            else if (documentClassification == "PRR")
+            {
+                var prodRegDocRequirements = new List<string>();
+                var prodRegDocRequirementsTrimmed = new List<string>();
+                var prodRegDocOptional = new List<string>();
+                var prodRegDocOptionalTrimmed = new List<string>();
+
+                if (RequestDTO.AgencyId == "2")
+                {
+                    // ipDocRequirements = mongoRecord["IP DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();       TBC
+                    prodRegDocOptional = mongoRecord["DOCUMENTARY REQUIREMENTS FOR REGISTRATION"].ToString().Split('|').ToList();
+
+                    //Financial Requirements
+                    FinancialRequirement.PlainAmount = mongoRecord["REGISTRATION FEES"].ToString();
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["REGISTRATION FEES"].ToString());
+                    FinancialRequirement.PlainAmmendmentFee = mongoRecord["AMENDMENT FEE PER DATA ELEMENT"].ToString();
+                    FinancialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["AMENDMENT FEE PER DATA ELEMENT"].ToString());
+                    // FinancialRequirement.PlainExtensionFee = mongoRecord["IP Extention Fees"].ToString();
+                    // FinancialRequirement.ExtensionFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["IP Extention Fees"].ToString());
+                    FinancialRequirement.PlainRenewalFee = mongoRecord["RENEWAL FEES"].ToString();
+                    FinancialRequirement.RenewalFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["RENEWAL FEES"].ToString());
+                    FinancialRequirement.PlainRenewalLateFee = mongoRecord["RENEWAL LATE FEE"].ToString();
+                    FinancialRequirement.RenewalLateFee = Command.CryptoAlgorithm.Encrypt(mongoRecord["RENEWAL LATE FEE"].ToString());
+
+
+                    //ValidityTerm Requirements
+                    ValidityRequirement.UomName = "Year";
+                    ValidityRequirement.Quantity = Convert.ToInt32(mongoRecord["REGISTRATION VALIDITY IN YEARS"]);
+                    // ValidityRequirement.ExtensionAllowed = mongoRecord["IP Extention Allowed"].ToString().ToLower() == "yes" ? true : false;
+                    // ValidityRequirement.ExtensionPeriod = Convert.ToInt32(mongoRecord["IP Extention Period (Months)"]);
+                    // ValidityRequirement.ExtensionPeriodUnitName = "Months";     // Hard coded till we have a separate column in sheet for this
+                }
+
+                if (prodRegDocOptional != null && !prodRegDocOptional.Contains("NaN"))
+                {
+                    foreach (var lpco in prodRegDocOptional)
+                    {
+                        prodRegDocOptionalTrimmed.Add(lpco.Trim());
+                    }
+
+                    foreach (var doc in prodRegDocOptionalTrimmed)
+                    {
+                        var tempReq = new DocumentaryRequirement();
+
+                        tempReq.Name = doc + " For Product Registeration";
+                        tempReq.DocumentName = doc;
+                        tempReq.IsMandatory = false;
+                        tempReq.RequirementType = "Documentary";
+
+                        tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                        tempReq.AttachedObjectFormatID = 1;
+
+                        tarpDocumentRequirements.Add(tempReq);
+                    }
+                }
+
+                if (prodRegDocRequirements != null && !prodRegDocRequirements.Contains("NaN"))
+                {
+                    foreach (var lpco in prodRegDocRequirements)
+                    {
+                        prodRegDocRequirementsTrimmed.Add(lpco.Trim());
+                    }
+
+                    foreach (var doc in prodRegDocRequirementsTrimmed)
+                    {
+                        var tempReq = new DocumentaryRequirement();
+
+                        tempReq.Name = doc + " For Product Registeration";
+                        tempReq.DocumentName = doc;
+                        tempReq.IsMandatory = true;
+                        tempReq.RequirementType = "Documentary";
+
+                        tempReq.DocumentTypeCode = Command.UnitOfWork.DocumentTypeRepository.Where(new { Name = doc }).FirstOrDefault()?.Code;
+                        tempReq.AttachedObjectFormatID = 1;
+
+                        tarpDocumentRequirements.Add(tempReq);
+                    }
+                }
+            }
 
             tarpRequirments.DocumentaryRequirementList = tarpDocumentRequirements;
             tarpRequirments.FinancialRequirement = FinancialRequirement;

@@ -70,6 +70,18 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("additionalAmountOn")]
         public string AdditionalAmountOn { get; set; }
+
+        [JsonPropertyName("plainRenewalFee")]
+        public string PlainRenewalFee { get; set; }
+
+        [JsonPropertyName("renewalFee")]
+        public string RenewalFee { get; set; }
+
+        [JsonPropertyName("plainRenewalLateFee")]
+        public string PlainRenewalLateFee { get; set; }
+
+        [JsonPropertyName("renewalLateFee")]
+        public string RenewalLateFee { get; set; }
     }
 
     public class ValidityRequirement

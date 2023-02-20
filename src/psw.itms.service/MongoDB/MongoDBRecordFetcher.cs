@@ -168,6 +168,10 @@ namespace PSW.ITMS.Service.MongoDB
                     IsParenCodeValid = true;
                     return mongoRecord["PHYTOSANITARY CERTIFICATION REQUIRED (Y /N)"].ToString().ToLower() == "yes";
 
+                case "PRR":
+                    IsParenCodeValid = true;
+                    return mongoRecord["REGISTRATION REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+
                 default:
                     IsParenCodeValid = false;
                     return false;
@@ -189,6 +193,10 @@ namespace PSW.ITMS.Service.MongoDB
                 case "EC":
                     IsParenCodeValid = true;
                     return mongoRecord["Health Certificate"].ToString().ToLower() == "yes";
+
+                case "PRR":
+                    IsParenCodeValid = true;
+                    return mongoRecord["REGISTRATION REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
 
                 default:
                     IsParenCodeValid = false;
@@ -242,6 +250,11 @@ namespace PSW.ITMS.Service.MongoDB
                 case "EC":
                     IsParenCodeValid = true;
                     return mongoRecord["Is Certificate of Quality and Origin Required (Yes/No)"].ToString().ToLower() == "yes";
+
+                case "PRR":
+                    IsParenCodeValid = true;
+                    return mongoRecord["REGISTRATION REQUIRED (YES/NO)"].ToString().ToLower() == "yes";
+                    
                 default:
                     IsParenCodeValid = false;
                     return false;
