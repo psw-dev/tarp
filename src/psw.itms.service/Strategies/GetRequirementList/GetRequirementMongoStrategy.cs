@@ -147,6 +147,14 @@ namespace PSW.ITMS.Service.Strategies
                             return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
                         }
                     }
+                    else if (RequestDTO.AgencyId == "11")//GetFilteredRecordFromHSCodeExt can be use for other agency if condition is same
+                    {
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordFromHSCodeExt(RequestDTO.HsCode);
+                        if (mongoDoc == null)
+                        {
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
+                        }
+                    }
                 }
                 catch (SystemException ex)
                 {
@@ -189,6 +197,10 @@ namespace PSW.ITMS.Service.Strategies
                 else if (RequestDTO.AgencyId == "10")
                 {
                     DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMFD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                }
+                else if (RequestDTO.AgencyId == "11")
+                {
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMNC(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
                 }
 
                 if (!IsParenCodeValid)
@@ -327,6 +339,11 @@ namespace PSW.ITMS.Service.Strategies
                     //Financial Requirements
                     FinancialRequirement.PlainAmount = mongoRecord["ENLISTMENT OF SEED VARIETY  FEES"].ToString();
                     FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["ENLISTMENT OF SEED VARIETY  FEES"].ToString());
+                }
+                else if(RequestDTO.AgencyId == "11")
+                {
+                    ipDocRequirements = mongoRecord["IMPORT PERMIT MANDATORY DOCUMENTARY  REQUIREMENTS"].ToString().Split('|').ToList();
+                    ipDocOptional = mongoRecord["IMPORT PERMIT OPTIONAL DOCUMENTARY  REQUIREMENTS"].ToString().Split('|').ToList();
                 }
                 else
                 {
