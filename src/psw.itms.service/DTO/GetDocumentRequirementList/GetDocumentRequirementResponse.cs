@@ -19,6 +19,9 @@ namespace PSW.ITMS.Service.DTO
 
         [JsonPropertyName("allowedQuantity")]
         public string AllowedQuantity { get; set; }
+
+        [JsonPropertyName("isDocumentAttachmentRequired")]
+        public bool IsDocumentAttachmentRequired { get; set; }
     }
 
     public class DocumentaryRequirement
