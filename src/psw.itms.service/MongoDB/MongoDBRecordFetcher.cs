@@ -125,6 +125,25 @@ namespace PSW.ITMS.Service.MongoDB
 
             return FetchedRecord;
         }
+        public BsonDocument GetFilteredRecordMNC(string hscode)
+        {
+            var database = MClient.GetDatabase(DbName);
+
+            var collection = database.GetCollection<BsonDocument>(CollectionName);
+
+            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hscode);
+
+            Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
+
+            var FetchedRecord = collection.Find(hsCodeFilter, new FindOptions { Collation = collation }).FirstOrDefault();
+
+            if (FetchedRecord == null)
+            {
+                return null;
+            }
+
+            return FetchedRecord;
+        }
         public bool UpdateRecord(string hscode, string purpose, string propertyToBeUpdated, string updatedValue)
         {
             var recordFetch = GetFilteredRecord(hscode, purpose);
@@ -242,6 +261,31 @@ namespace PSW.ITMS.Service.MongoDB
                 case "EC":
                     IsParenCodeValid = true;
                     return mongoRecord["Is Certificate of Quality and Origin Required (Yes/No)"].ToString().ToLower() == "yes";
+                default:
+                    IsParenCodeValid = false;
+                    return false;
+            }
+        }
+        public bool CheckIfLPCORequiredMNC(BsonDocument mongoRecord, string requiredDocumentParentCode, out bool IsParenCodeValid)
+        {
+            switch (requiredDocumentParentCode)
+            {
+                case "EXP":
+                    IsParenCodeValid = true;
+                    return mongoRecord["EXPORT PERMIT REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+
+                case "IMP":
+                    IsParenCodeValid = true;
+                    return mongoRecord["IMPORT PERMIT REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+
+                case "RO":
+                    IsParenCodeValid = true;
+                    return mongoRecord["RELEASE ORDER REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+
+                case "EC":
+                    IsParenCodeValid = true;
+                    return mongoRecord["EXPORT CERTIFICATE REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+                    
                 default:
                     IsParenCodeValid = false;
                     return false;
