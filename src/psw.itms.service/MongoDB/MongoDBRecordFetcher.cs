@@ -125,7 +125,7 @@ namespace PSW.ITMS.Service.MongoDB
 
             return FetchedRecord;
         }
-        public BsonDocument GetFilteredRecordFromHSCodeExt(string hscode)
+        public BsonDocument GetFilteredRecordMNC(string hscode)
         {
             var database = MClient.GetDatabase(DbName);
 
@@ -270,9 +270,22 @@ namespace PSW.ITMS.Service.MongoDB
         {
             switch (requiredDocumentParentCode)
             {
+                case "EXP":
+                    IsParenCodeValid = true;
+                    return mongoRecord["EXPORT PERMIT REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+
                 case "IMP":
                     IsParenCodeValid = true;
                     return mongoRecord["IMPORT PERMIT REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+
+                case "RO":
+                    IsParenCodeValid = true;
+                    return mongoRecord["RELEASE ORDER REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+
+                case "EC":
+                    IsParenCodeValid = true;
+                    return mongoRecord["EXPORT CERTIFICATE REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+                    
                 default:
                     IsParenCodeValid = false;
                     return false;

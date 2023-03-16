@@ -55,7 +55,16 @@ namespace PSW.ITMS.Service.Strategies
                 //     }
                 //     ).FirstOrDefault();
 
-                RegulatedHSCode tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(RequestDTO.HsCode, RequestDTO.AgencyId, RequestDTO.TradeTranTypeID, RequestDTO.documentTypeCode);
+                RegulatedHSCode tempHsCode = new RegulatedHSCode();
+
+                if(RequestDTO.documentTypeCode == null || RequestDTO.documentTypeCode == string.Empty)
+                {
+                    tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(RequestDTO.HsCode, RequestDTO.AgencyId, RequestDTO.TradeTranTypeID);
+                }
+                else
+                {
+                    tempHsCode = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(RequestDTO.HsCode, RequestDTO.AgencyId, RequestDTO.TradeTranTypeID, RequestDTO.documentTypeCode);
+                }
 
                 Log.Information("|{0}|{1}| RegulatedHSCode DbRecord {@tempHsCode}", StrategyName, MethodID, tempHsCode);
 
@@ -147,9 +156,9 @@ namespace PSW.ITMS.Service.Strategies
                             return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
                         }
                     }
-                    else if (RequestDTO.AgencyId == "11")//GetFilteredRecordFromHSCodeExt can be use for other agency if condition is same
+                    else if (RequestDTO.AgencyId == "11")
                     {
-                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordFromHSCodeExt(RequestDTO.HsCode);
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordMNC(RequestDTO.HsCode);
                         if (mongoDoc == null)
                         {
                             return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
@@ -167,40 +176,64 @@ namespace PSW.ITMS.Service.Strategies
 
                 Log.Information("|{0}|{1}| Mongo Record fetched {@mongoDoc}", StrategyName, MethodID, mongoDoc);
 
+                string docTypeClassificationCode = string.Empty;
 
-                var docType = this.Command.UnitOfWork.DocumentTypeRepository.Where(new
-                { Code = RequestDTO.documentTypeCode }).FirstOrDefault();
+                if(RequestDTO.documentTypeCode == null || RequestDTO.documentTypeCode == string.Empty)
+                {
+                    if(RequestDTO.TradeTranTypeID==1)   // IMPORT
+                    {
+                        docTypeClassificationCode = "RO";
+                    }
+                    else if(RequestDTO.TradeTranTypeID==2)  // EXPORT
+                    {
+                        docTypeClassificationCode = "EC";
+                    }
+                }
+                else
+                {
+                    docTypeClassificationCode = this.Command.UnitOfWork.DocumentTypeRepository.Where(new { Code = RequestDTO.documentTypeCode }).FirstOrDefault().DocumentClassificationCode;
+                }
 
-                Log.Information("|{0}|{1}| Required LPCO Parent Code {@documentClassification}", StrategyName, MethodID, docType.DocumentClassificationCode);
+                Log.Information("|{0}|{1}| Required LPCO Parent Code {@documentClassification}", StrategyName, MethodID, docTypeClassificationCode);
 
                 ResponseDTO = new GetDocumentRequirementResponse();
 
                 bool DocumentIsRequired = false;
+                bool DocReqNeedsToBeAttachedColExists = false;
+                bool DocReqNeedsToBeAttached = false;
                 bool IsParenCodeValid = false;
+                bool isLPCOReqState = true;
 
                 if (RequestDTO.AgencyId == "2")
                 {
-                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequired(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequired(mongoDoc, docTypeClassificationCode, out IsParenCodeValid);
                 }
                 else if (RequestDTO.AgencyId == "3")
                 {
-                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredAQD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredAQD(mongoDoc, docTypeClassificationCode, out IsParenCodeValid);
                 }
                 else if (RequestDTO.AgencyId == "4")
                 {
-                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredFSCRD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredFSCRD(mongoDoc, docTypeClassificationCode, out IsParenCodeValid);
                 }
                 else if (RequestDTO.AgencyId == "5")
                 {
-                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredPSQCA(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredPSQCA(mongoDoc, docTypeClassificationCode, out IsParenCodeValid);
                 }
                 else if (RequestDTO.AgencyId == "10")
                 {
-                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMFD(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMFD(mongoDoc, docTypeClassificationCode, out IsParenCodeValid);
                 }
                 else if (RequestDTO.AgencyId == "11")
                 {
-                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMNC(mongoDoc, docType.DocumentClassificationCode, out IsParenCodeValid);
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMNC(mongoDoc, docTypeClassificationCode, out IsParenCodeValid);
+                }
+
+                DocReqNeedsToBeAttachedColExists = mongoDoc.Contains("Attach Documentary Requirements (Yes/No)");
+
+                if(DocReqNeedsToBeAttachedColExists)
+                {
+                    DocReqNeedsToBeAttached = mongoDoc["Attach Documentary Requirements (Yes/No)"].ToString().ToLower() == "yes";
                 }
 
                 if (!IsParenCodeValid)
@@ -213,9 +246,21 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     Log.Information("|{0}|{1}| LPCO required {2}", StrategyName, MethodID, "false");
 
-                    ResponseDTO.isLPCORequired = false;
+                    isLPCOReqState = false;
 
-                    return OKReply(string.Format("{0} not required for HsCode : {1} and Purpose : {2}", docType.Name, RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"].FactorValue));
+                    if((!DocReqNeedsToBeAttachedColExists || !DocReqNeedsToBeAttached))
+                    {
+                        ResponseDTO.isLPCORequired = isLPCOReqState;
+
+                        if(RequestDTO.FactorCodeValuePair.ContainsKey("PURPOSE"))
+                        {
+                            return OKReply(string.Format("Requested document not required for HsCode : {0} and Purpose : {1}", RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["PURPOSE"]?.FactorValue));
+                        }
+                        else
+                        {
+                            return OKReply(string.Format("Requested document not required for HsCode : {0}", RequestDTO.HsCode));
+                        }
+                    }
                 }
 
                 Log.Information("|{0}|{1}| LPCO required {2}", StrategyName, MethodID, "true");
@@ -226,7 +271,7 @@ namespace PSW.ITMS.Service.Strategies
 
                 if (recordChecker == "Checked")
                 {
-                    var response = GetRequirements(mongoDoc, docType.DocumentClassificationCode);
+                    var response = GetRequirements(mongoDoc, docTypeClassificationCode);
 
                     if (!response.IsError)
                     {
@@ -239,22 +284,27 @@ namespace PSW.ITMS.Service.Strategies
                     }
                     if (RequestDTO.AgencyId == "2")
                     {
-                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumber(mongoDoc, docType.DocumentClassificationCode);
+                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumber(mongoDoc, docTypeClassificationCode);
                     }
                     else if (RequestDTO.AgencyId == "3")
                     {
-                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberAQD(mongoDoc, docType.DocumentClassificationCode);
+                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberAQD(mongoDoc, docTypeClassificationCode);
                     }
                     else if (RequestDTO.AgencyId == "4")
                     {
-                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberFSCRD(mongoDoc, docType.DocumentClassificationCode);
+                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberFSCRD(mongoDoc, docTypeClassificationCode);
                     }
                     else if (RequestDTO.AgencyId == "10")
                     {
-                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberMFD(mongoDoc, docType.DocumentClassificationCode);
+                        ResponseDTO.FormNumber = mongoDBRecordFetcher.GetFormNumberMFD(mongoDoc, docTypeClassificationCode);
+                    }
+                    else if (RequestDTO.AgencyId == "11")
+                    {
+                        ResponseDTO.FormNumber = string.Empty;
                     }
 
-
+                    ResponseDTO.isLPCORequired = isLPCOReqState;
+                    ResponseDTO.IsDocumentAttachmentRequired = isLPCOReqState || DocReqNeedsToBeAttached;
                     Log.Information("|{0}|{1}| Documentary Requirements {@tempDocumentaryRequirementList}", StrategyName, MethodID, tempDocumentaryRequirementList);
                 }
                 else
@@ -340,10 +390,14 @@ namespace PSW.ITMS.Service.Strategies
                     FinancialRequirement.PlainAmount = mongoRecord["ENLISTMENT OF SEED VARIETY  FEES"].ToString();
                     FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["ENLISTMENT OF SEED VARIETY  FEES"].ToString());
                 }
-                else if(RequestDTO.AgencyId == "11")
+                else if (RequestDTO.AgencyId == "11")
                 {
                     ipDocRequirements = mongoRecord["IMPORT PERMIT MANDATORY DOCUMENTARY  REQUIREMENTS"].ToString().Split('|').ToList();
                     ipDocOptional = mongoRecord["IMPORT PERMIT OPTIONAL DOCUMENTARY  REQUIREMENTS"].ToString().Split('|').ToList();
+
+                    //Financial Requirements
+                    FinancialRequirement.PlainAmount = mongoRecord["IMPORT PERMIT FEES"].ToString();
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["IMPORT PERMIT FEES"].ToString());
                 }
                 else
                 {
@@ -515,6 +569,17 @@ namespace PSW.ITMS.Service.Strategies
                         FinancialRequirement.AdditionalAmountOn = calculatedFee.AdditionalAmountOn;
                     }
                 }
+                else if (RequestDTO.AgencyId == "11")
+                {
+                    roDocRequirements = mongoRecord["RELEASE ORDER MANDATORY DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                    roDocOptional = mongoRecord["RELEASE ORDER OPTIONAL DOCUMENTARY  REQUIREMENTS"].ToString().Split('|').ToList();
+                    ipReq = mongoRecord["IMPORT PERMIT REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+                    docClassificCode = "IMP";
+
+                    //Financial Requirements
+                    FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
+                    FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RELEASE ORDER FEES"].ToString());
+                }
                 else
                 {
                     roDocRequirements = mongoRecord["RO  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
@@ -658,6 +723,8 @@ namespace PSW.ITMS.Service.Strategies
                 var premisesRegistrationRequired = false;
                 var healthCertificateFeeRequired = false;
                 var countries = new List<string>();
+                var epReq = false;
+                var docClassificCode = string.Empty;
 
                 if (RequestDTO.AgencyId == "2")
                 {
@@ -672,6 +739,13 @@ namespace PSW.ITMS.Service.Strategies
                     ecDocRequirements = mongoRecord["Certificate of Quality and Origin Processing Mandatory Documentary Requirements"].ToString().Split('|').ToList();
                     ecDocOptional = mongoRecord["Certificate of Quality and Origin Processing  Optional  Documentary Requirements"].ToString().Split('|').ToList();
                     premisesRegistrationRequired = mongoRecord["Is Premises Registration Required? (Yes/No)"].ToString().ToLower() == "yes";
+                }
+                else if (RequestDTO.AgencyId == "11")
+                {
+                    ecDocRequirements = mongoRecord["EXPORT CERTIFICATE MANDATORY DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
+                    ecDocOptional = mongoRecord["EXPORT CERTIFICATE OPTIONAL DOCUMENTARY  REQUIREMENTS"].ToString().Split('|').ToList();
+                    epReq = mongoRecord["EXPORT PERMIT REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+                    docClassificCode = "EXP";
                 }
 
 
@@ -763,7 +837,25 @@ namespace PSW.ITMS.Service.Strategies
                     }
 
                 }
+                if (epReq == true)
+                {
+                    var tempReq = new DocumentaryRequirement();
+                    var epDocRequired = Command.UnitOfWork.DocumentTypeRepository.Where(new { AgencyID = RequestDTO.AgencyId, documentClassificationCode = docClassificCode, AttachedObjectFormatID = 2, AltCode = "C" }).FirstOrDefault();
 
+                    tempReq.Name = epDocRequired.Name;
+
+                    if(RequestDTO.AgencyId != "11")
+                    {
+                        tempReq.Name = tempReq.Name + " For " + "Release Order";
+                    }
+
+                    tempReq.DocumentName = epDocRequired.Name;
+                    tempReq.IsMandatory = true;
+                    tempReq.RequirementType = "Documentary";
+                    tempReq.DocumentTypeCode = epDocRequired.Code;
+                    tempReq.AttachedObjectFormatID = epDocRequired.AttachedObjectFormatID;
+                    tarpDocumentRequirements.Add(tempReq);
+                }
                 if (RequestDTO.IsFinancialRequirement)
                 {
                     //Financial Requirements
@@ -849,6 +941,11 @@ namespace PSW.ITMS.Service.Strategies
                         FinancialRequirement.PlainAmount = ECFeeDecimal.ToString();
                         FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(ECFeeDecimal.ToString());
 
+                    }
+                    if (RequestDTO.AgencyId == "11")
+                    {
+                        FinancialRequirement.PlainAmount = mongoRecord["EXPORT CERTIFICATE FEES"].ToString();
+                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["EXPORT CERTIFICATE FEES"].ToString());
                     }
                 }
             }
