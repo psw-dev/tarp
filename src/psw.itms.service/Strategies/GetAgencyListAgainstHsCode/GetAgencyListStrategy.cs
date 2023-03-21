@@ -59,7 +59,7 @@ namespace PSW.ITMS.Service.Strategies
                         agency.RequiredDocumentCode = documentToInitiate.RequiredDocumentCode;      
                     }  
                 }
-                tempAgencyList = tempAgencyList.Where(x => !string.IsNullOrEmpty( x.RequiredDocumentCode)).ToList();
+                // tempAgencyList = tempAgencyList.Where(x => !string.IsNullOrEmpty( x.RequiredDocumentCode)).ToList();
                 var distinctAgencyList = tempAgencyList.Distinct(new objCompare()).ToList();
 
                 ResponseDTO = new GetListOfAgencyAgainstHscodeResponse
