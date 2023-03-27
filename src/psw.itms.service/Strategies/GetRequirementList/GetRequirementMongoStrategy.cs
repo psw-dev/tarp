@@ -229,11 +229,11 @@ namespace PSW.ITMS.Service.Strategies
                     DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMNC(mongoDoc, docTypeClassificationCode, out IsParenCodeValid);
                 }
 
-                DocReqNeedsToBeAttachedColExists = mongoDoc.Contains("Attach Documentary Requirements (Yes/No)");
+                DocReqNeedsToBeAttachedColExists = mongoDoc.Contains("ATTACH DOCUMENTARY REQUIREMENTS (YES/NO)");
 
                 if(DocReqNeedsToBeAttachedColExists)
                 {
-                    DocReqNeedsToBeAttached = mongoDoc["Attach Documentary Requirements (Yes/No)"].ToString().ToLower() == "yes";
+                    DocReqNeedsToBeAttached = mongoDoc["ATTACH DOCUMENTARY REQUIREMENTS (YES/NO)"].ToString().ToLower() == "yes";
                 }
 
                 if (!IsParenCodeValid)
