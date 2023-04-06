@@ -132,7 +132,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     var filter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", RequestDTO.HSCodeExt);
                     var projection = Builders<BsonDocument>.Projection.Include(factorData.FactorCode).Exclude("_id");
-                    var lov = documentInCollection.Find<BsonDocument>(filter).Project(projection).ToList().Select(x => x.GetValue(factorData.FactorCode).ToString()).ToList();
+                    var lov = documentInCollection.Find<BsonDocument>(filter).Project(projection).ToList().Select(x => x.GetValue(factorData.FactorCode).ToString().Trim()).ToList();
 
                     if (factorData.FactorCode == "UNIT")
                     {
