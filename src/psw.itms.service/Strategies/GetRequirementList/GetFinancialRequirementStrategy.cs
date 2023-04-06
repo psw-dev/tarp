@@ -203,6 +203,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     decimal plainAmount = 0m;
                     decimal additionalAmount = 0m;
+                    decimal plainAmmendmentFee = 0m;
                     string additionalAmountOn = string.Empty;
                     string docTypeCode = string.Empty;
 
@@ -223,6 +224,8 @@ namespace PSW.ITMS.Service.Strategies
                     financialRequirement.AdditionalAmount = additionalAmount;
                     financialRequirement.AdditionalAmountOn = additionalAmountOn;
                     financialRequirement.documentTypeCode = docTypeCode;
+                    financialRequirement.PlainAmmendmentFee = plainAmmendmentFee.ToString();
+                    financialRequirement.AmmendmentFee = Command.CryptoAlgorithm.Encrypt(plainAmmendmentFee.ToString());
 
                     ResponseDTO.DocumentFinancialRequirement = financialRequirement;
                 }
