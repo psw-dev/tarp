@@ -86,7 +86,7 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Error occured in fetching record from MongoDB");
                 }
 
-                var regulatedHsCodePurposeList = GetPurposeListAgainstRegulatedHsCode(extHsCodeList, documentInCollection);
+                var regulatedHsCodePurposeList = GetPurposeListAgainstRegulatedHsCode(extHsCodeList, documentInCollection, RequestDTO.AgencyId);
 
                 ResponseDTO = new RegulatedHsCodePurposeResponseDTO
                 {
@@ -106,7 +106,7 @@ namespace PSW.ITMS.Service.Strategies
         }
         #endregion 
 
-        private static List<RegulatedHsCodePurpose> GetPurposeListAgainstRegulatedHsCode(List<string> extHsCodeList, IMongoCollection<BsonDocument> documentInCollection)
+        private static List<RegulatedHsCodePurpose> GetPurposeListAgainstRegulatedHsCode(List<string> extHsCodeList, IMongoCollection<BsonDocument> documentInCollection, int agencyId)
         {
             var regulatedHsCodePurposes = new List<RegulatedHsCodePurpose>();
 
@@ -118,7 +118,10 @@ namespace PSW.ITMS.Service.Strategies
                 var filter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hsCode);
                 var projection = Builders<BsonDocument>.Projection.Include("PURPOSE").Exclude("_id");
 
-                hsCodePurpose.PurposeList = documentInCollection.Find<BsonDocument>(filter).Project(projection).ToList().Select(x => x.GetValue("PURPOSE").ToString()).ToList();
+                if (agencyId != 11)
+                {
+                    hsCodePurpose.PurposeList = documentInCollection.Find<BsonDocument>(filter).Project(projection).ToList().Select(x => x.GetValue("PURPOSE").ToString()).ToList();
+                }
 
                 regulatedHsCodePurposes.Add(hsCodePurpose);
 
