@@ -316,7 +316,7 @@ namespace PSW.ITMS.Service.MongoDB
             {
                 case "RO":
                     IsParenCodeValid = true;
-                    return mongoRecord["RO REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
+                    return mongoRecord["RO Required (Yes/No)"].ToString().ToLower() == "yes";
 
                 default:
                     IsParenCodeValid = false;
