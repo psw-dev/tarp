@@ -592,6 +592,17 @@ namespace PSW.ITMS.Service.Strategies
                     FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
                     FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RELEASE ORDER FEES"].ToString());
                 }
+                else if (RequestDTO.AgencyId == "13")
+                {
+                    roDocRequirements = mongoRecord["RO Mandatory Documentary Requirements"].ToString().Split('|').ToList();
+                    roDocOptional = mongoRecord["RO Optional Documentary Requirements"].ToString().Split('|').ToList();
+                    // ipReq = mongoRecord["IMPORT PERMIT REQUIRED (Y/N)"].ToString().ToLower() == "yes";
+                    // docClassificCode = "IMP";
+
+                    //Financial Requirements
+                    // FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
+                    // FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RELEASE ORDER FEES"].ToString());
+                }
                 else
                 {
                     roDocRequirements = mongoRecord["RO  DOCUMENTARY REQUIREMENTS"].ToString().Split('|').ToList();
