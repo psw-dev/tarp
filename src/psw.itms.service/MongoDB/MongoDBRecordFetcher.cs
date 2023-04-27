@@ -144,6 +144,25 @@ namespace PSW.ITMS.Service.MongoDB
 
             return FetchedRecord;
         }
+        public BsonDocument GetFilteredRecordMMD(string hscode)
+        {
+            var database = MClient.GetDatabase(DbName);
+
+            var collection = database.GetCollection<BsonDocument>(CollectionName);
+
+            var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hscode);
+
+            Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
+
+            var FetchedRecord = collection.Find(hsCodeFilter, new FindOptions { Collation = collation }).FirstOrDefault();
+
+            if (FetchedRecord == null)
+            {
+                return null;
+            }
+
+            return FetchedRecord;
+        }
         public bool UpdateRecord(string hscode, string purpose, string propertyToBeUpdated, string updatedValue)
         {
             var recordFetch = GetFilteredRecord(hscode, purpose);
@@ -286,6 +305,19 @@ namespace PSW.ITMS.Service.MongoDB
                     IsParenCodeValid = true;
                     return mongoRecord["EXPORT CERTIFICATE REQUIRED (Y/N)"].ToString().ToLower() == "yes";
                     
+                default:
+                    IsParenCodeValid = false;
+                    return false;
+            }
+        }
+        public bool CheckIfLPCORequiredMMD(BsonDocument mongoRecord, string requiredDocumentParentCode, out bool IsParenCodeValid)
+        {
+            switch (requiredDocumentParentCode)
+            {
+                case "RO":
+                    IsParenCodeValid = true;
+                    return mongoRecord["RO REQUIRED (Yes/No)"].ToString().ToLower() == "yes";
+
                 default:
                     IsParenCodeValid = false;
                     return false;
