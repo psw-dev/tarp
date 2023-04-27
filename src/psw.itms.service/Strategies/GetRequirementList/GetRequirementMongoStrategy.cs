@@ -164,6 +164,14 @@ namespace PSW.ITMS.Service.Strategies
                             return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
                         }
                     }
+                    else if (RequestDTO.AgencyId == "13")
+                    {
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordMMD(RequestDTO.HsCode);
+                        if (mongoDoc == null)
+                        {
+                            return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));
+                        }
+                    }
                 }
                 catch (SystemException ex)
                 {
@@ -227,6 +235,10 @@ namespace PSW.ITMS.Service.Strategies
                 else if (RequestDTO.AgencyId == "11")
                 {
                     DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMNC(mongoDoc, docTypeClassificationCode, out IsParenCodeValid);
+                }
+                else if (RequestDTO.AgencyId == "13")
+                {
+                    DocumentIsRequired = mongoDBRecordFetcher.CheckIfLPCORequiredMMD(mongoDoc, docTypeClassificationCode, out IsParenCodeValid);
                 }
 
                 DocReqNeedsToBeAttachedColExists = mongoDoc.Contains("ATTACH DOCUMENTARY REQUIREMENTS (YES/NO)");
