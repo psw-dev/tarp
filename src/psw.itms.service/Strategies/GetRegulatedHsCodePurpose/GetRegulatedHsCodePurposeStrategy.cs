@@ -38,11 +38,22 @@ namespace PSW.ITMS.Service.Strategies
                     return BadRequestReply("Please provide valid request parameters");
                 }
 
-                var mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
-                    RequestDTO.AgencyId.ToString(),
-                    RequestDTO.TradeTranTypeID,
-                    RequestDTO.DocumentTypeCode
-                ).CollectionName;
+                string mongoDbCollection = null;
+                if (RequestDTO.TradeTranTypeID == -1)
+                {
+                    mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
+                      RequestDTO.AgencyId.ToString(),
+                      RequestDTO.DocumentTypeCode
+                  ).CollectionName;
+                }
+                else
+                {
+                    mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
+                       RequestDTO.AgencyId.ToString(),
+                       RequestDTO.TradeTranTypeID,
+                       RequestDTO.DocumentTypeCode
+                   ).CollectionName;
+                }
 
                 if (string.IsNullOrEmpty(mongoDbCollection))
                 {
