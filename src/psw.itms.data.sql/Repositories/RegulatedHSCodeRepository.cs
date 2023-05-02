@@ -74,6 +74,10 @@ namespace PSW.ITMS.Data.Sql.Repositories
         {
             return _connection.Query<string>(string.Format("SELECT HSCODEEXT FROM REGULATEDHSCODE WHERE AGENCYID = '{0}' AND TRADETRANTYPEID = '{1}' AND REQUIREDDOCUMENTTYPECODE = '{2}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId, tradeTransitTypeId, requiredDocumentTypeCode)).ToList();
         }
+        public List<string> GetExtHsCodeList(int agencyId, string requiredDocumentTypeCode)
+        {
+            return _connection.Query<string>(string.Format("SELECT DISTINCT HSCODEEXT FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'  AND REQUIREDDOCUMENTTYPECODE = '{1}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId, requiredDocumentTypeCode)).ToList();
+        }
         public RegulatedHSCode GetActiveHsCode(string hsCodeExt, string agencyId, int tradeTranTypeId, string requiredDocumentTypeCode)
         {
             return _connection.Query<RegulatedHSCode>(string.Format("select * from RegulatedHSCode where HSCodeExt = '{0}' AND AgencyId = '{1}' AND TradeTranTypeID = '{2}' AND RequiredDocumentTypeCode = '{3}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", hsCodeExt, agencyId, tradeTranTypeId, requiredDocumentTypeCode)).FirstOrDefault();
@@ -88,7 +92,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
         }
         public RegulatedHSCode GetActiveHsCode(string agencyId, string requiredDocumentTypeCode)
         {
-            return _connection.Query<RegulatedHSCode>(string.Format("select * from RegulatedHSCode where AgencyId = '{0}'  AND RequiredDocumentTypeCode = '{2}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId, requiredDocumentTypeCode)).FirstOrDefault();
+            return _connection.Query<RegulatedHSCode>(string.Format("select * from RegulatedHSCode where AgencyId = '{0}'  AND RequiredDocumentTypeCode = '{1}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId, requiredDocumentTypeCode)).FirstOrDefault();
         }
         public List<string> ValidateRegulatedHSCodes(List<string> HSCodes, int agencyId, int tradeTranTypeId)
         {
