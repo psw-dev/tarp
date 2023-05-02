@@ -76,7 +76,7 @@ namespace PSW.ITMS.Data.Sql.Repositories
         }
         public List<string> GetExtHsCodeList(int agencyId, string requiredDocumentTypeCode)
         {
-            return _connection.Query<string>(string.Format("SELECT HSCODEEXT FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'  AND REQUIREDDOCUMENTTYPECODE = '{1}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId, requiredDocumentTypeCode)).ToList();
+            return _connection.Query<string>(string.Format("SELECT DISTINCT HSCODEEXT FROM REGULATEDHSCODE WHERE AGENCYID = '{0}'  AND REQUIREDDOCUMENTTYPECODE = '{1}' AND GETDATE() BETWEEN EFFECTIVEFROMDT AND EFFECTIVETHRUDT", agencyId, requiredDocumentTypeCode)).ToList();
         }
         public RegulatedHSCode GetActiveHsCode(string hsCodeExt, string agencyId, int tradeTranTypeId, string requiredDocumentTypeCode)
         {
