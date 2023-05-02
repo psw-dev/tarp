@@ -85,7 +85,15 @@ namespace PSW.ITMS.Service.Strategies
 
                     Log.Information("|{0}|{1}| MongoDb Collection Name : {@mongoDbCollection}", StrategyName, MethodID, mongoDbCollection);
 
-                    var extHsCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetExtHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode, RequestDTO.TradeTranTypeID);
+                    List<string> extHsCodeList = null;
+                    if (RequestDTO.TradeTranTypeID == -1)
+                    {
+                        extHsCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetExtHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode);
+                    }
+                    else
+                    {
+                        extHsCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetExtHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode, RequestDTO.TradeTranTypeID);
+                    }
 
                     if (extHsCodeList == null)
                     {
