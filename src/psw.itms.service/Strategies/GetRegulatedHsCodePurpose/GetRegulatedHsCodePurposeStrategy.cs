@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
+using psw.itms.common.Enums;
 using PSW.ITMS.Common;
 using PSW.ITMS.Service.Command;
 using PSW.ITMS.Service.DTO;
@@ -62,7 +63,7 @@ namespace PSW.ITMS.Service.Strategies
                 {
 
                     string mongoDbCollection = null;
-                    if (RequestDTO.TradeTranTypeID == -1)
+                    if (RequestDTO.TradeTranTypeID == (int)TradeTranTypeEnum.IMPORT_AND_EXPORT)
                     {
                         mongoDbCollection = Command.UnitOfWork.RegulatedHSCodeRepository.GetActiveHsCode(
                           RequestDTO.AgencyId.ToString(),
@@ -86,7 +87,7 @@ namespace PSW.ITMS.Service.Strategies
                     Log.Information("|{0}|{1}| MongoDb Collection Name : {@mongoDbCollection}", StrategyName, MethodID, mongoDbCollection);
 
                     List<string> extHsCodeList = null;
-                    if (RequestDTO.TradeTranTypeID == -1)
+                    if (RequestDTO.TradeTranTypeID == (int)TradeTranTypeEnum.IMPORT_AND_EXPORT)
                     {
                         extHsCodeList = Command.UnitOfWork.RegulatedHSCodeRepository.GetExtHsCodeList(RequestDTO.AgencyId, RequestDTO.DocumentTypeCode);
                     }
