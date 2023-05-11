@@ -14,6 +14,7 @@ namespace PSW.ITMS.service
         public LPCOFeeCalculator(LPCOFeeCleanResp lpcoFeeEntity, GetDocumentRequirementRequest request)
         {
             this.LPCOFeeEntity = lpcoFeeEntity;
+            this.Request = new List<GetDocumentRequirementRequest>();
             this.Request.Add(request);
         }
 
@@ -41,6 +42,14 @@ namespace PSW.ITMS.service
             switch(calculationBasis)
             {
                 case "Quantity":
+                    if(calculationSource.ToLower() == "item")
+                    {
+                        calculatedFee = CalculateItemFeeAsQuantity(Request[0]);
+                    }
+                    else if (calculationSource.ToLower() == "document")
+                    {
+                        break;
+                    }
                     break;
                 case "Fixed":
                     break;
@@ -111,6 +120,22 @@ namespace PSW.ITMS.service
             }
 
             lpcoFee.Fee = Math.Round(result);
+            lpcoFee.AdditionalAmount = Math.Round(additionalAmount);
+            lpcoFee.AdditionalAmountOn = additionalAmountOn;
+
+            return lpcoFee;
+        }
+
+        private LPCOFeeDTO CalculateItemFeeAsQuantity(GetDocumentRequirementRequest request)
+        {
+            LPCOFeeDTO lpcoFee = new LPCOFeeDTO();
+            var result = LPCOFeeEntity.Rate;
+            var percentage = LPCOFeeEntity.Rate == null ? 0m : (LPCOFeeEntity.Rate/100);
+            var minAmount = LPCOFeeEntity.MinAmount ?? 0m;
+            var additionalAmount = LPCOFeeEntity.AdditionalAmount ?? 0m;
+            var additionalAmountOn = LPCOFeeEntity.AdditionalAmountOn ?? string.Empty;
+            
+            lpcoFee.Fee = Math.Round((decimal)result);
             lpcoFee.AdditionalAmount = Math.Round(additionalAmount);
             lpcoFee.AdditionalAmountOn = additionalAmountOn;
 

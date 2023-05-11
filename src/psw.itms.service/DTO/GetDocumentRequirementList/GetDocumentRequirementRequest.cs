@@ -24,6 +24,9 @@ namespace PSW.ITMS.Service.DTO
         [JsonPropertyName("Quantity")]
         public decimal Quantity { get; set; }
 
+        [JsonPropertyName("grossTonnage")]
+        public decimal GrossTonnage { get; set; }
+
         [JsonPropertyName("AgencyQuantity")]
         public decimal AgencyQuantity { get; set; }
 

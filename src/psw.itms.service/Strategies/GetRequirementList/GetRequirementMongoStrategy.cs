@@ -596,12 +596,30 @@ namespace PSW.ITMS.Service.Strategies
                 {
                     roDocRequirements = mongoRecord["RO Mandatory Documentary Requirements"].ToString().Split('|').ToList();
                     roDocOptional = mongoRecord["RO Optional Documentary Requirements"].ToString().Split('|').ToList();
-                    // ipReq = mongoRecord["IMPORT PERMIT REQUIRED (Y/N)"].ToString().ToLower() == "yes";
-                    // docClassificCode = "IMP";
 
                     //Financial Requirements
-                    // FinancialRequirement.PlainAmount = mongoRecord["RELEASE ORDER FEES"].ToString();
-                    // FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(mongoRecord["RELEASE ORDER FEES"].ToString());
+                    if (RequestDTO.IsFinancialRequirement)
+                    {
+                        var feeConfigurationList = Command.UnitOfWork.LPCOFeeConfigurationRepository.GetFeeConfig(
+                            RequestDTO.HsCode,
+                            RequestDTO.TradeTranTypeID,
+                            Convert.ToInt32(RequestDTO.AgencyId)).Where(x => (x.EffectiveFromDt < DateTime.Now && x.EffectiveThruDt > DateTime.Now) && ((double?)x.QtyRangeFrom >= (double)RequestDTO.GrossTonnage && (double?)x.QtyRangeTo <= (double)RequestDTO.GrossTonnage) || ((double?)x.QtyRangeFrom is null && (double?)x.QtyRangeTo <= (double)RequestDTO.GrossTonnage)).FirstOrDefault();
+
+                        var feeConfig = new LPCOFeeCleanResp();
+                        feeConfig.AdditionalAmount = feeConfigurationList.AdditionalAmount;
+                        feeConfig.AdditionalAmountOn = feeConfigurationList.AdditionalAmountOn;
+                        feeConfig.Rate = feeConfigurationList.Rate;
+                        feeConfig.CalculationBasis = feeConfigurationList.CalculationBasis;
+                        feeConfig.CalculationSource = feeConfigurationList.CalculationSource;
+                        feeConfig.MinAmount = feeConfigurationList.MinAmount;
+                        var calculatedFee = new LPCOFeeCalculator(feeConfig, RequestDTO).Calculate();
+
+                        FinancialRequirement.PlainAmount = calculatedFee.Fee.ToString();
+                        FinancialRequirement.Amount = Command.CryptoAlgorithm.Encrypt(calculatedFee.Fee.ToString());
+                        FinancialRequirement.AdditionalAmount = calculatedFee.AdditionalAmount;
+                        FinancialRequirement.AdditionalAmountOn = calculatedFee.AdditionalAmountOn;
+
+                    }
                 }
                 else
                 {
