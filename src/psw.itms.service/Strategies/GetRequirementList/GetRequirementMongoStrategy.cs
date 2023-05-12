@@ -166,7 +166,7 @@ namespace PSW.ITMS.Service.Strategies
                     }
                     else if (RequestDTO.AgencyId == "13")
                     {
-                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordMMD(RequestDTO.HsCode);
+                        mongoDoc = mongoDBRecordFetcher.GetFilteredRecordMMD(RequestDTO.HsCode, RequestDTO.FactorCodeValuePair["SEAWORTHINESSCERT"].FactorValue);
                         if (mongoDoc == null)
                         {
                             return BadRequestReply(String.Format("No record found for HsCode : {0}", RequestDTO.HsCode));

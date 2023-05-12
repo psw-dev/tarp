@@ -144,17 +144,20 @@ namespace PSW.ITMS.Service.MongoDB
 
             return FetchedRecord;
         }
-        public BsonDocument GetFilteredRecordMMD(string hscode)
+        public BsonDocument GetFilteredRecordMMD(string hscode, string certificate)
         {
             var database = MClient.GetDatabase(DbName);
 
             var collection = database.GetCollection<BsonDocument>(CollectionName);
 
             var hsCodeFilter = Builders<BsonDocument>.Filter.Eq("12 DIGIT PRODUCT CODE", hscode);
+            var certificateFilter = Builders<BsonDocument>.Filter.Eq("SEAWORTHINESSCERT", certificate);
+
+            var combinedFilter = Builders<BsonDocument>.Filter.And(hsCodeFilter, certificateFilter);
 
             Collation collation = new Collation("en", caseLevel: false, strength: CollationStrength.Secondary);
 
-            var FetchedRecord = collection.Find(hsCodeFilter, new FindOptions { Collation = collation }).FirstOrDefault();
+            var FetchedRecord = collection.Find(combinedFilter, new FindOptions { Collation = collation }).FirstOrDefault();
 
             if (FetchedRecord == null)
             {
