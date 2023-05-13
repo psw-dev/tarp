@@ -139,6 +139,11 @@ namespace PSW.ITMS.Service.Strategies
                         lov = lov.FirstOrDefault().Split('|').ToList();
 
                     }
+                    if (factorData.FactorCode == "CLASSIFIEDSOCIETY")
+                    {
+                        lov = lov.LastOrDefault().Split('|').ToList();
+
+                    }
                     Log.Information("[{0}.{1}] LOV : {@lov}", GetType().Name, MethodBase.GetCurrentMethod().Name, lov);
                     var factorLOVItems = Command.UnitOfWork.LOVItemRepository.GetLOVItems(factorInfo.LOVTableName, factorInfo.LOVColumnName);
 
